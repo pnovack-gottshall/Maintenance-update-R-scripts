@@ -1,7 +1,7 @@
 ## Update age ranges from Paleobiology Database and create diversity curves. Also
 ## check for missing ID numbers.
 
-##### Add code to check if a sungenus, and if so, use the subgenus name for the 
+##### Add code to check if a subgenus, and if so, use the subgenus name for the 
 ##### range! #####
 
 

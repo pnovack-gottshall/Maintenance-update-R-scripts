@@ -14,8 +14,8 @@
 ##
 ## 3. When propogating higher taxa (e.g., Xanthoidea indet. for Carcinoplax),
 ## should the EcoRef be the consensus best reference (e.g., Dromia sp.), or
-## switch to "Xanthoidea indet."? As currently done, note really copying Dromia,
-## but the consensus across the higher taxa.
+## switch to "Xanthoidea indet."? As currently done, not really copying Dromia,
+## but cpoying the consensus across that taxon's relatives instead.
 
 ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ##
 ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ##
@@ -24,7 +24,6 @@
 ## FUTURE FEATURE REQUEST? Add AbsStratDist here instead, so that propogated 
 ## based not only on size, but also on life habit coding? Would require
 ## exporting canonical body size lengths!
-
 
 
 
