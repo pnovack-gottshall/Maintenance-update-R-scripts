@@ -125,8 +125,8 @@ colnames(out[AP.cols])          # "APLength", "PhotoAP", "APScale"
 colnames(out[T.cols])           # "TrLength", "PhotoTr", "TrScale"
 colnames(out[DV.cols])          # "DVLength", "PhotoDV", "DVScale"
 str(input)
-# Make sure the "SizeChanged" and "Est_X" columns are input as characters. If
-# a column is blank, it by default is classed as a logical (which causes errors
+# Make sure the 4 "SizeChanged" and "Est_X" columns are input as characters. If 
+# a column is blank, it by default is classed as a logical (which causes errors 
 # below)
 head(input)
 table(input$BodySizeScale)
@@ -139,11 +139,12 @@ if(length(table(table(input$Genus))) > 1L) {
   print(which(table(input$Genus) > 1L))
   stop("The above genus entries are entered twice. Delete the outdated entry?")
 }
-# Ignore if extant brachiopods or multiple subgenera or rather different species
-# in same genus: brachiopod Eoplectodonta, polychaete Glycera, trilobite 
-# Isotelus, brachiopod Leangella, bivalve Modiolopsis, brachiopod Plectodonta, 
+# Ignore the 72 extant brachiopod genera with multiple species in the database
+# (mostly extant species, some fossil species), cases where multiple subgenera
+# are included in same genus, and where there are ecologically quite different
+# species in same genus: brachiopod Eoplectodonta, polychaete Glycera, trilobite
+# Isotelus, brachiopod Leangella, bivalve Modiolopsis, brachiopod Plectodonta,
 # rugose Streptelasma, brachiopod Strophomena, and Tentaculites
-
 
 
 ## FUNCTIONS ---------------------------------------
@@ -253,9 +254,10 @@ better.all.equal <- function(a, b) {
 
 
 ## IDENTIFY HOW ABSOLUTE STRAT DISTANCE WAS CALCULATED, AND PROPOGATE USING SAME
-## CALCULATION (USING APPROXIMATIONS FOR 4 SIGNIFICANT DIGITS IN CASE OF INEXACT
-## EQUALITY, AND 'NA' IF NO MATCH). CALCULATIONS USED INCLUDE 30, 45, & 60 
-## DEGREES, and 25%, 33%, 50%, 67%, 75%, 90%, 200%, and 400%
+## CALCULATION. CALCULATIONS USED INCLUDE 30, 45, & 60 DEGREES, and 25%, 33%, 
+## 50%, 67%, 75%, 90%, 200%, and 400%. NOTE USES 3 SIGNIFICANT DIGITS FOR
+## IDENTIFYING MATCHES (IN CASE OF INEXACT EQUALITY), BUT OUTPUTS ALL DIGITS,
+## AND 'NA' IF NO MATCH)
 # target = life habit data frame for target taxon to be estimated
 # source = life-habit data frame containing best relative.
 get.strat <- function(target, ref) {
