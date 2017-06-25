@@ -441,27 +441,32 @@ for(i in 1:nrow(out)) {
   out$TransverseLength[i] <- out$PhotoTransverse[i] / out$TransverseScale[i]
   out$DVLength[i] <- out$PhotoDV[i] / out$DVScale[i]
 
-  # Propogate AbsStratDist, if missing but available via ALL best relatives
-  # (that are within same suborder [end=7] or lower resolution)
-  rels <- find.rel(x=out, i=i, end=7, photo.cols=photo.cols, est.cols=est.cols,
-    sim.time=FALSE)$rel
-  rels.with.strats <- 0L
-  if(!is.null(rels)) rels.with.strats <- length(na.omit(rels$AbsStratDistance))
-  if(missing.strat & rels.with.strats > 0L) {
-    nr <- 1:nrow(rels)
-    poss.strats <- as.vector(na.omit(sapply(nr, function(nr) get.strat(out[i,],
-      rels[nr,]))))
-    # Discard all if some aren't a canonical orientation (because ignored in 'get.strat')
-    if(length(poss.strats) != rels.with.strats) poss.strats <- NA
-    if(length(unique(na.omit(poss.strats))) == 1L) out$AbsStratDistance[i] <- poss.strats[1]
+  # Propogate AbsStratDist 
+  if(missing.strat) {
+    # ... if missing AbsStratDist but available via ALL best relatives (that are within same
+    # suborder [end=7] or lower resolution)
+    rels <- find.rel(x=out, i=i, end=7, photo.cols=photo.cols, est.cols=est.cols, 
+      sim.time=FALSE)$rel
+    rels.with.strats <- 0L
+    if(!is.null(rels)) rels.with.strats <- length(na.omit(rels$AbsStratDistance))
+    if(missing.strat & rels.with.strats > 0L) {
+      nr <- 1:nrow(rels)
+      poss.strats <- as.vector(na.omit(sapply(nr, function(nr) get.strat(out[i,], 
+        rels[nr,]))))
+      # Discard all if some aren't a canonical orientation (because ignored in 'get.strat')
+      if(length(poss.strats) != rels.with.strats) poss.strats <- NA
+      if(length(unique(na.omit(poss.strats))) == 1L) out$AbsStratDistance[i] <- 
+        poss.strats[1]
+    }
+  } else {
+    # Or update AbsStratDist if previously existed, but some measurements were updated
+    orig_ms <- unlist(input[i, ATD.cols])
+    poss_dists <- c(1, -1) %x% c(orig_ms, angle.30 * orig_ms, angle.45 * orig_ms, 
+      angle.60 * orig_ms, proportions %x% orig_ms)
+    if(change == "maybe" & !missing.strat & 
+        signif(input$AbsStratDistance[i], 3) %in% signif(poss_dists, 3))
+      out$AbsStratDistance[i] <- get.strat(out[i,], input[i,])
   }
-  # Or update AbsStratDist if previously existed, but some measurements were updated
-  orig_ms <- unlist(input[i, ATD.cols])
-  poss_dists <- c(1, -1) %x% c(orig_ms, angle.30 * orig_ms, angle.45 * orig_ms, 
-    angle.60 * orig_ms, proportions %x% orig_ms)
-  if(change == "maybe" & !missing.strat & 
-      signif(input$AbsStratDistance[i], 3) %in% signif(poss_dists, 3))
-    out$AbsStratDistance[i] <- get.strat(out[i,], input[i,])
 
   # Add "check" tag if any size or AbsStratDist was changed
   if(!identical(signif(input[i, photo.cols], 3), signif(out[i, photo.cols], 3)) || 
