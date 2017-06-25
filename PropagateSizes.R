@@ -496,9 +496,9 @@ round(table(input$BodySizeScale) * 100 / nrow(input), 1)
 round(table(out$BodySizeScale) * 100 / nrow(out), 1)
 
 rng <- range(na.omit(c(log10(input$AbsStratDistance), log10(out$AbsStratDistance))))
-hist(log10(out$AbsStratDistance), xlim=rng, col="white", border="white")
-hist(log10(out$AbsStratDistance), col="darkgray", border="white", add=TRUE)
-hist(log10(input$AbsStratDistance), col="transparent", border="black", add=TRUE)
+hist(log10(out$AbsStratDistance), xlim=rng, col="white", border="white", n=50)
+hist(log10(out$AbsStratDistance), col="darkgray", border="white", add=TRUE, n=50)
+hist(log10(input$AbsStratDistance), col="transparent", border="black", add=TRUE, n=50)
 
 
 ## EXPORT DATA -------------------------------------------------------------
