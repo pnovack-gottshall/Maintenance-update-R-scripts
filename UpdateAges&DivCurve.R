@@ -1,15 +1,12 @@
 ## Update age ranges from Paleobiology Database and create diversity curves. Also
 ## check for missing ID numbers.
 
-##### Add code to check if a subgenus, and if so, use the subgenus name for the 
-##### range! #####
-
 
 rm(list=ls())
 setwd("C:/Users/pnovack-gottshall/Desktop/Databases/Maintenance & update R scripts")
 
 ## Download data directly from PaleobioDB and save to working directory (will be 
-## > ~35 MB)
+## > ~37 MB)
 
 ## Easier if paste link into URL and save manually
 # pbdb <- read.csv("www.paleobiodb.org/data1.2/taxa/list.csv?base_name=Metazoa&interval=Phanerozoic&show=app&vocab=pbdb")
@@ -20,7 +17,7 @@ head(pbdb)
 
 ## Export occurrences as .csv file named "occs.csv" from "LifeHabits.fmp12" (in 
 ## any sort order) with following columns: IDNumber, Phylum, Class, Order, 
-## Superfamily, Family, Genus, Species, early_period, early_age, late_period, 
+## Superfamily, Family, Genus, Subgenus, Species, early_period, early_age, late_period, 
 ## late_age). Make sure to manually enter the header names! (easiest is to save
 ## as Excel to retain column names and then re-save as .csv.)
 occs <- read.csv("occs.csv", header=TRUE)
@@ -33,6 +30,7 @@ sort(or.tbl, decreasing=FALSE)
 # Confirm that early_period and late_period are factors
 is.factor(occs$early_period)
 is.factor(occs$late_period)
+# If not, run following:
 # occs$early_period <- as.character(occs$early_period)
 # occs$late_period <- as.character(occs$late_period)
 head(occs)
@@ -71,31 +69,39 @@ ints[which(!ints %in% l4s$interval_name)]
 
 ## With this one: 
 
-# l4s[c(length(which(l4s$late_age <= wh.bad$late_age)),
-      length(which(l4s$late_age < wh.bad$early_age))), 3:5]
+# l4s[c(length(which(l4s$late_age <= wh.bad$late_age)), length(which(l4s$late_age < wh.bad$early_age))), 3:5]
 
 
 
 ## Extract age and interval ranges
 
-# If crashes, most likely because the genus is mis-spelled, or not in PBDB AND
+# If crashes, most likely because the genus is mis-spelled, or not in PBDB AND 
 # there are no ranges available to use. Manually set as Recent (if extant and no
-# fossil record) or enter manually.
+# fossil record, according to WoRMS) or enter manually.
 
 index <- seq(0, 10000, by=100)
-Gen <- sort(unique(occs$Genus))
+# In next line, make sure Genus is added before Subgenus. Algorithm will first
+# update the ranges for all subgenera in a genus to the range for the type
+# subgenus (if subgenus name same as genus), then will override for individual
+# subgenera later
+Gen <- sort(unique(unlist(list(occs$Genus, occs$Subgenus), recursive=TRUE)))
 for(i in 1:length(Gen)) {
   gen.pbdb <- max.ma <- min.ma <- Early <- Late <- NA
   gen <- as.character(Gen[i])
+  if(gen == "") next   # Combining genera and subgenera sometimes adds a blank
   if(i %in% index) cat("genus ", i, ":", gen, "\n")
-  wh.occs.G <- which(occs$Genus==gen)
+  # PBDB treats the accepted names of subgenera as "Genus (Subgenus)"
+  if(gen %in% occs$Subgenus) {
+    wh.occs.G <- which(occs$Subgenus==gen)
+    gen <- paste(occs$Genus[wh.occs.G[1]], " (", occs$Subgenus[wh.occs.G[1]], ")", sep="")
+  } else wh.occs.G <- which(occs$Genus==gen)
   len.g <- length(wh.occs.G)
   wh.pbdb.G <- which(pbdb$accepted_name==gen)
 
   # Update ages for taxa not in PBDB (such as those with ranges from Treatise or
-  # Sepkoski's Compendium), implmenting pull-of-the-Recent (if needed):
+  # Sepkoski's Compendium), implementing pull-of-the-Recent (if needed):
   if(length(wh.pbdb.G)==0) {
-    if(occs$early_period[wh.occs.G]=="Recent") { min.ma <- 0 } else occs$early_age[wh.occs.G] <- rep(l4s$early_age[which(l4s$interval_name==as.character(occs$early_period[wh.occs.G]))], len.g)
+    if(occs$early_period[wh.occs.G]=="Recent") { max.ma <- 0 } else occs$early_age[wh.occs.G] <- rep(l4s$early_age[which(l4s$interval_name==as.character(occs$early_period[wh.occs.G]))], len.g)
     if(occs$late_period[wh.occs.G]=="Recent") { min.ma <- 0 } else occs$late_age[wh.occs.G] <- rep(l4s$late_age[which(l4s$interval_name==as.character(occs$late_period[wh.occs.G]))], len.g)
   }
   if(length(wh.pbdb.G)==0) next
@@ -122,11 +128,12 @@ for(i in 1:length(Gen)) {
 }
 # write.csv(occs, file="PBDBDates.csv", row.names=FALSE)
 
-# If want to use a direct download from FileMakerPro. (Make sure the file details
-# are the same as above.)
+# Use next command if want to use a direct export from FileMakerPro. (Make
+# sure the file details are the same as above.)
 
 # occs <- read.csv("PBDBDates.csv", header=TRUE)
 head(occs)
+
 
 ## Construct diversity curves        (using 'Total Diversity' of Foote 2000)
 ## X-FL, number of taxa w/ 1st and last appearance in interval (singletons),
@@ -215,7 +222,7 @@ for(i in 1:length(taxa)) {
 
 write.csv(t.occs, file=paste("PBDBDates_", t.rank, ".csv", sep=""), row.names=FALSE)
 
-# If want to use a direct download from FileMakerPro. (Make sure the file details
+# If want to use a direct export from FileMakerPro. (Make sure the file details 
 # are the same as above.
 
 # t.occs <- read.csv("occs2.csv", header=TRUE)
@@ -258,22 +265,41 @@ geoscalePlot(divs$midpt, divs$div, units=c("Epoch", "Period"),
 
 
 
-# Get current numbers from PBDB
+## Get current numbers from PBDB, and compare to life habit database
+# Note is comparing a marine & invertebrate-only life habit database to the
+# entire PBDB
 pbdb$taxon_name[which(pbdb$taxon_rank=="phylum" & pbdb$difference=="")]
-length(pbdb$taxon_name[which(pbdb$taxon_rank=="phylum" & pbdb$difference=="")])
+(l.pbdb <- length(pbdb$taxon_name[which(pbdb$taxon_rank=="phylum" & 
+    pbdb$difference=="")]))
+(lhdb <- length(unique(occs$Phylum)))
+round(lhdb * 100 / l.pbdb, 2)
 
 pbdb$taxon_name[which(pbdb$taxon_rank=="class" & pbdb$difference=="")]
-length(pbdb$taxon_name[which(pbdb$taxon_rank=="class" & pbdb$difference=="")])
+(l.pbdb <- length(pbdb$taxon_name[which(pbdb$taxon_rank=="class" & 
+    pbdb$difference=="")]))
+(lhdb <- length(unique(occs$Class)))
+round(lhdb * 100 / l.pbdb, 2)
 
 pbdb$taxon_name[which(pbdb$taxon_rank=="order" & pbdb$difference=="")]
-length(pbdb$taxon_name[which(pbdb$taxon_rank=="order" & pbdb$difference=="")])
+(l.pbdb <- length(pbdb$taxon_name[which(pbdb$taxon_rank=="order" & 
+    pbdb$difference=="")]))
+(lhdb <- length(unique(occs$Order)))
+round(lhdb * 100 / l.pbdb, 2)
 
 pbdb$taxon_name[which(pbdb$taxon_rank=="superfamily" & pbdb$difference=="")]
-length(pbdb$taxon_name[which(pbdb$taxon_rank=="superfamily" & pbdb$difference=="")])
+(l.pbdb <- length(pbdb$taxon_name[which(pbdb$taxon_rank=="superfamily" & 
+    pbdb$difference=="")]))
+(lhdb <- length(unique(occs$Superfamily)))
+round(lhdb * 100 / l.pbdb, 2)
 
 pbdb$taxon_name[which(pbdb$taxon_rank=="family" & pbdb$difference=="")]
-length(pbdb$taxon_name[which(pbdb$taxon_rank=="family" & pbdb$difference=="")])
+(l.pbdb <- length(pbdb$taxon_name[which(pbdb$taxon_rank=="family" & 
+    pbdb$difference=="")]))
+(lhdb <- length(unique(occs$Family)))
+round(lhdb * 100 / l.pbdb, 2)
 
 pbdb$taxon_name[which(pbdb$taxon_rank=="genus" & pbdb$difference=="")]
-length(pbdb$taxon_name[which(pbdb$taxon_rank=="genus" & pbdb$difference=="")])
-
+(l.pbdb <- length(pbdb$taxon_name[which(pbdb$taxon_rank=="genus" & 
+    pbdb$difference=="")]))
+(lhdb <- length(unique(occs$Genus)))
+round(lhdb * 100 / l.pbdb, 2)
