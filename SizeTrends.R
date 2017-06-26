@@ -22,7 +22,7 @@ top <- ages$late_age
 
 # IMPORT DATA -------------------------------------------------------------
 setwd("C:/Users/pnovack-gottshall/Desktop/Databases/Maintenance & update R scripts")
-data <- read.delim(file="PostSizes.txt", sep="\t", header=TRUE)
+data <- read.delim(file="PostSizes.tab", sep="\t", header=TRUE)
 
 # Calculate biovolume:
 # BVOL = 0.5439 * (DVLength * TransverseLength * APLength / 1000) ^ 0.896
