@@ -70,8 +70,9 @@
 
 # (3) Open file in MSWord (turn off smart quotes are off: File > Options > 
 # Proofing > Autocorrect Options > Autoformat As You Type > uncheck Smart 
-# Quotes) and delete any hidden tabs and all problematic (i.e., double)
-# quotation marks (replacing "^t, ^t" with ^t and "" with ").
+# Quotes) and delete any hidden tabs and all problematic (i.e., double) 
+# quotation marks (replacing "^t with " and replacing ^t" with " and replacing
+# "" with ").
 
 # (4) In Excel, add a row for headers and confirm the column headers are correct
 # (and no cells are "hanging"). Then add a new column counting 'PhotoX' columns
@@ -118,6 +119,7 @@ T.cols <- which(colnames(input) == "TransverseLength" | colnames(input) ==
     "PhotoTransverse" | colnames(input) == "TransverseScale")
 DV.cols <- which(colnames(input) == "DVLength" | colnames(input) == "PhotoDV" |
     colnames(input) == "DVScale")
+AbsStratDist.col <- which(colnames(input) == "AbsStratDistance")
 out <- input                    # Work with 'out', saving 'input' for reference
 colnames(out[photo.cols])       # "PhotoAP", "PhotoTransverse", "PhotoDV"
 colnames(out[est.cols])         # "Est_AP", "Est_T", "Est_DV"
@@ -137,7 +139,7 @@ if(any(is.na(input$early_age)) || any(is.na(input$late_age)))
     Database before proceeding.\n")
 if(length(table(table(input$Genus))) > 1L) {
   print(which(table(input$Genus) > 1L))
-  stop("The above genus entries are entered twice. Delete the outdated entry?")
+  stop("The above genus entries are entered twice. Delete the outdated entry/entries?")
 }
 # Ignore the 72 extant brachiopod genera with multiple species in the database
 # (mostly extant species, some fossil species), cases where multiple subgenera
@@ -160,7 +162,6 @@ if(length(table(table(input$Genus))) > 1L) {
 #     extract relatives with complete measurements.
 # simtime = logical. If TRUE (default), uses similarity of geological range to
 #     choose among multiple relatives. (If FALSE, returns all complete relatives)
-
 find.rel <- function(x, i, start=4, end=12, photo.cols=NULL, est.cols=NULL, sim.time=TRUE) {
   if(any(is.null(photo.cols), is.null(est.cols)))
     stop("photo.cols and est.cols need to be specified\n")
@@ -242,13 +243,20 @@ pre.text <- function(x) {
 }
 
 
-## IMPROVED ALL.EQUAL THAT JUST PRINTS THOSE THAT ARE CHANGED (IGNORING ROW NUMBERS)
-better.all.equal <- function(a, b) {
+## IMPROVED ALL.EQUAL THAT JUST PRINTS THOSE THAT ARE CHANGED (IGNORING ROW 
+## NUMBERS), USING SPECIFIED NUMBER OF SIGNIFICANT DIGITS AND SPECIFYING WHICH
+## COLUMNS TO ROUND
+better.all.equal <- function(a, b, sig.digits=2, nums=sort(c(AP.cols, T.cols, 
+  DV.cols, AbsStratDist.col))) {
   if(!identical(dim(a), dim(b))) stop("data frames have different sizes\n")
   cn <- seq.int(ncol(a))
   row.names(a) <- row.names(b) <- NULL
-  wh.diff <- sapply(cn, function(cn) !identical(a[ ,cn], b[ ,cn]))
-  ab <- rbind(a,b)
+  a.round <- a
+  b.round <- b
+  a.round[nums] <- signif(a[nums], sig.digits)
+  b.round[nums] <- signif(b[nums], sig.digits)
+  wh.diff <- sapply(cn, function(cn) !identical(a.round[ ,cn], b.round[ ,cn]))
+  ab <- rbind(a, b)
   return(ab[ ,which(wh.diff), drop=FALSE])
 }
 
@@ -330,7 +338,7 @@ for(i in 1:nrow(out)) {
       (this.scale == "Species" | this.scale == "Subgenus" | this.scale == "Genus")) next
 
   rel <- rels <- NULL
-  change <- ""
+  change <- input$SizeChanged[i]
 
   # If entry is at species-, subgenus-, or genus-level AND 1 or more measures
   # are missing, proceed to estimating missing measurements:
@@ -429,10 +437,14 @@ for(i in 1:nrow(out)) {
     out[i,T.cols] <- rel$rel[T.cols]
     out[i,DV.cols] <- rel$rel[DV.cols]
     out[i,est.cols] <- "Estimated"
-    change <- "maybe"
-    out$DateEntered_Size[i] <- today
-    out$Enterer[i] <- rel$rel$Enterer
-    out$History_Size[i] <- ""
+    if(ncol(better.all.equal(input[i, ], out[i, ], sig.digits=4)) > 0L) {
+      # Only update metadata if actually changed (reference taxa and estimates
+      # are always over-ridden in case there is new data)
+      change <- "maybe"
+      out$DateEntered_Size[i] <- today
+      out$Enterer[i] <- rel$rel$Enterer
+      out$History_Size[i] <- ""
+      }
   }
 
   # Update actual sizes. (Will be overridden by FileMakerPro, but need to update
@@ -468,52 +480,48 @@ for(i in 1:nrow(out)) {
       out$AbsStratDistance[i] <- get.strat(out[i,], input[i,])
   }
 
-  # Add "check" tag if any size or AbsStratDist was changed
-  if(!identical(signif(input[i, photo.cols], 3), signif(out[i, photo.cols], 3)) || 
-      !identical(signif(input$AbsStratDistance[i], 3), signif(out$AbsStratDistance[i], 3))) {
+  # Add "check" tag if any size or AbsStratDist was changed (to 2 significant digits)
+  if(!identical(signif(input[i, photo.cols], 2), signif(out[i, photo.cols], 2)) || 
+      !identical(signif(input$AbsStratDistance[i], 2), signif(out$AbsStratDistance[i], 2))) {
     out$SizeChanged[i] <- "Check"
   }
   
   # Interactive mode (to observe how states are being propogated)
-  if(interactive) {
-    input[i, c(ATD.cols, photo.cols)] <- round(input[i, c(ATD.cols, photo.cols)], 3)
-    out[i, c(ATD.cols, photo.cols)] <- round(out[i, c(ATD.cols, photo.cols)], 3)
-    same <- identical(input[i, -ATD.cols], out[i, -ATD.cols])
-    if(!same) {
-      plot(1, 1, type="n", bty="n", xaxt="n", yaxt="n", xlab="", ylab="")
-      text(1, 1, as.character(paste(out$Genus[i], out$Species[i])), cex=2)
-      cat(as.character(paste(out$Genus[i], out$Species[i])), "\n")
-      # print(better.all.equal(input[i, ], out[i, ]))
-      print(better.all.equal(input[i,-ATD.cols],
-        out[i,-ATD.cols]))                         # If want to mask raws
-      cat("\n")
+  if(interactive & ncol(better.all.equal(input[i, ], out[i, ], sig.digits = 3)) > 0L) {
+    plot(1, 1, type="n", bty="n", xaxt="n", yaxt="n", xlab="", ylab="")
+    text(1, 1, as.character(paste(out$Genus[i], out$Species[i])), cex=2)
+    cat(as.character(paste(out$Genus[i], out$Species[i])), "\n")
+    # print(better.all.equal(input[i, ], out[i, ]))
+    print(better.all.equal(input[i,-c(20, ATD.cols)], out[i,-c(20, ATD.cols)], 
+      nums=c(23:25, 32)))     # If want to mask date and calculated lengths
+    cat("\n")
     }
-  }
 
 }
 
 round(table(input$BodySizeScale) * 100 / nrow(input), 1)
 round(table(out$BodySizeScale) * 100 / nrow(out), 1)
 
-rng <- range(na.omit(c(log10(input$AbsStratDistance), log10(out$AbsStratDistance))))
-hist(log10(out$AbsStratDistance), xlim=rng, col="white", border="white", n=50)
-hist(log10(out$AbsStratDistance), col="darkgray", border="white", add=TRUE, n=50)
-hist(log10(input$AbsStratDistance), col="transparent", border="black", add=TRUE, n=50)
+rng <- range(na.omit(c(input$AbsStratDistance, out$AbsStratDistance)))
+hist(out$AbsStratDistance, xlim=rng, col="white", border="white", n=50)
+hist(out$AbsStratDistance, col="darkgray", border="white", add=TRUE, n=50)
+hist(input$AbsStratDistance, col="transparent", border="black", add=TRUE, n=50)
+abline(v=0, lwd=2, lty=2)
 
 
 ## EXPORT DATA -------------------------------------------------------------
 write.table(out, file="PostSizes.tab", quote=FALSE, sep="\t", row.names=FALSE)
 
-# Open in Excel to confirm looks acceptable. Replace (matching entire cell
-# contents) "NA"s in body size data and AbsStratDist with blank cells.Then open
-# in Word to remove quotation marks around the text entries, (replacing "^t,
-# ^t", and "" with ^t and ").
+# Open in Excel to confirm looks acceptable. Replace (matching entire cell 
+# contents) "NA"s in body size data and AbsStratDist with blank cells.Then open 
+# in Word to remove quotation marks around the text entries, (replacing "^t with
+# " and replacing ^t" with " and replacing "" with ").
 
 # Open FileMakerPro and import, updating records by matching names and using the
 # IDNumber as the matching identifier. (Fine to not import the taxonomic names
 # and geological ranges.)
 
-# Known problems: Some propogations are known to be (potentially) incorrect.
+# Manual trouble-shooting: Some propogations are known to be (potentially) incorrect.
 
 # Once imported, run following manual corrections. (Note the RelStrat should not
 # be deleted, but updated as needed, with other stratifications.)
@@ -528,4 +536,3 @@ write.table(out, file="PostSizes.tab", quote=FALSE, sep="\t", row.names=FALSE)
 
 # (3) Confirm all exclusively infaunal taxa have negative AbsStratDists and
 # exclusively epifaunal taxa have positive values.
-
