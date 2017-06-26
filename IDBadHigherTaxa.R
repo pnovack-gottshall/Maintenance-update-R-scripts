@@ -3,10 +3,22 @@
 rm(list=ls())
 setwd("C:/Users/pnovack-gottshall/Desktop/Databases/Maintenance & update R scripts")
 
-# Input file with following columns (Phylum, Subphylum, Class, Subclass, Order, Suborder, Superfamily, Family)
+# Input file with following columns (Phylum, Subphylum, Class, Subclass, Order, Suborder, Superfamily, Family, Subfamily), making sure headers are included
 x <- read.csv(file="HigherTaxa.csv", header=TRUE)
 head(x)
 attach(x)
+
+# Subfamilies
+tax <- levels(Subfamily)
+for(i in 1:length(tax)) {
+  if(i==1) cat("Subfamilies:\n")
+  wh <- which(Subfamily==tax[i])
+  if(length(wh)==1L) next
+  higher <- unique(x[wh, 1:6])
+  if(nrow(higher)==1) next
+  cat(as.character(tax[i]), "\n")
+}
+# Ignore "UNCERTAIN," which is inherently allowed to be polyphyletic
 
 # Families
 tax <- levels(Family)
