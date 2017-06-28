@@ -534,5 +534,9 @@ write.table(out, file="PostSizes.tab", quote=FALSE, sep="\t", row.names=FALSE)
 # AbsStratDist=* [ANY] & SizeChanged=CHECK and delete AbsStratDist (if needs
 # correcting).
 
-# (3) Confirm all exclusively infaunal taxa have negative AbsStratDists and
+# (3) Epibiotic (but barely raised, so self-supported) taxa given benthic
+# AbsStratDists: Find Biotic=1 & AbsStratDist=* [ANY] & SizeChanged=CHECK and
+# delete AbsStratDist (if needs correcting).
+
+# (4) Confirm all exclusively infaunal taxa have negative AbsStratDists and
 # exclusively epifaunal taxa have positive values.
