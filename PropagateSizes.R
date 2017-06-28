@@ -317,11 +317,23 @@ rm(list=c("i", "rel"))
 # measurements.
 
 index <- seq(100, nrow(input), by=100) # For keeping track
+today <- format(Sys.Date(), "%m/%d/%Y")
 angle.30 <- sin(30 * pi / 180)
 angle.45 <- sin(45 * pi / 180)
 angle.60 <- sin(60 * pi / 180)
 proportions <- c(.25, (1 / 3), 0.5, (2 / 3), 0.75, 0.9, 2.0, 4.0)
-today <- format(Sys.Date(), "%m/%d/%Y")
+AbsStratDist.text <- c("AP.", "T.", "DV.",   "30 degrees (from horiz.) of AP, or half AP.", 
+  "30 degrees (from horiz.) of T, or half AP.", 
+  "30 degrees (from horiz.) of DV, or half AP.", "45 degrees (from horiz.) of AP.", 
+  "45 degrees (from horiz.) of T.", "45 degrees (from horiz.) of DV.", 
+  "60 degrees (from horiz.) of AP.", "60 degrees (from horiz.) of T.", 
+  "60 degrees (from horiz.) of DV.", "25% of AP.", "25% of T.", "25% of DV.", 
+  "33% of AP.", "33% of T.", "33% of DV.", "50% of AP (or 30 degrees).", 
+  "50% of T (or 30 degrees).", "50% of DV (or 30 degrees).", "66.7% of AP.", "66.7% of T.",
+  "66.7% of DV.", "75% of AP.", "75% of T.", "75% of DV.", "90% of AP.", "90% of T.", 
+  "90% of DV.", "200% of AP.", "200% of T.", "200% of DV.", "400% of AP.", "400% of T.",
+  "400% of DV.")
+seq.AbsStratDist <- rep(seq.int(AbsStratDist.text), 2)
 interactive <- TRUE   # If want to watch updates in real time
 if(interactive) par("ask"=TRUE)
 
@@ -455,8 +467,8 @@ for(i in 1:nrow(out)) {
 
   # Propogate AbsStratDist 
   if(missing.strat) {
-    # ... if missing AbsStratDist but available via ALL best relatives (that are within same
-    # suborder [end=7] or lower resolution)
+    # ... if missing AbsStratDist but available via ALL best relatives (that are
+    # within same suborder [end=7] or lower resolution)
     rels <- find.rel(x=out, i=i, end=7, photo.cols=photo.cols, est.cols=est.cols, 
       sim.time=FALSE)$rel
     rels.with.strats <- 0L
@@ -472,11 +484,11 @@ for(i in 1:nrow(out)) {
     }
   } else {
     # Or update AbsStratDist if previously existed, but some measurements were updated
-    orig_ms <- unlist(input[i, ATD.cols])
-    poss_dists <- c(1, -1) %x% c(orig_ms, angle.30 * orig_ms, angle.45 * orig_ms, 
-      angle.60 * orig_ms, proportions %x% orig_ms)
+    orig.ms <- unlist(input[i, ATD.cols])
+    poss.dists <- c(1, -1) %x% c(orig.ms, angle.30 * orig.ms, angle.45 * orig.ms, 
+      angle.60 * orig.ms, proportions %x% orig.ms)
     if(change == "maybe" & !missing.strat & 
-        signif(input$AbsStratDistance[i], 3) %in% signif(poss_dists, 3))
+        signif(input$AbsStratDistance[i], 3) %in% signif(poss.dists, 3))
       out$AbsStratDistance[i] <- get.strat(out[i,], input[i,])
   }
 
@@ -484,6 +496,18 @@ for(i in 1:nrow(out)) {
   if(!identical(signif(input[i, photo.cols], 2), signif(out[i, photo.cols], 2)) || 
       !identical(signif(input$AbsStratDistance[i], 2), signif(out$AbsStratDistance[i], 2))) {
     out$SizeChanged[i] <- "Check"
+  }
+
+  # Update history if AbsStratDist changed
+  if(!identical(signif(input$AbsStratDistance[i], 2), signif(out$AbsStratDistance[i], 2))) {
+    orig.ms <- unlist(input[i, ATD.cols])
+    poss.dists <- c(1, -1) %x% c(orig.ms, angle.30 * orig.ms, angle.45 * orig.ms, 
+      angle.60 * orig.ms, proportions %x% orig.ms)
+    wh.m <- match(signif(out$AbsStratDistance[i], 3), signif(poss.dists, 3))
+    if(out$History_Size[i] != "") out$History_Size[i] <- 
+      paste("AbsStratDist estimated from ", AbsStratDist.text[seq.AbsStratDist[wh.m]],
+        " ", out$History_Size[i], sep="") else out$History_Size[i] <- 
+      paste("AbsStratDist estimated from", AbsStratDist.text[seq.AbsStratDist[wh.m]])
   }
   
   # Interactive mode (to observe how states are being propogated)
