@@ -335,7 +335,7 @@ AbsStratDist.text <- c("AP.", "T.", "DV.",   "30 degrees (from horiz.) of AP, or
   "400% of DV.")
 seq.AbsStratDist <- rep(seq.int(AbsStratDist.text), 2)
 interactive <- TRUE   # If want to watch updates in real time
-if(interactive) par("ask"=TRUE)
+if(interactive) par("ask"=TRUE) else par("ask"=FALSE)
 
 for(i in 1:nrow(out)) {
 
@@ -498,16 +498,16 @@ for(i in 1:nrow(out)) {
     out$SizeChanged[i] <- "Check"
   }
 
-  # Update history if AbsStratDist changed
+  # Update history if AbsStratDist changed (using updated measurements)
   if(!identical(signif(input$AbsStratDistance[i], 2), signif(out$AbsStratDistance[i], 2))) {
-    orig.ms <- unlist(input[i, ATD.cols])
+    orig.ms <- unlist(out[i, ATD.cols])
     poss.dists <- c(1, -1) %x% c(orig.ms, angle.30 * orig.ms, angle.45 * orig.ms, 
       angle.60 * orig.ms, proportions %x% orig.ms)
     wh.m <- match(signif(out$AbsStratDistance[i], 3), signif(poss.dists, 3))
-    if(out$History_Size[i] != "") out$History_Size[i] <- 
-      paste("AbsStratDist estimated from ", AbsStratDist.text[seq.AbsStratDist[wh.m]],
-        " ", out$History_Size[i], sep="") else out$History_Size[i] <- 
-      paste("AbsStratDist estimated from", AbsStratDist.text[seq.AbsStratDist[wh.m]])
+    if(out$History_Size[i] == "") out$History_Size[i] <- 
+      paste("AbsStratDist estimated from", AbsStratDist.text[seq.AbsStratDist[wh.m]]) else 
+        out$History_Size[i] <- paste("AbsStratDist estimated from ", 
+          AbsStratDist.text[seq.AbsStratDist[wh.m]], " ", out$History_Size[i], sep="")
   }
   
   # Interactive mode (to observe how states are being propogated)
@@ -536,10 +536,10 @@ abline(v=0, lwd=2, lty=2)
 ## EXPORT DATA -------------------------------------------------------------
 write.table(out, file="PostSizes.tab", quote=FALSE, sep="\t", row.names=FALSE)
 
-# Open in Excel to confirm looks acceptable. Replace (matching entire cell 
-# contents) "NA"s in body size data and AbsStratDist with blank cells.Then open 
-# in Word to remove quotation marks around the text entries, (replacing "^t with
-# " and replacing ^t" with " and replacing "" with ").
+# (1) Open in Excel to confirm looks acceptable. Replace (matching entire cell 
+# contents) "NA"s in body size data and AbsStratDist with blank cells.(2) Then
+# open in Word to remove quotation marks around the text entries, (replacing "^t
+# with " and replacing ^t" with " and replacing "" with ").
 
 # Open FileMakerPro and import, updating records by matching names and using the
 # IDNumber as the matching identifier. (Fine to not import the taxonomic names
