@@ -537,13 +537,14 @@ abline(v=0, lwd=2, lty=2)
 write.table(out, file="PostSizes.tab", quote=FALSE, sep="\t", row.names=FALSE)
 
 # (1) Open in Excel to confirm looks acceptable. Replace (matching entire cell 
-# contents) "NA"s in body size data and AbsStratDist with blank cells.(2) Then
-# open in Word to remove quotation marks around the text entries, (replacing "^t
-# with " and replacing ^t" with " and replacing "" with ").
+# contents) "NA"s in body size data and AbsStratDist with blank cells.
 
-# Open FileMakerPro and import, updating records by matching names and using the
-# IDNumber as the matching identifier. (Fine to not import the taxonomic names
-# and geological ranges.)
+# (2) Open in Word to remove quotation marks around the text entries, (replacing
+# "^t with " and replacing ^t" with " and replacing "" with ").
+
+# (3) Open FileMakerPro and import, updating records by matching names and using
+# the IDNumber as the matching identifier. (Fine to not import the taxonomic
+# names and geological ranges.)
 
 # Manual trouble-shooting: Some propogations are known to be (potentially) incorrect.
 
