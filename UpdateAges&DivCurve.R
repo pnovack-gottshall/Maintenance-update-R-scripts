@@ -1,5 +1,6 @@
-## Update age ranges from Paleobiology Database and create diversity curves. Also
-## check for missing ID numbers.
+## Update age ranges from Paleobiology Database and create diversity curves. 
+## Check for missing ID numbers. Check that extant/extincts are correct (but
+## note false flag if a subgenus is extinct within a still-extant genus).
 
 
 rm(list=ls())
@@ -110,6 +111,13 @@ for(i in 1:length(Gen)) {
   gen.pbdb <- pbdb[wh.pbdb.G, ]
   max.ma <- max(gen.pbdb$firstapp_max_ma)
   min.ma <- min(gen.pbdb$lastapp_min_ma)
+  
+  # Flag any discrepancies in extinct / extant tags
+  if(any(occs$late_period[wh.occs.G]=="Recent") & 
+      any(gen.pbdb$is_extant=="extinct")) cat("Confirm extinct/extant status for", gen, "\n")
+  if(any(occs$late_period[wh.occs.G]!="Recent") & 
+      any(gen.pbdb$is_extant=="extant")) cat("Confirm extinct/extant status for", gen, "\n")
+
   # Assign to "level-4" ages
   Early <-
     as.character(l4s$interval_name[length(which(l4s$late_age < max.ma))])
