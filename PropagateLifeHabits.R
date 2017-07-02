@@ -24,12 +24,6 @@
 ## 5. Confirm 'signif()' and orientation handling is consistent here and in the
 ## PropogateSizes.R algorithms.
 ## 
-## 6. Check why some extant brachiopod species (such as those in Argyrotheca)
-## are not being filled in. Assuming it's because they're at the relative-genus
-## level, and therefore the code was written to 'protect' them by not
-## over-writing? If so, need to run the brachiopods alone with allowance to
-## override.
-
 ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ##
 ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ##
 ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ##
