@@ -15,7 +15,20 @@
 ## 3. When propogating higher taxa (e.g., Xanthoidea indet. for Carcinoplax),
 ## should the EcoRef be the consensus best reference (e.g., Dromia sp.), or
 ## switch to "Xanthoidea indet."? As currently done, not really copying Dromia,
-## but cpoying the consensus across that taxon's relatives instead.
+## but copying the consensus across that taxon's relatives instead.
+## 
+## 4. Why are some seemingly fine AbsStratDists being deleted? (Ex., Homalonotus
+## and Colpocoryphe) It seems it happens when the entry being processed has
+## BodySizeScale > Genus level.
+## 
+## 5. Confirm 'signif()' and orientation handling is consistent here and in the
+## PropogateSizes.R algorithms.
+## 
+## 6. Check why some extant brachiopod species (such as those in Argyrotheca)
+## are not being filled in. Assuming it's because they're at the relative-genus
+## level, and therefore the code was written to 'protect' them by not
+## over-writing? If so, need to run the brachiopods alone with allowance to
+## override.
 
 ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ##
 ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ##
@@ -70,9 +83,9 @@
 ## IMPORT DATA ------------------------------------------------------------- 
 
 # Make sure the stratifications are updated from the size propogation BEFORE 
-# running this algorithm! (The algorithm reverts stratifications when size was
-# coded as genus or species level, but still adds a size "Check" to trigger a
-# second look-over afterwards.)
+# running this algorithm! (The algorithm reverts to original stratifications
+# when size was coded as genus or species level, but still adds a size "Check"
+# to trigger a second look-over afterwards.)
 
 # (1) Before exporting, sort the entries so that EcoScale=Species is first,
 # followed by Subgenus, Genus, etc. That way those with best scales are checked
@@ -248,14 +261,14 @@ better.all.equal <- function(a, b) {
 
 # Examples
 cols <- 21:58
-i <- which(out$Genus=="Atreta") # Atreta
+i <- which(out$Genus=="Taxocrinus") # Crinoid Taxocrinus
 out[i, cols]
 (r <- find.rels(input, i))
 rels <- r$rels
 (cs <- consensus(rels=rels, cols=cols, method="constant"))
 any.missing(cs, seq.int(ncol(cs)))
 best <- best.ref(rels=rels, cols=cols, scale=r$eco.sc)
-input[best, ] # Notice the proper type taxon in same as ...
+input[best, ] # Notice the proper type taxon chosen that is in same higher taxon
 r$eco.sc
 
 # Compare proxy methods:
