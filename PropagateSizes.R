@@ -336,12 +336,16 @@ AbsStratDist.text <- c("AP.", "T.", "DV.",   "30 degrees (from horiz.) of AP, or
 seq.AbsStratDist <- rep(seq.int(AbsStratDist.text), 2)
 interactive <- TRUE   # If want to watch updates in real time
 if(interactive) par("ask"=TRUE) else par("ask"=FALSE)
+(start.t <- Sys.time())
 
 for(i in 1:nrow(out)) {
 
   if(i %in% index) cat("record", i, "of", nrow(out), ":", out$Genus[i],
     out$Species[i], "\n")
 
+  # Ignore if no higher taxonomic information at all
+  if(all(input[i, 2:10] == "")) next
+  
   # Ignore if already coded at species, subgenus or genus level AND complete
   this.scale <- out$BodySizeScale[i]
   missing <- any.missing(out[i, ], photo.cols, est.cols)
@@ -522,6 +526,7 @@ for(i in 1:nrow(out)) {
     }
 
 }
+(Sys.time() - start.t)    
 
 round(table(input$BodySizeScale) * 100 / nrow(input), 1)
 round(table(out$BodySizeScale) * 100 / nrow(out), 1)
