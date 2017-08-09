@@ -312,6 +312,9 @@ for(i in 1:nrow(out)) {
   if(i %in% index) cat("record", i, "of", nrow(out), ":", out$Genus[i], 
     out$Species[i], "\n")
 
+  # Ignore if no higher taxonomic information at all
+  if(all(input[i, 2:10] == "")) next
+  
   # Ignore if already coded at species, subgenus or genus level AND complete
   this.scale <- out$EcologyScale[i]
   if(any.missing(out[i, ], eco.col)$any == FALSE & (this.scale == "Species" |
