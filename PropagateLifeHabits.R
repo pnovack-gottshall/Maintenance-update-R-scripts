@@ -422,6 +422,8 @@ for(i in 1:nrow(out)) {
 
 round(table(input$EcologyScale) * 100 / nrow(input), 1)
 round(table(out$EcologyScale) * 100 / nrow(out), 1)
+table(input$EcologyScale)
+table(out$EcologyScale)
 
   
 ## EXPORT DATA -------------------------------------------------------------
