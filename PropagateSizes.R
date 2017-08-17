@@ -438,11 +438,12 @@ for(i in 1:nrow(out)) {
       rel$rel$BodyMeasureReference)
   }
 
-  # If entry is NOT at genus-or-better level (i.e., subfamily or greater) [OR,
-  # if reported at genus or better level, but missing all 3 measurements], find
-  # closest-aged relative and drop in all 3 measurements, updating metadata (and
-  # erasing history, in case previously entered incorrectly). NOTE THIS REFERS
-  # TO PREVIOUSLY UPDATED DATA IN CASE THERE IS A MORE SUITABLE RELATIVE.
+  # If entry is NOT at genus-or-better level (i.e., subfamily or greater) [OR, 
+  # if reported at genus or better level, but missing all 3 measurements], find 
+  # closest-aged relative and drop in all 3 measurements, maintain original date
+  # entered, and update metadata (and erasing history, in case previously
+  # entered incorrectly). NOTE THIS REFERS TO PREVIOUSLY UPDATED DATA IN CASE
+  # THERE IS A MORE SUITABLE RELATIVE.
   if(this.scale > "Genus" | (this.scale <= "Genus" & length(missing$which) == 3L)) {
     rel <- find.rel(x=out, i=i, photo.cols=photo.cols, est.cols=est.cols)
     if(nrow(rel$rel) == 0L) next
@@ -457,7 +458,7 @@ for(i in 1:nrow(out)) {
       # Only update metadata if actually changed (reference taxa and estimates
       # are always over-ridden in case there is new data)
       change <- "maybe"
-      out$DateEntered_Size[i] <- today
+      out$DateEntered_Size[i] <- rel$rel$DateEntered_Size
       out$Enterer[i] <- rel$rel$Enterer
       out$History_Size[i] <- ""
       }
