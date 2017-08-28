@@ -623,11 +623,8 @@ write.table(out, file="PostSizes.tab", quote=FALSE, sep="\t", row.names=FALSE)
 # extends (and that food is also "Above" the seafloor). Exceptions include the
 # relatively deeply buried semi-infaunals, where a large portion of body may be
 # buried but only a small portion atop seafloor.
-<<<<<<< HEAD
 
 # (9) Need to write out rules for hunters, scavengers, and mass feeders, 
 # especially regarding food tier (half D/V for predators to account for smaller 
 # size of prey?) and sensory distances when scouting. (Speed can also be a proxy
 # for this.)
-=======
->>>>>>> 748fe4bb05654b4280c9540d0e3e7c9ccbacb911
