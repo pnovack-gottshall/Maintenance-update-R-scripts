@@ -612,6 +612,19 @@ write.table(out, file="PostSizes.tab", quote=FALSE, sep="\t", row.names=FALSE)
 # etc.) generally should be 0.25. ASCIDIANS should generally be 0.5.
 
 # (7) Confirm that wholly infaunal filter-feeders (AboveAbsStrat=0, WithinAbs=1,
-# Filter=1 [rest 0]) have AbsFoodStrat at 0.25 (typically). Conirm that filter
-# feeders that extend body above sea floor (AboveAbsStrat=1 & Filter=0 [rest=])
-# have AbsFoodStrat at level to which body extends.
+# Filter=1 [rest 0]) have AbsFoodStrat at 0.25 (typically) and that AbsFood is 
+# "Above" the seafloor (with exceptions, like callianassoids that also ingest 
+# sediment from burrow wall, or Cenozoic cave-dwelling brachiopods, or thin 
+# productids that rested within the sediment with gape at seafloor, or echinoids
+# like Encope that emerge at surface to filter feed).
+
+# (8) Conirm that filter feeders that extend body above sea floor 
+# (AboveAbsStrat=1 & Filter=0 [rest=0]) have AbsFoodStrat at level to which body
+# extends (and that food is also "Above" the seafloor). Exceptions include the
+# relatively deeply buried semi-infaunals, where a large portion of body may be
+# buried but only a small portion atop seafloor.
+
+# (9) Need to write out rules for hunters, scavengers, and mass feeders, 
+# especially regarding food tier (half D/V for predators to account for smaller 
+# size of prey?) and sensory distances when scouting. (Speed can also be a proxy
+# for this.)
