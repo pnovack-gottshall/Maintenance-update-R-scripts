@@ -554,22 +554,60 @@ write.table(out, file="PostSizes.tab", quote=FALSE, sep="\t", row.names=FALSE)
 # the IDNumber as the matching identifier. (Fine to not import the taxonomic
 # names and geological ranges.)
 
-# Manual trouble-shooting: Some propogations are known to be (potentially) incorrect.
+## Manual trouble-shooting: Some propogations are known to be (potentially)
+## incorrect. It would be more efficient it the following rules could be checked
+## algorithmically, but that may be challenging because of the interpretative
+## nuances involved. One possibility (for the size-related feeding and mobility
+## rules, at least) is to add a code that uses some form of binned size
+## regression analysis (within classes) to extrapolate the size-rules. Another
+## option might be to use machine-learning (i.e., classification trees). Either
+## way, would need to add an "exception" field when a coding defies the standard
+## coding rules (for example, when crinoid sizes lack column lengths but a
+## AbsStrat coding is still possible, or when the functional gill size in
+## vermiculariids is best approximated by transverse width and A/P length).
 
 # Once imported, run following manual corrections. (Note the RelStrat should not
 # be deleted, but updated as needed, with other stratifications.)
 
 # (1) Pelagic taxa given benthic AbsStratDists: Find Fluidic=1 & Insubstantial=1
-# & AbsStratDist=* [ANY] & SizeChanged=CHECK and delete AbsStratDist (if needs
-# correcting).
+# & AbsStratDist=">-10000" [ANY] & SizeChanged=CHECK and delete AbsStratDist (if
+# needs correcting).
 
-# (2) Supported taxa given self-supported AbsStratDists: Find Supported=1 &
-# AbsStratDist=* [ANY] & SizeChanged=CHECK and delete AbsStratDist (if needs
-# correcting).
+# (2) Supported taxa given self-supported AbsStratDists: Find Supported=1 & 
+# AbsStratDist=">-10000" [ANY] & SizeChanged=CHECK and delete AbsStratDist (if
+# needs correcting).
 
-# (3) Epibiotic (but barely raised, so self-supported) taxa given benthic
-# AbsStratDists: Find Biotic=1 & AbsStratDist=* [ANY] & SizeChanged=CHECK and
-# delete AbsStratDist (if needs correcting).
+# (3) Epibiotic (but barely raised, so should be coded as self-supported) taxa 
+# given incorrect benthic (as if not epibiotic) AbsStratDists: Find Biotic=1 &
+# AbsStratDist=">-10000" [ANY] & SizeChanged=CHECK and delete AbsStratDist (if
+# needs correcting).
 
-# (4) Confirm all exclusively infaunal taxa have negative AbsStratDists and
-# exclusively epifaunal taxa have positive values.
+# (4) Confirm all exclusively infaunal taxa have negative AbsStratDists and 
+# exclusively epifaunal taxa have positive values. (But don't be surprised by 
+# semi-infaunal taxa that are simultaneously epifaunal and infaunal.)
+# Alternatively, confirm that all with negative AbsStratDists have
+# WithinAbsStrat=1 and that all with positive AbsStratDists have
+# AboveAbsStrat=1.
+
+# (5) Confirm that taxa with AbsStratDist=">-100000" values [ANY] match the 
+# correct AbsStrat coding. (Sort by AbsStratDist when checking manually.) When 
+# checking this, also worth checking the RelStrat and AbsFoodStrat codings. In 
+# general, if animal is epibenthic, self-supported, and filter-feeder, the 
+# AbsFoodStrat will be same as AbsStrat; if mass-feeder, AbsFoodStrat will be 0;
+# and if raptorial, AbsFoodStrat will be where food is located (often 0.25 
+# coding). For RelStrat, useful to sort of Phylum>Class>DV or AP length. For
+# RelStrat, recall that for semi-infaunals this will correspond to the animal's
+# major axis and not the distance from sea floor.
+
+# (6) Confirm RelFoodStrat for filter feeders, sorting by phyla and then either 
+# AbsStratDist or A/P length. For ambient filter feeders (SPONGES and 
+# suspension-feeding ECHINODERMS and CNIDARIANS) where flow rate depends on 
+# distance from sea floor, confirm those 15-200 mm tall are 0.5; refer to 
+# LifeHabitNotes.docs for additional categorizations. For active filter feeders,
+# the coding depends on the size of the pumping organ. All BRYOZOANS, 
+# GRAPTOLITES, and PTEROBRANCHS should be 0.25. BRACHIOPODS should be half the 
+# A/P length. Filter-feeding mollusks (BIVALVES, ROSTROCONCHS, and GASTROPODS) 
+# should be twice the A/P length. POLYCHAETES and TENTACULITIDS should be twice 
+# the transverse length. Filter-feeding MICROCRUSTACEANS (amphipods, mysids, 
+# etc.) generally should be 0.25. ASCIDIANS should generally be 0.5.
+
