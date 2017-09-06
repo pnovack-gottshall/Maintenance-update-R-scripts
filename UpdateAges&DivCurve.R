@@ -153,6 +153,7 @@ for(i in 1:length(Gen)) {
 # sure the file details are the same as above.)
 
 # occs <- read.csv("PBDBDates.csv", header=TRUE)
+# occs <- read.delim("PostSizes_withPBDB.tab", sep="\t", header=TRUE)
 head(occs)
 
 

@@ -1,5 +1,13 @@
 ## PROPOGATE BODY SIZE CODINGS ACROSS ENTRIES, USING RELATIVES AS PROXIES
 
+## ISSUES TO FIX: The AbsStratDist, once entered previously by an auto-calculate
+## algorithm (with determination placed into the SizeHistory field), gets
+## removed if a newer estimate is calculated (even if the AbsStratDist is
+## changed). It is useful and informative to maintain the papertrail of how
+## AbsStratDist was calculated in this field, even if not new.
+
+
+
 ## BASIC LOGIC -------------------------------------------------------------
 
 # "Relative' means the smallest inclusive taxonomic group the entry is related
@@ -71,22 +79,21 @@
 # (3) Open file in MSWord (turn off smart quotes are off: File > Options > 
 # Proofing > Autocorrect Options > Autoformat As You Type > uncheck Smart 
 # Quotes) and delete any hidden tabs and all problematic (i.e., double) 
-# quotation marks (replacing "^t with " and replacing ^t" with " and replacing
-# "" with ").
+# quotation marks (replacing [UNLESS THE QUOTATION MARK IS CORRECTLY AT THE END
+# OF A TEXT FIELD] "^t with " and replacing ^t" with " and replacing "" with ").
 
 # (4) In Excel, add a row for headers and confirm the column headers are correct
-# (and no cells are "hanging"). Then add a new column counting 'PhotoX' columns
-# with values. Confirm all BodySizeScale = 'Sp/Subg/Gen' scales have at least
-# one measurement.
+# (and no cells are "hanging"). Then add a new column counting 'PhotoX' columns 
+# with values. TROUBLESHOOT: Confirm that all 'Sp/Subg/Gen' have at least 1
+# measurement!
 
 # (5) Sort the BodySizeScale = 'Sp/Subg/Gen' by (1) number of PhotoX columns 
 # (largest first) so entries with complete (all 3) size measurements are first 
 # and most incomplete are last. That way those with best scales and 
 # more-complete sizes are checked first, so that later entries can use the 
-# largest available pool of relatives. (2) Second, sort item by AbsStratDist,
-# with largest values first (so those with estimated AbsStratDists are
-# considered first to propogate to those lacking them). TROUBLESHOOT: Confirm
-# that all 'Sp/Subg/Gen' have at least 1 measurement!
+# largest available pool of relatives. (2) Second, sort item by AbsStratDist, 
+# with largest values first (so those with estimated AbsStratDists are 
+# considered first to propogate to those lacking them).
 
 # (6) Delete the added 'count' column and resave.
 
@@ -96,6 +103,7 @@ setwd("C:/Users/pnovack-gottshall/Desktop/Databases/Maintenance & update R scrip
 # setwd("C:/Users/pnovack-gottshall/Documents/GSA (& NSF & NAPC)/2016GSA/GSA2016 analyses")
 
 pre.input <- read.delim(file="preSizes.tab", stringsAsFactors=FALSE)
+# pre.input <- read.delim(file="PreSizes_withPBDB.tab", stringsAsFactors=FALSE)
 est.cols <- which(colnames(pre.input) == "SizeChanged" | 
     colnames(pre.input) == "Est_AP" | colnames(pre.input) == "Est_T" | 
     colnames(pre.input) == "Est_DV")
@@ -103,6 +111,7 @@ colCl <- c(rep(NA, ncol(pre.input)))
 colCl[est.cols] <- "character"
 rm(pre.input)
 input <- read.delim(file="preSizes.tab", stringsAsFactors=FALSE, colClasses=colCl)
+# input <- read.delim(file="PreSizes_withPBDB.tab", stringsAsFactors=FALSE)
 scales <- c("Species", "Subgenus", "Genus", "Subfamily", "Family", "Superfamily",
   "Suborder", "Order", "Subclass", "Class", "Subphylum", "Phylum", "", NA)
 scales <- factor(scales, levels=scales, ordered=TRUE)
@@ -127,10 +136,11 @@ colnames(out[AP.cols])          # "APLength", "PhotoAP", "APScale"
 colnames(out[T.cols])           # "TrLength", "PhotoTr", "TrScale"
 colnames(out[DV.cols])          # "DVLength", "PhotoDV", "DVScale"
 str(input)
-# Make sure the 4 "SizeChanged" and "Est_X" columns are input as characters. If 
-# a column is blank, it by default is classed as a logical (which causes errors 
-# below)
+# TROUBLESHOOT: Make sure the 4 "SizeChanged" and "Est_X" columns are input as
+# characters. If a column is blank, it by default is classed as a logical (which
+# causes errors below)
 head(input)
+tail(input)
 table(input$BodySizeScale)
 
 # Troubleshooting
@@ -140,7 +150,7 @@ if(any(is.na(input$early_age)) || any(is.na(input$late_age)))
 if(length(table(table(input$Genus))) > 1L) {
   print(which(table(input$Genus) > 1L))
   stop("The above genus entries are entered twice. Delete the outdated entry/entries?")
-}
+  }
 # Ignore the 72 extant brachiopod genera with multiple species in the database
 # (mostly extant species, some fossil species), cases where multiple subgenera
 # are included in same genus, and where there are ecologically quite different
@@ -543,12 +553,15 @@ abline(v=0, lwd=2, lty=2)
 
 ## EXPORT DATA -------------------------------------------------------------
 write.table(out, file="PostSizes.tab", quote=FALSE, sep="\t", row.names=FALSE)
+# write.table(out, file="PostSizes_withPBDB.tab", quote=FALSE, sep="\t", row.names=FALSE)
 
-# (1) Open in Excel to confirm looks acceptable. Replace (matching entire cell 
-# contents) "NA"s in body size data and AbsStratDist with blank cells.
+# (1) Open in Excel to confirm looks acceptable. Replace (with Options=Match
+# entire cell contents) "NA"s in body size data and AbsStratDist with blank
+# cells.
 
-# (2) Open in Word to remove quotation marks around the text entries, (replacing
-# "^t with " and replacing ^t" with " and replacing "" with ").
+# (2) Open in Word to remove quotation marks around the text entries [UNLESS THE
+# QUOTATION MARK IS CORRECTLY AT THE END OF A TEXT FIELD], (replacing "^t with
+# ^t and replacing ^t" with " and replacing "" with ").
 
 # (3) Open FileMakerPro and import, updating records by matching names and using
 # the IDNumber as the matching identifier. (Fine to not import the taxonomic
@@ -573,9 +586,9 @@ write.table(out, file="PostSizes.tab", quote=FALSE, sep="\t", row.names=FALSE)
 # & AbsStratDist=">-10000" [ANY] & SizeChanged=CHECK and delete AbsStratDist (if
 # needs correcting).
 
-# (2) Supported taxa given self-supported AbsStratDists: Find Supported=1 & 
-# AbsStratDist=">-10000" [ANY] & SizeChanged=CHECK and delete AbsStratDist (if
-# needs correcting).
+# (2) Supported taxa given self-supported AbsStratDists: Find
+# SupportedByOthers=1 & AbsStratDist=">-10000" [ANY] & SizeChanged=CHECK and
+# delete AbsStratDist (if needs correcting).
 
 # (3) Epibiotic (but barely raised, so should be coded as self-supported) taxa 
 # given incorrect benthic (as if not epibiotic) AbsStratDists: Find Biotic=1 &
