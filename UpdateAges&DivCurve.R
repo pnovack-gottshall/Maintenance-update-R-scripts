@@ -89,6 +89,7 @@ index <- seq(0, 10000, by=100)
 # subgenera later
 Gen <- sort(unique(unlist(list(occs$Genus, occs$Subgenus), recursive=TRUE)))
 for(i in 1:length(Gen)) {
+# for(i in 72:length(Gen)) {
   gen.pbdb <- max.ma <- min.ma <- Early <- Late <- NA
   override <- FALSE
   gen <- as.character(Gen[i])
