@@ -76,8 +76,11 @@ lines(mids, means, lwd=3)
 
 
 ## Tiering trends (NOTE: MAKE SURE TO RE-DOWNLOAD SIZES ONLY FOR SUSPENSION-FEEDERS!)
+<<<<<<< HEAD
 setwd("C:/Users/pnovack-gottshall/Desktop/Databases/Maintenance & update R scripts")
 data <- read.delim(file="SuspensionSizes.tab", sep="\t", header=TRUE)
+=======
+>>>>>>> d1f3146f3c36cc422a9b5d264babe4636a1d855a
 
 # Create separate infaunal and epifaunal trends
 hist(data$AbsStratDist, col="darkgray", border="white")
