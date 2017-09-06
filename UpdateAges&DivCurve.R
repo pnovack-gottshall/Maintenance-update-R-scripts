@@ -18,9 +18,10 @@ head(pbdb)
 
 ## Export occurrences as .csv file named "occs.csv" from "LifeHabits.fmp12" (in 
 ## any sort order) with following columns: IDNumber, Phylum, Class, Order, 
-## Superfamily, Family, Genus, Subgenus, Species, early_period, early_age, late_period, 
-## late_age). Make sure to manually enter the header names! (easiest is to save
-## as Excel to retain column names and then re-save as .csv.)
+## Superfamily, Family, Genus, Subgenus, Species, early_period, early_age,
+## late_period, late_age). Make sure to manually enter the header names!
+## (easiest is to save as Excel to retain column names and then re-save as
+## .csv.)
 occs <- read.csv("occs.csv", header=TRUE)
 table(occs$Phylum)
 cl.tbl <- table(occs$Class)
@@ -78,7 +79,8 @@ ints[which(!ints %in% l4s$interval_name)]
 
 # If crashes, most likely because the genus is mis-spelled, or not in PBDB AND 
 # there are no ranges available to use. Manually set as Recent (if extant and no
-# fossil record, according to WoRMS) or enter manually.
+# fossil record, according to WoRMS) or enter manually (and start at next "i" in
+# loop).
 
 index <- seq(0, 10000, by=100)
 # In next line, make sure Genus is added before Subgenus. Algorithm will first
@@ -87,25 +89,34 @@ index <- seq(0, 10000, by=100)
 # subgenera later
 Gen <- sort(unique(unlist(list(occs$Genus, occs$Subgenus), recursive=TRUE)))
 for(i in 1:length(Gen)) {
+# for(i in 72:length(Gen)) {
   gen.pbdb <- max.ma <- min.ma <- Early <- Late <- NA
+  override <- FALSE
   gen <- as.character(Gen[i])
   if(gen == "") next   # Combining genera and subgenera sometimes adds a blank
   if(i %in% index) cat("genus ", i, ":", gen, "\n")
   # PBDB treats the accepted names of subgenera as "Genus (Subgenus)"
   if(gen %in% occs$Subgenus) {
     wh.occs.G <- which(occs$Subgenus==gen)
-    gen <- paste(occs$Genus[wh.occs.G[1]], " (", occs$Subgenus[wh.occs.G[1]], ")", sep="")
+    gen <- paste(occs$Genus[wh.occs.G[1]], " (", 
+      occs$Subgenus[wh.occs.G[1]], ")", sep="")
   } else wh.occs.G <- which(occs$Genus==gen)
   len.g <- length(wh.occs.G)
   wh.pbdb.G <- which(pbdb$accepted_name==gen)
 
-  # Update ages for taxa not in PBDB (such as those with ranges from Treatise or
-  # Sepkoski's Compendium), implementing pull-of-the-Recent (if needed):
-  if(length(wh.pbdb.G)==0) {
-    if(occs$early_period[wh.occs.G]=="Recent") { max.ma <- 0 } else occs$early_age[wh.occs.G] <- rep(l4s$early_age[which(l4s$interval_name==as.character(occs$early_period[wh.occs.G]))], len.g)
-    if(occs$late_period[wh.occs.G]=="Recent") { min.ma <- 0 } else occs$late_age[wh.occs.G] <- rep(l4s$late_age[which(l4s$interval_name==as.character(occs$late_period[wh.occs.G]))], len.g)
-  }
-  if(length(wh.pbdb.G)==0) next
+  # Update ages for taxa not in PBDB, or lacking PBDB occurrences (such as those
+  # with ranges from Treatise or Sepkoski's Compendium), implementing
+  # pull-of-the-Recent (if needed):
+  if(length(wh.pbdb.G)==0 | (length(wh.pbdb.G)>=1L & 
+      is.numeric(pbdb$firstapp_max_ma[wh.pbdb.G]) & 
+      is.numeric(pbdb$lastapp_min_ma[wh.pbdb.G]))) { override <- TRUE }
+  if(override) {
+    if(occs$early_period[wh.occs.G]=="Recent") { max.ma <- 0 } else occs$early_age[wh.occs.G] <- 
+        rep(l4s$early_age[which(l4s$interval_name==as.character(occs$early_period[wh.occs.G]))], len.g)
+    if(occs$late_period[wh.occs.G]=="Recent") { min.ma <- 0 } else occs$late_age[wh.occs.G] <- 
+        rep(l4s$late_age[which(l4s$interval_name==as.character(occs$late_period[wh.occs.G]))], len.g)
+    }
+  if(override) next
 
   # Or continue on with those in the PBDB:
   gen.pbdb <- pbdb[wh.pbdb.G, ]
@@ -114,9 +125,11 @@ for(i in 1:length(Gen)) {
   
   # Flag any discrepancies in extinct / extant tags
   if(any(occs$late_period[wh.occs.G]=="Recent") & 
-      any(gen.pbdb$is_extant=="extinct")) cat("Confirm extinct/extant status for", gen, "\n")
+      any(gen.pbdb$is_extant=="extinct")) cat("Confirm extinct/extant status for", 
+        gen, "\n")
   if(any(occs$late_period[wh.occs.G]!="Recent") & 
-      any(gen.pbdb$is_extant=="extant")) cat("Confirm extinct/extant status for", gen, "\n")
+      any(gen.pbdb$is_extant=="extant")) cat("Confirm extinct/extant status for", 
+        gen, "\n")
 
   # Assign to "level-4" ages
   Early <-
@@ -188,7 +201,7 @@ geoscalePlot(divs$midpt, divs$div, units=c("Epoch", "Period"),
 
 ## Extract age and interval ranges for families
 index <- seq(0, 10000, by=100)
-t.rank <- "Phylum"  # specify taxonomic level: Family, Superfamily, Order, Class, Phylum
+t.rank <- "Family"  # specify taxonomic level: Family, Superfamily, Order, Class, Phylum
 wh.col <- which(colnames(occs)==t.rank)
 t.occs <- occs[0 ,c(2:wh.col, 9:12)]
 taxa <- sort(unique(occs[[wh.col]]))
@@ -215,8 +228,9 @@ for(i in 1:length(taxa)) {
   wh.pbdb.taxon <- which(pbdb$accepted_name==taxon)
   if(length(wh.pbdb.taxon)==0) next
   taxon.pbdb <- pbdb[wh.pbdb.taxon, ]
-  max.ma <- max(taxon.pbdb$firstapp_max_ma)
-  min.ma <- min(taxon.pbdb$lastapp_min_ma)
+  if(is.na(taxon.pbdb$firstapp_max_ma) & is.na(taxon.pbdb$lastapp_min_ma)) next
+  max.ma <- max(taxon.pbdb$firstapp_max_ma, na.rm=TRUE)
+  min.ma <- min(taxon.pbdb$lastapp_min_ma, na.rm=TRUE)
   if(max.ma > occs.max.ma) t.occs$early_age[i] <- max.ma
   if(min.ma < occs.min.ma) t.occs$late_age[i] <- min.ma
   # Assign to "level-4" ages
