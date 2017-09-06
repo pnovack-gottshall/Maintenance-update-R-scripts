@@ -60,6 +60,8 @@ for(g in 1:n.gen) {
 # x3 <- read.csv(file="PBDBformatted3.csv", header=TRUE, stringsAsFactors=FALSE)
 # x4 <- read.csv(file="PBDBformatted4.csv", header=TRUE, stringsAsFactors=FALSE)
 # x <- rbind(x1[1:17750, ], x2[17751:35500, ], x3[35501:53250, ], x4[53251:n.gen, ])
+# write.csv(x, file="PBDBformatted.csv", row.names=FALSE)
+# x <- read.csv(file="PBDBformatted.csv", header=TRUE, stringsAsFactors=FALSE)
 
 
 ## Remove terrestrial and non-marine taxa, but include marine tetrapods (list
@@ -84,8 +86,8 @@ marine.exceptions <- c("Chelonioidea", "Ophidiomorpha", "Mosasauroidea", "Thalat
   "Pelecaniformes", "Pelagornithidae", "Plotopteridae", "Charadriiformes", "Cetacea",
   "Sirenia", "Pinnipedia", "Desmostylia", "Ariidae", "Plotosidae")
 
-write.csv(x, file="PBDBformatted2.csv", row.names=FALSE)
-# x <- read.csv(file="PBDBformatted.csv", header=TRUE, stringsAsFactors=FALSE)
+write.csv(x, file="PBDBformatted_NoTerr.csv", row.names=FALSE)
+# x <- read.csv(file="PBDBformatted_NoTerr.csv", header=TRUE, stringsAsFactors=FALSE)
 
 sq <- 1:nrow(x)
 marine.vert.exceptions <- x[sapply(sq, function(sq) any(marine.exceptions %in% x[sq, ])), ]
@@ -98,12 +100,29 @@ nrow(x)
 nrow(marine.taxa)
 
 
-# read mine (size or LH) and add PBDBformatted (BELOW mine!)
-index matches
-keep mine, remove pbdb matches, and merge
-save
+## Run following to manually combine my database and the PBDB databases
 
-## Identify taxa placed inconsistently within higher taxa.
-# Run IDBadHigherTaxa.R
+# (1) In Excel, open the "postSizes.tab" or "postLH.tab" file and re-save as 
+# "PreSizes_withPBDB.tab" or "PreLH_withPBDB.tab" (MANUALLY ADDING THE ".TAB" TO
+# FILE NAME TO FORCE AS TAB-DELIMITED INSTEAD OF TEXT FILE FORMAT. Open 
+# "PBDBformatted_NoTerr.csv" and copy this data into the combined database. Add 
+# new IDNumbers (that pick up after those in the existing database), and
+# re-save. Manually delete any "NA"s in early and late ages.
 
-# Consider extracting out non-marines and genus duplicates (multiple species for same genus) and non-fossilized at end instead?
+# (2) Open here and run following code to remove duplicated genus entries.
+
+rm(list=ls())
+setwd("C:/Users/pnovack-gottshall/Desktop/Databases/Maintenance & update R scripts")
+pre <- read.delim(file="PreSizes_withPBDB.tab", stringsAsFactors=FALSE)
+head(pre)
+tail(pre)
+duplicate.G <- duplicated(pre$Genus)
+post <- pre[!duplicate.G, ]
+write.table(post, file="PreSizes_withPBDB.tab", quote=FALSE, sep="\t", row.names=FALSE)
+
+# (3) Run code as usual in "PropogateSizes.R" or "PropogateLifeHabits.R", but resaving as postX_withPBDB" file name. Make sure to add new IDNumbers to the new PBDB entries!
+
+# (4) Import into copy of FileMakerPro life habit database, adding the new entries. Use this one for running next analyses.
+
+# (4) Before running disparity and tiering analyses, open here and remove the non-terrestrials (and non-fossils with Recent-only occurrences?)
+

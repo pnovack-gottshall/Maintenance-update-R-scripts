@@ -23,6 +23,7 @@ top <- ages$late_age
 # IMPORT DATA -------------------------------------------------------------
 setwd("C:/Users/pnovack-gottshall/Desktop/Databases/Maintenance & update R scripts")
 data <- read.delim(file="PostSizes.tab", sep="\t", header=TRUE)
+# data <- read.delim(file="PostSizes_withPBDB.tab", sep="\t", header=TRUE)
 
 # Calculate biovolume:
 # BVOL = 0.5439 * (DVLength * TransverseLength * APLength / 1000) ^ 0.896
@@ -68,10 +69,18 @@ for(t in 1:nrow(group)) {
    rep(log10(group$BodyVolume[t]), 2), border="gray50")
  }
 
+# mean trend:
 means <- rep(NA, length(mids))
 means <- apply(log10(sizes), 2, mean, na.rm=TRUE)
 lines(mids, means, lwd=3)
 
+# 5th and 95th percentiles:
+perc.5 <- rep(NA, length(mids))
+perc.5 <- apply(log10(sizes), 2, quantile, probs=0.05, na.rm=TRUE)
+perc.95 <- rep(NA, length(mids))
+perc.95 <- apply(log10(sizes), 2, quantile, probs=0.95, na.rm=TRUE)
+lines(mids, perc.5, lty=2, lwd=2)
+lines(mids, perc.95, lty=2, lwd=2)
 
 
 
