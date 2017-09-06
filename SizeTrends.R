@@ -32,7 +32,7 @@ data$BodyVolume <- 0.5439 * (data$DVLength * data$TransverseLength * data$APLeng
 str(data)
 head(data, 2)
 
-hist(log10(data$BodyVolume), col="darkgray", border="white")
+hist(log10(data$BodyVolume), col="darkgray", border="white", n=20)
 
 ## MAKE TRENDS -------------------------------------------------------------
 
@@ -57,6 +57,7 @@ for(t in 1:length(mids)) {
 
 # Plot size trend, with individual genus sizes and mean trend
 lim <- range(log10(sizes), na.rm=TRUE)
+# lim <- c(-0.4, 0.6) # Set manually to focus on mean trend
 geoscalePlot(mids, rep(lim[1], length(mids)), units=c("Epoch", "Period"),
              tick.scale="Period", boxes="Epoch", cex.age=0.65, cex.ts=0.75,
              cex.pt=1, age.lim=c(540, 0), data.lim=lim, ts.col=TRUE,
@@ -70,3 +71,69 @@ for(t in 1:nrow(group)) {
 means <- rep(NA, length(mids))
 means <- apply(log10(sizes), 2, mean, na.rm=TRUE)
 lines(mids, means, lwd=3)
+
+
+
+
+## Tiering trends (NOTE: MAKE SURE TO RE-DOWNLOAD SIZES ONLY FOR SUSPENSION-FEEDERS!)
+setwd("C:/Users/pnovack-gottshall/Desktop/Databases/Maintenance & update R scripts")
+data <- read.delim(file="SuspensionSizes.tab", sep="\t", header=TRUE)
+
+# Create separate infaunal and epifaunal trends
+hist(data$AbsStratDist, col="darkgray", border="white")
+
+
+# Create a tier-by-age matrix
+tiers <- matrix(NA, nrow=nrow(group), ncol=length(mids))
+for(t in 1:length(mids)) {
+  wh.gr <- which((group$early_age >= base[t] & group$late_age <= top[t]) | 
+      (group$early_age <= base[t] & group$late_age >= top[t]))
+  tiers[wh.gr,t] <- group$AbsStratDist[wh.gr]
+}
+
+# Plot size trend, with individual genus tiers and mean trend
+lim <- range(tiers, na.rm=TRUE)
+geoscalePlot(mids, rep(lim[1], length(mids)), units=c("Epoch", "Period"), 
+  tick.scale="Period", boxes="Epoch", cex.age=0.65, cex.ts=0.75,
+  cex.pt=1, age.lim=c(540, 0), data.lim=lim, ts.col=TRUE,
+  label="tiering height (mm)", vers="ICS2015", type="n")
+mtext(text=group.name, side=3, cex=1.25)
+for(t in 1:nrow(group)) {
+  polygon(c(group$early_age[t], group$late_age[t]), 
+    rep(group$AbsStratDist[t], 2), border="gray50")
+}
+abline(h=0, lwd=2)
+
+pro <- c(.5, .75, .99)
+
+epif <- data.frame(mids=mids, median=NA, q75=NA, top=NA)
+epif[,2:4] <- t(apply(tiers[which(group$AbsStratDistance > 0), ], 2, quantile, 
+  probs=pro, na.rm=TRUE))
+# lines(mids, epif$median, lwd=2, col="gray15")
+# lines(mids, epif$q75, lwd=2, col="gray15")
+lines(mids, epif$top, lwd=2, col="gray15")
+
+inf <- data.frame(mids=mids, median=NA, q75=NA, top=NA)
+inf[,2:4] <- t(apply(tiers[which(group$AbsStratDistance < 0), ], 2, quantile, 
+  probs=(1 - pro), na.rm=TRUE))
+# lines(mids, inf$median, lwd=2, col="gray15")
+# lines(mids, inf$q75, lwd=2, col="gray15")
+lines(mids, inf$top, lwd=2, col="gray15")
+
+
+
+# Just plot trend
+t.lim <- range(c(epif$top, inf$top), na.rm=TRUE)
+geoscalePlot(mids, epif$top, units=c("Epoch", "Period"), tick.scale="Period", boxes="Epoch", 
+  cex.age=0.65, cex.ts=0.75, cex.pt=1, age.lim=c(540, 0), data.lim=t.lim, ts.col=TRUE, 
+  label="tiering height (mm)", vers="ICS2015", type="n", lwd=3)
+# lines(mids, epif$median, lwd=2, col="gray25")
+# lines(mids, epif$q75, lwd=2, col="gray25")
+lines(mids, epif$top, lwd=2, col="gray25")
+# lines(mids, inf$median, lwd=2, col="gray25")
+# lines(mids, inf$q75, lwd=2, col="gray25")
+lines(mids, inf$top, lwd=2, col="gray25")
+abline(h=0, lwd=2)
+
+
+
