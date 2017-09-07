@@ -114,6 +114,7 @@ rm(list=ls())
 setwd("C:/Users/pnovack-gottshall/Desktop/Databases/Maintenance & update R scripts")
 # setwd("C:/Users/pnovack-gottshall/Documents/GSA (& NSF & NAPC)/2016GSA/GSA2016 analyses")
 input <- read.delim(file="preLH.tab", colClasses="character")
+# input <- read.delim(file="preLH_withPBDB.tab", colClasses="character")
 scales <- c("Species", "Subgenus", "Genus", "Subfamily", "Family", "Superfamily", 
   "Suborder", "Order", "Subclass", "Class", "Subphylum", "Phylum", "", NA)
 scales <- factor(scales, levels=scales, ordered=TRUE)
@@ -304,8 +305,9 @@ colnames(input)[-eco.col]             #      IDNumber   < ---- >  History_Ecolog
 today <- format(Sys.Date(), "%m/%d/%Y")
 # Which consensus method ('constant' or 'mode' to use for propogating from relatives
 method <- "constant"
+# method <- "mode"
 interactive <- TRUE   # If want to watch updates in real time
-if(interactive) par("ask"=TRUE)
+if(interactive) par("ask"=TRUE) else par("ask"=FALSE)
 ncs <- 14:58 # For printing interactive data
 (start.t <- Sys.time())
 
@@ -429,10 +431,11 @@ table(out$EcologyScale)
 ## EXPORT DATA -------------------------------------------------------------
 write.table(out, file="PostLH_constant.tab", quote=FALSE, sep="\t", row.names=FALSE)
 # write.table(out, file="PostLH_mode.tab", quote=FALSE, sep="\t", row.names=FALSE)
+# write.table(out, file="PostLH_withPBDB_mode.tab", quote=FALSE, sep="\t", row.names=FALSE)
 
 # Open in Excel to confirm looks acceptable. Replace (matching entire cell 
 # contents) "NA"s in life habit data.Then open in Word to remove quotation marks
-# around the text entries, (replacing "^t, ^t", and "" with ^t and ").
+# around the text entries, (replacing "^t with ^t and ^t" with ^t and "" with ^t and ").
 
 # Open FileMakerPro and import, updating records by matching names and using the
 # IDNumber as the matching identifier. (Fine to not import the taxonomic names

@@ -23,6 +23,7 @@ top <- ages$late_age
 # IMPORT DATA -------------------------------------------------------------
 setwd("C:/Users/pnovack-gottshall/Desktop/Databases/Maintenance & update R scripts")
 data <- read.delim(file="PostSizes.tab", sep="\t", header=TRUE)
+# data <- read.delim(file="Tiering.tab", sep="\t", header=TRUE)
 # data <- read.delim(file="PostSizes_withPBDB.tab", sep="\t", header=TRUE)
 
 # Calculate biovolume:
@@ -85,13 +86,8 @@ lines(mids, perc.95, lty=2, lwd=2)
 
 
 ## Tiering trends (NOTE: MAKE SURE TO RE-DOWNLOAD SIZES ONLY FOR SUSPENSION-FEEDERS!)
-setwd("C:/Users/pnovack-gottshall/Desktop/Databases/Maintenance & update R scripts")
-data <- read.delim(file="SuspensionSizes.tab", sep="\t", header=TRUE)
 
 # Create separate infaunal and epifaunal trends
-hist(data$AbsStratDist, col="darkgray", border="white")
-
-
 # Create a tier-by-age matrix
 tiers <- matrix(NA, nrow=nrow(group), ncol=length(mids))
 for(t in 1:length(mids)) {
@@ -116,14 +112,14 @@ abline(h=0, lwd=2)
 pro <- c(.5, .75, .99)
 
 epif <- data.frame(mids=mids, median=NA, q75=NA, top=NA)
-epif[,2:4] <- t(apply(tiers[which(group$AbsStratDistance > 0), ], 2, quantile, 
+epif[,2:4] <- t(apply(tiers[which(group$AbsStratDist > 0), ], 2, quantile, 
   probs=pro, na.rm=TRUE))
 # lines(mids, epif$median, lwd=2, col="gray15")
 # lines(mids, epif$q75, lwd=2, col="gray15")
 lines(mids, epif$top, lwd=2, col="gray15")
 
 inf <- data.frame(mids=mids, median=NA, q75=NA, top=NA)
-inf[,2:4] <- t(apply(tiers[which(group$AbsStratDistance < 0), ], 2, quantile, 
+inf[,2:4] <- t(apply(tiers[which(group$AbsStratDist < 0), ], 2, quantile, 
   probs=(1 - pro), na.rm=TRUE))
 # lines(mids, inf$median, lwd=2, col="gray15")
 # lines(mids, inf$q75, lwd=2, col="gray15")
