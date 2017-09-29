@@ -306,7 +306,8 @@ today <- format(Sys.Date(), "%m/%d/%Y")
 # Which consensus method ('constant' or 'mode' to use for propogating from relatives
 method <- "constant"
 # method <- "mode"
-interactive <- TRUE   # If want to watch updates in real time
+# interactive <- TRUE   # If want to watch updates in real time
+interactive <- FALSE
 if(interactive) par("ask"=TRUE) else par("ask"=FALSE)
 ncs <- 14:58 # For printing interactive data
 (start.t <- Sys.time())
@@ -429,9 +430,10 @@ table(out$EcologyScale)
 
   
 ## EXPORT DATA -------------------------------------------------------------
-write.table(out, file="PostLH_constant.tab", quote=FALSE, sep="\t", row.names=FALSE)
+# write.table(out, file="PostLH_constant.tab", quote=FALSE, sep="\t", row.names=FALSE)
 # write.table(out, file="PostLH_mode.tab", quote=FALSE, sep="\t", row.names=FALSE)
 # write.table(out, file="PostLH_withPBDB_mode.tab", quote=FALSE, sep="\t", row.names=FALSE)
+write.table(out, file="PostLH_withPBDB_constant.tab", quote=FALSE, sep="\t", row.names=FALSE)
 
 # Open in Excel to confirm looks acceptable. Replace (matching entire cell 
 # contents) "NA"s in life habit data.Then open in Word to remove quotation marks
