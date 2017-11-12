@@ -254,7 +254,7 @@ better.all.equal <- function(a, b) {
 
 
 
-# Examples
+## Examples --------------------------------------------------------------------
 cols <- 21:58
 i <- which(out$Genus=="Taxocrinus") # Crinoid Taxocrinus
 out[i, cols]
@@ -436,8 +436,10 @@ table(out$EcologyScale)
 write.table(out, file="PostLH_withPBDB_constant.tab", quote=FALSE, sep="\t", row.names=FALSE)
 
 # Open in Excel to confirm looks acceptable. Replace (matching entire cell 
-# contents) "NA"s in life habit data. Then open in Word to remove quotation marks
-# around the text entries, (replacing "^t with ^t and ^t" with ^t and "" with ^t and ").
+# contents) "NA"s in life habit data.
+
+# Next open in Word to remove quotation marks around the text entries,
+# (replacing "^t with ^t and ^t" with ^t and "" with ^t and ").
 
 # Open FileMakerPro and import, updating records by matching names and using the
 # IDNumber as the matching identifier. (Fine to not import the taxonomic names

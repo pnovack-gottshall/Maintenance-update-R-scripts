@@ -296,7 +296,7 @@ get.strat <- function(target, ref) {
 
 
 
-# Examples
+## Examples --------------------------------------------------------------------
 i <- which(out$Genus=="Etoctenocystis")   # ctenocystoid Etoctenocystis
 # i <- which(out$Genus=="Isogramma")      # brachiopod Isogramma
 # i <- which(out$Genus=="Rhytimya")       # bivalve Rhytimya
@@ -556,8 +556,8 @@ write.table(out, file="PostSizes.tab", quote=FALSE, sep="\t", row.names=FALSE)
 # write.table(out, file="PostSizes_withPBDB.tab", quote=FALSE, sep="\t", row.names=FALSE)
 
 # (1) Open in Excel to confirm looks acceptable. Replace (with Options=Match
-# entire cell contents) "NA"s in body size data and AbsStratDist with blank
-# cells.
+# entire cell contents) "NA"s in taxonomic names, body size data and
+# AbsStratDist with blank cells.
 
 # (2) Open in Word to remove quotation marks around the text entries [UNLESS THE
 # QUOTATION MARK IS CORRECTLY AT THE END OF A TEXT FIELD], (replacing "^t with
@@ -602,15 +602,15 @@ write.table(out, file="PostSizes.tab", quote=FALSE, sep="\t", row.names=FALSE)
 # WithinAbsStrat=1 and that all with positive AbsStratDists have
 # AboveAbsStrat=1.
 
-# (5) Confirm that taxa with AbsStratDist=">-100000" values [ANY] match the 
-# correct AbsStrat coding. (Sort by AbsStratDist when checking manually.) When 
-# checking this, also worth checking the RelStrat and AbsFoodStrat codings. In 
-# general, if animal is epibenthic, self-supported, and filter-feeder, the 
-# AbsFoodStrat will be same as AbsStrat; if mass-feeder, AbsFoodStrat will be 0;
-# and if raptorial, AbsFoodStrat will be where food is located (often 0.25 
-# coding). For RelStrat, useful to sort of Phylum>Class>DV or AP length. For
-# RelStrat, recall that for semi-infaunals this will correspond to the animal's
-# major axis and not the distance from sea floor.
+# (5) Confirm that taxa with AbsStratDist=">-100000" values [ANY] match the
+# correct AbsStrat coding. (Sort by AbsStratDist when checking manually.) When
+# checking this, also worth checking the RelStrat and AbsFoodStrat codings. In
+# general, if animal is epibenthic, self-supported, and filter-feeder, the
+# AbsFoodStrat will be same as AbsStrat; if surficial mass-feeder, AbsFoodStrat
+# will be 0; and if raptorial, AbsFoodStrat will be where food is located (often
+# 0.25 coding). For RelStrat, useful to sort of Phylum>Class>DV or AP length.
+# For RelStrat, recall that for semi-infaunals this will correspond to the
+# animal's major axis and not the distance from sea floor.
 
 # (6) Confirm RelFoodStrat for filter feeders, sorting by phyla and then either 
 # AbsStratDist or A/P length. For ambient filter feeders (SPONGES and 
