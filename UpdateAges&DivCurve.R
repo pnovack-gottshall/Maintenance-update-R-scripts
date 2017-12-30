@@ -104,21 +104,41 @@ for(i in 1:length(Gen)) {
   len.g <- length(wh.occs.G)
   wh.pbdb.G <- which(pbdb$accepted_name==gen)
 
-  # Update ages for taxa not in PBDB, or lacking PBDB occurrences (such as those
-  # with ranges from Treatise or Sepkoski's Compendium), implementing
-  # pull-of-the-Recent (if needed):
-  if(length(wh.pbdb.G)==0 | (length(wh.pbdb.G)>=1L & 
-      is.numeric(pbdb$firstapp_max_ma[wh.pbdb.G]) & 
-      is.numeric(pbdb$lastapp_min_ma[wh.pbdb.G]))) { override <- TRUE }
+  # Manual override: Taxa not in PBDB but manually given dates or ages
+  # (code here re-confirms correct ages and interval names)
+  if(length(wh.pbdb.G)==0) { override <- TRUE }
   if(override) {
-    if(occs$early_period[wh.occs.G]=="Recent") { max.ma <- 0 } else occs$early_age[wh.occs.G] <- 
-        rep(l4s$early_age[which(l4s$interval_name==as.character(occs$early_period[wh.occs.G]))], len.g)
-    if(occs$late_period[wh.occs.G]=="Recent") { min.ma <- 0 } else occs$late_age[wh.occs.G] <- 
-        rep(l4s$late_age[which(l4s$interval_name==as.character(occs$late_period[wh.occs.G]))], len.g)
+    # If only range is provided, give correct interval name :
+    if(occs$early_period[wh.occs.G]=="" & occs$late_period[wh.occs.G]=="" & 
+        !is.na(occs$early_age[wh.occs.G]) & !is.na(occs$late_age[wh.occs.G])) {
+      occs$early_period[wh.occs.G] <- rep(as.character(l4s$interval_name[length(which(l4s$late_age 
+        < occs$early_age[wh.occs.G]))]), len.g)
+      occs$late_period[wh.occs.G] <- rep(as.character(l4s$interval_name[length(which(l4s$late_age 
+        <= occs$late_age[wh.occs.G]))]), len.g)
     }
+    # If only interval names are given, give correct range (be aware range could be overextended):
+    if(occs$early_period[wh.occs.G]!="" & occs$late_period[wh.occs.G]!="" & 
+        is.na(occs$early_age[wh.occs.G]) & is.na(occs$late_age[wh.occs.G])) {
+      if(occs$early_period[wh.occs.G]=="Recent") { occs$early_age[wh.occs.G] <- rep(0, len.g) } else {
+        occs$early_age[wh.occs.G] <- 
+          rep(l4s$early_age[which(l4s$interval_name==as.character(occs$early_period[wh.occs.G]))], len.g)
+      }
+      if(occs$late_period[wh.occs.G]=="Recent") { occs$late_age[wh.occs.G] <- rep(0, len.g) } else {
+        occs$late_age[wh.occs.G] <- 
+          rep(l4s$late_age[which(l4s$interval_name==as.character(occs$late_period[wh.occs.G]))], len.g)
+      }
+    }
+    # If no stratigraphic information is available:
+    if(occs$early_period[wh.occs.G]=="" & occs$late_period[wh.occs.G]=="" & 
+        is.na(occs$early_age[wh.occs.G]) & is.na(occs$late_age[wh.occs.G])) {
+      cat(paste("check ", gen, " (", occs$Class[wh.occs.G], 
+        "): no age known in PBDB; check Treatise/Sepkoski\n", sep=""))
+    }
+  }
+  
   if(override) next
 
-  # Or continue on with those in the PBDB:
+  # Or continue on with those taxa with PBDB ranges:
   gen.pbdb <- pbdb[wh.pbdb.G, ]
   max.ma <- max(gen.pbdb$firstapp_max_ma)
   min.ma <- min(gen.pbdb$lastapp_min_ma)
