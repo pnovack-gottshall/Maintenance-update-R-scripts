@@ -15,9 +15,10 @@ setwd("C:/Users/pnovack-gottshall/Desktop/Databases/Maintenance & update R scrip
 pbdb.all <- read.csv("pbdb_data.csv")
 head(pbdb.all)
 
-# Extract only genera (to ensure only searching for genus ranges--sometimes a
+# Extract only genera (to ensure only searching for genus ranges sometimes a
 # genus, like Nuculoidea, has same name as a higher taxon)
 pbdb <- pbdb.all[which(pbdb.all$accepted_rank=="genus"), ]
+
 
 
 ## Export occurrences as .csv file named "occs.csv" from "LifeHabits.fmp12" (in 
