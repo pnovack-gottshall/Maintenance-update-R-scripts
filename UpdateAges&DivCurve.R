@@ -19,6 +19,10 @@ head(pbdb.all)
 # genus, like Nuculoidea, has same name as a higher taxon)
 pbdb <- pbdb.all[which(pbdb.all$accepted_rank=="genus"), ]
 
+# Extract only genera (to ensure only searching for genus ranges--sometimes a
+# genus, like Nuculoidea, has same name as a higher taxon)
+pbdb <- pbdb[which(pbdb$accepted_rank=="genus"), ]
+
 
 ## Export occurrences as .csv file named "occs.csv" from "LifeHabits.fmp12" (in 
 ## any sort order) with following columns: IDNumber, Phylum, Class, Order, 
