@@ -230,7 +230,7 @@ geoscalePlot(divs$midpt, divs$div, units=c("Epoch", "Period"),
 ## Extract age and interval ranges for families
 pbdb <- pbdb.all
 index <- seq(0, 10000, by=100)
-t.rank <- "Family"  # specify taxonomic level: Family, Superfamily, Order, Class, Phylum
+t.rank <- "Phylum"  # specify taxonomic level: Family, Superfamily, Order, Class, Phylum
 wh.col <- which(colnames(occs)==t.rank)
 t.occs <- occs[0 ,c(2:wh.col, 9:12)]
 taxa <- sort(unique(occs[[wh.col]]))
