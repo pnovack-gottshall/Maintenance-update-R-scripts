@@ -15,6 +15,10 @@ setwd("C:/Users/pnovack-gottshall/Desktop/Databases/Maintenance & update R scrip
 pbdb <- read.csv("pbdb_data.csv")
 head(pbdb)
 
+# Extract only genera (to ensure only searching for genus ranges--sometimes a
+# genus, like Nuculoidea, has same name as a higher taxon)
+pbdb <- pbdb[which(pbdb$accepted_rank=="genus"), ]
+
 
 ## Export occurrences as .csv file named "occs.csv" from "LifeHabits.fmp12" (in 
 ## any sort order) with following columns: IDNumber, Phylum, Class, Order, 
@@ -168,6 +172,8 @@ for(i in 1:length(Gen)) {
   occs$late_period[wh.occs.G] <- rep(Late, len.g)
 }
 # write.csv(occs, file="PBDBDates.csv", row.names=FALSE)
+
+# Before importing ranges, manually delete 'NA's in strat ranges
 
 # Use next command if want to use a direct export from FileMakerPro. (Make
 # sure the file details are the same as above.)
