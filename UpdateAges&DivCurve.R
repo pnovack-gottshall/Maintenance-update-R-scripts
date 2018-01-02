@@ -12,8 +12,12 @@ setwd("C:/Users/pnovack-gottshall/Desktop/Databases/Maintenance & update R scrip
 ## Easier if paste link into URL and save manually
 # pbdb <- read.csv("www.paleobiodb.org/data1.2/taxa/list.csv?base_name=Metazoa&interval=Phanerozoic&show=app&vocab=pbdb")
 # If want forams too, use base_name=Metazoa,Retaria
-pbdb <- read.csv("pbdb_data.csv")
-head(pbdb)
+pbdb.all <- read.csv("pbdb_data.csv")
+head(pbdb.all)
+
+# Extract only genera (to ensure only searching for genus ranges--sometimes a
+# genus, like Nuculoidea, has same name as a higher taxon)
+pbdb <- pbdb.all[which(pbdb.all$accepted_rank=="genus"), ]
 
 
 ## Export occurrences as .csv file named "occs.csv" from "LifeHabits.fmp12" (in 
@@ -169,6 +173,8 @@ for(i in 1:length(Gen)) {
 }
 # write.csv(occs, file="PBDBDates.csv", row.names=FALSE)
 
+# Before importing ranges, manually delete 'NA's in strat ranges
+
 # Use next command if want to use a direct export from FileMakerPro. (Make
 # sure the file details are the same as above.)
 
@@ -221,6 +227,7 @@ geoscalePlot(divs$midpt, divs$div, units=c("Epoch", "Period"),
 ## Recalculate ranges for other taxonomic levels
 
 ## Extract age and interval ranges for families
+pbdb <- pbdb.all
 index <- seq(0, 10000, by=100)
 t.rank <- "Family"  # specify taxonomic level: Family, Superfamily, Order, Class, Phylum
 wh.col <- which(colnames(occs)==t.rank)
@@ -241,13 +248,15 @@ for(i in 1:length(taxa)) {
   occs.min.ma <- occs$late_age[wh.occs.taxon][wh.min]
   occs.Early <- as.character(occs$early_period[wh.occs.taxon][wh.max])
   occs.Late <- as.character(occs$late_period[wh.occs.taxon][wh.min])
-  t.occs$early_age[i] <- occs.max.ma
-  t.occs$early_period[i] <- occs.Early
-  t.occs$late_age[i] <- occs.min.ma
-  t.occs$late_period[i] <- occs.Late
+  if(length(occs.max.ma) > 0L) {
+    t.occs$early_age[i] <- occs.max.ma
+    t.occs$early_period[i] <- occs.Early
+    t.occs$late_age[i] <- occs.min.ma
+    t.occs$late_period[i] <- occs.Late
+  }
   # Update with PBDB (if extends range):
   wh.pbdb.taxon <- which(pbdb$accepted_name==taxon)
-  if(length(wh.pbdb.taxon)==0) next
+  if(length(wh.pbdb.taxon)==0L) next
   taxon.pbdb <- pbdb[wh.pbdb.taxon, ]
   if(is.na(taxon.pbdb$firstapp_max_ma) & is.na(taxon.pbdb$lastapp_min_ma)) next
   max.ma <- max(taxon.pbdb$firstapp_max_ma, na.rm=TRUE)
