@@ -62,8 +62,8 @@ edia <- strat_names[which(strat_names$interval_name=="Ediacaran"), ]
 l4s <- rbind(l4s, edia)
 l4s[ ,1:5]
 
-## Any disallowed intervals? (Allow Ediacaran and Recent, although not official
-## subperiods)
+## Any disallowed intervals? (Allow blank (""), Ediacaran and Recent, although
+## not official subperiods)
 ints <- unique(c(levels(occs$early_period), levels(occs$late_period)))
 ints[which(!ints %in% l4s$interval_name)]
 
