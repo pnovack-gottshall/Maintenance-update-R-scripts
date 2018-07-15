@@ -275,7 +275,7 @@ for (r in 1:length(ranks)) {
       t.occs$late_period[i] <- occs.Late
     }
     # Update with PBDB (if extends range):
-    wh.pbdb.taxon <- which(pbdb$accepted_name == taxon)
+    wh.pbdb.taxon <- which(pbdb$taxon_name == taxon)
     if (length(wh.pbdb.taxon) == 0L) next
     taxon.pbdb <- pbdb[wh.pbdb.taxon, ]
     if (is.na(taxon.pbdb$firstapp_max_ma) &
