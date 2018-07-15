@@ -2,6 +2,8 @@
 ## Check for missing ID numbers. Check that extant/extincts are correct (but
 ## note false flag if a subgenus is extinct within a still-extant genus).
 
+## IMPORT AND PROCESS FILES ############################################
+
 rm(list = ls())
 setwd("C:/Users/pnovack-gottshall/Desktop/Databases/Maintenance & update R scripts")
 
@@ -16,7 +18,8 @@ head(pbdb.all)
 
 # Extract only genera (to ensure only searching for genus ranges sometimes a
 # genus, like Nuculoidea, has same name as a higher taxon)
-pbdb <- pbdb.all[which(pbdb.all$taxon_rank == "genus"),]
+pbdb <- pbdb.all[which(pbdb.all$taxon_rank == "genus" | 
+                         pbdb.all$taxon_rank == "subgenus"), ]
 nrow(pbdb)
 
 ## Export occurrences as .csv file named "occs.csv" from "LifeHabits.fmp12" (in
@@ -48,6 +51,8 @@ num <- seq(nrow(occs))
 all(num %in% sort(occs$IDNumber)) # TRUE if nothing missing
 which(num %in% sort(occs$IDNumber) == FALSE)
 
+## PREP TIME SCALE #####################################################
+
 ## Get updated PBDB intervals and ages
 library(paleobioDB)
 strat_names <- pbdb_intervals(limit = "all", vocab = "pbdb")
@@ -78,7 +83,7 @@ ints[which(!ints %in% l4s$interval_name)]
 
 
 
-## Extract age and interval ranges
+## EXTRACT AGE AND INTERVAL RANGES #####################################
 
 # If crashes, most likely because the genus is mis-spelled, or not in PBDB AND 
 # there are no ranges available to use. Manually set as Recent (if extant and no
@@ -203,7 +208,9 @@ for (i in 1:length(Gen)) {
 head(occs)
 
 
-## Construct diversity curves        (using 'Total Diversity' of Foote 2000)
+
+## CONSTRUCT DIVERSITY CURVES ##########################################
+## (using 'Total Diversity' of Foote 2000)
 ## X-FL, number of taxa w/ 1st and last appearance in interval (singletons),
 ## X-bL, number of taxa crossing bottom boundary & last appear in interval,
 ## X-Ft, number of taxa crossing top boundary and first appear in interval,
@@ -337,10 +344,9 @@ for (r in 1:length(ranks)) {
 
 
 
-
-## Get current numbers from PBDB, and compare to life habit database
-# Note is comparing a marine & invertebrate-only life habit database to the
-# entire PBDB
+## COMPARE TO PBDB TALLIES #############################################
+# Get current numbers from PBDB, and compare to life habit database Note is
+# comparing a marine & invertebrate-only life habit database to the entire PBDB
 pbdb$taxon_name[which(pbdb$taxon_rank == "phylum")]
 (l.pbdb <- length(pbdb$taxon_name[which(pbdb$taxon_rank == "phylum")]))
 (lhdb <- length(unique(occs$Phylum)))
@@ -370,3 +376,4 @@ pbdb$taxon_name[which(pbdb$taxon_rank=="genus")]
 (l.pbdb <- length(pbdb$taxon_name[which(pbdb$taxon_rank=="genus")]))
 (lhdb <- length(unique(occs$Genus)))
 round(lhdb * 100 / l.pbdb, 2)
+
