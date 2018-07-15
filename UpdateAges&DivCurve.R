@@ -242,96 +242,98 @@ geoscalePlot(divs$midpt, divs$div, units = c("Epoch", "Period"),
              type = "l", lwd = 3)
 
 
-
 ## Recalculate ranges for other taxonomic levels
 
-## Extract age and interval ranges for families
+## Extract age and interval ranges for higher taxa
 pbdb <- pbdb.all
 index <- seq(0, 10000, by = 100)
-t.rank <- "Phylum"  # specify taxonomic level: Family, Superfamily, Order, Class, Phylum
-wh.col <- which(colnames(occs)==t.rank)
-t.occs <- occs[0 ,c(2:wh.col, 9:12)]
-taxa <- sort(unique(occs[[wh.col]]))
-for(i in 1:length(taxa)) {
-  taxon.pbdb <- max.ma <- min.ma <- Early <- Late <- NA
-  taxon <- as.character(taxa[i])
-  if(i %in% index) cat("taxon ", i, ":", taxon, "\n")
-  if(taxon=="UNCERTAIN") next
-  if(taxon=="Trace fossil") next
-  wh.occs.taxon <- which(occs[[wh.col]]==taxon)
-  t.occs[i, 1:(wh.col - 1)] <- occs[wh.occs.taxon[1], 2:wh.col]
-  # Use current ranges before updating with PBDB:
-  wh.max <- which.max(occs$early_age[wh.occs.taxon])
-  wh.min <- which.min(occs$late_age[wh.occs.taxon])
-  occs.max.ma <- occs$early_age[wh.occs.taxon][wh.max]
-  occs.min.ma <- occs$late_age[wh.occs.taxon][wh.min]
-  occs.Early <- as.character(occs$early_period[wh.occs.taxon][wh.max])
-  occs.Late <- as.character(occs$late_period[wh.occs.taxon][wh.min])
-  if(length(occs.max.ma) > 0L) {
-    t.occs$early_age[i] <- occs.max.ma
-    t.occs$early_period[i] <- occs.Early
-    t.occs$late_age[i] <- occs.min.ma
-    t.occs$late_period[i] <- occs.Late
+ranks <- c("Family", "Superfamily", "Order", "Class", "Phylum")
+for (r in 1:length(ranks)) {
+  t.rank <- ranks[r]
+  wh.col <- which(colnames(occs) == t.rank)
+  t.occs <- occs[0 , c(2:wh.col, 9:12)]
+  taxa <- sort(unique(occs[[wh.col]]))
+  for (i in 1:length(taxa)) {
+    taxon.pbdb <- max.ma <- min.ma <- Early <- Late <- NA
+    taxon <- as.character(taxa[i])
+    if (i %in% index) cat("taxon ", i, ":", taxon, "\n")
+    if (taxon == "UNCERTAIN") next
+    if (taxon == "Trace fossil") next
+    wh.occs.taxon <- which(occs[[wh.col]] == taxon)
+    t.occs[i, 1:(wh.col - 1)] <- occs[wh.occs.taxon[1], 2:wh.col]
+    # Use current ranges before updating with PBDB:
+    wh.max <- which.max(occs$early_age[wh.occs.taxon])
+    wh.min <- which.min(occs$late_age[wh.occs.taxon])
+    occs.max.ma <- occs$early_age[wh.occs.taxon][wh.max]
+    occs.min.ma <- occs$late_age[wh.occs.taxon][wh.min]
+    occs.Early <- as.character(occs$early_period[wh.occs.taxon][wh.max])
+    occs.Late <- as.character(occs$late_period[wh.occs.taxon][wh.min])
+    if (length(occs.max.ma) > 0L) {
+      t.occs$early_age[i] <- occs.max.ma
+      t.occs$early_period[i] <- occs.Early
+      t.occs$late_age[i] <- occs.min.ma
+      t.occs$late_period[i] <- occs.Late
+    }
+    # Update with PBDB (if extends range):
+    wh.pbdb.taxon <- which(pbdb$accepted_name == taxon)
+    if (length(wh.pbdb.taxon) == 0L) next
+    taxon.pbdb <- pbdb[wh.pbdb.taxon, ]
+    if (is.na(taxon.pbdb$firstapp_max_ma) &
+        is.na(taxon.pbdb$lastapp_min_ma)) next
+    max.ma <- max(taxon.pbdb$firstapp_max_ma, na.rm = TRUE)
+    min.ma <- min(taxon.pbdb$lastapp_min_ma, na.rm = TRUE)
+    if (max.ma > occs.max.ma) t.occs$early_age[i] <- max.ma
+    if (min.ma < occs.min.ma) t.occs$late_age[i] <- min.ma
+    # Assign to "level-4" ages
+    Early <-
+      as.character(l4s$interval_name[length(which(l4s$late_age < t.occs$early_age[i]))])
+    Late <-
+      as.character(l4s$interval_name[length(which(l4s$late_age <= t.occs$late_age[i]))])
+    t.occs$late_period[i] <- Late
+    t.occs$early_period[i] <- Early
   }
-  # Update with PBDB (if extends range):
-  wh.pbdb.taxon <- which(pbdb$accepted_name==taxon)
-  if(length(wh.pbdb.taxon)==0L) next
-  taxon.pbdb <- pbdb[wh.pbdb.taxon, ]
-  if(is.na(taxon.pbdb$firstapp_max_ma) & is.na(taxon.pbdb$lastapp_min_ma)) next
-  max.ma <- max(taxon.pbdb$firstapp_max_ma, na.rm=TRUE)
-  min.ma <- min(taxon.pbdb$lastapp_min_ma, na.rm=TRUE)
-  if(max.ma > occs.max.ma) t.occs$early_age[i] <- max.ma
-  if(min.ma < occs.min.ma) t.occs$late_age[i] <- min.ma
-  # Assign to "level-4" ages
-  Early <-
-    as.character(l4s$interval_name[length(which(l4s$late_age < t.occs$early_age[i]))])
-  Late <-
-    as.character(l4s$interval_name[length(which(l4s$late_age <= t.occs$late_age[i]))])
-  t.occs$late_period[i] <- Late
-  t.occs$early_period[i] <- Early
+  
+  write.csv(t.occs, file=paste("PBDBDates_", t.rank, ".csv", sep=""), row.names=FALSE)
+
+  # If want to use a direct export from FileMakerPro. (Make sure the file details 
+  # are the same as above.
+  
+  # t.occs <- read.csv("occs2.csv", header=TRUE)
+  # t.occs$early_period <- as.character(t.occs$early_period); # t.occs$late_period <- as.character(t.occs$late_period)
+  # head(t.occs)
+
+  ## Construct diversity curves        (using 'Total Diversity' of Foote 2000)
+  
+  # Get midpoint age for PBDB subperiods
+  mids <- apply(l4s[, 4:5], 1, mean)
+  divs <- data.frame(interval = l4s$interval_name, base = l4s$early_age,
+                     top = l4s$late_age, midpt = mids, div = NA)
+  
+  # Higher taxa diversity curve (using database occurrences above)
+  for (t in 1:nrow(divs)) {
+    FL <- length(which(t.occs$early_age > divs$base[t] &
+                         t.occs$late_age < divs$top[t]))
+    bL <- length(which(t.occs$early_age > divs$base[t] &
+                         t.occs$late_age < divs$base[t] &
+                         t.occs$late_age >= divs$top[t]))
+    Ft <- length(which(t.occs$late_age < divs$top[t] &
+                         t.occs$early_age <= divs$base[t] &
+                         t.occs$early_age > divs$top[t]))
+    bt <- length(which(t.occs$early_age <= divs$base[t] &
+                         t.occs$late_age >= divs$top[t]))
+    divs$div[t] <- FL + bL + Ft + bt
   }
-
-write.csv(t.occs, file=paste("PBDBDates_", t.rank, ".csv", sep=""), row.names=FALSE)
-
-# If want to use a direct export from FileMakerPro. (Make sure the file details 
-# are the same as above.
-
-# t.occs <- read.csv("occs2.csv", header=TRUE)
-# t.occs$early_period <- as.character(t.occs$early_period); # t.occs$late_period <- as.character(t.occs$late_period)
-head(t.occs)
-
-## Construct diversity curves        (using 'Total Diversity' of Foote 2000)
-
-# Get midpoint age for PBDB subperiods
-mids <- apply(l4s[ ,4:5], 1, mean)
-divs <- data.frame(interval=l4s$interval_name, base=l4s$early_age,
-                   top=l4s$late_age, midpt=mids, div=NA)
-
-# Higher taxa diversity curve (using database occurrences above)
-for(t in 1:nrow(divs)) {
-  FL <- length(which(t.occs$early_age > divs$base[t] &
-                       t.occs$late_age < divs$top[t]))
-  bL <- length(which(t.occs$early_age > divs$base[t] &
-                       t.occs$late_age < divs$base[t] &
-                       t.occs$late_age >= divs$top[t]))
-  Ft <- length(which(t.occs$late_age < divs$top[t] &
-                       t.occs$early_age <= divs$base[t] &
-                       t.occs$early_age > divs$top[t]))
-  bt <- length(which(t.occs$early_age <= divs$base[t] &
-                       t.occs$late_age >= divs$top[t]))
-  divs$div[t] <- FL + bL + Ft + bt
+  head(divs)
+  summary(divs$div)
+  
+  # Plot diversity curve
+  library(geoscale)
+  geoscalePlot(divs$midpt, divs$div, units = c("Epoch", "Period"),
+               tick.scale = "Period", boxes = "Epoch", cex.age = 0.65,
+               cex.ts = 0.75, cex.pt = 1, age.lim = c(540, 0), data.lim = NULL,
+               ts.col = TRUE, label = paste(t.rank, "diversity"),
+               vers = "ICS2015", type = "l", lwd = 3)
 }
-head(divs)
-summary(divs$div)
-
-# Plot diversity curve
-library(geoscale)
-geoscalePlot(divs$midpt, divs$div, units=c("Epoch", "Period"),
-             tick.scale="Period", boxes="Epoch", cex.age=0.65, cex.ts=0.75,
-             cex.pt=1, age.lim=c(540, 0), data.lim=NULL, ts.col=TRUE,
-             label=paste(t.rank, "diversity"), vers="ICS2015", type="l", lwd=3)
-
-
 
 
 
@@ -339,38 +341,32 @@ geoscalePlot(divs$midpt, divs$div, units=c("Epoch", "Period"),
 ## Get current numbers from PBDB, and compare to life habit database
 # Note is comparing a marine & invertebrate-only life habit database to the
 # entire PBDB
-pbdb$taxon_name[which(pbdb$taxon_rank=="phylum" & pbdb$difference=="")]
-(l.pbdb <- length(pbdb$taxon_name[which(pbdb$taxon_rank=="phylum" & 
-    pbdb$difference=="")]))
+pbdb$taxon_name[which(pbdb$taxon_rank == "phylum")]
+(l.pbdb <- length(pbdb$taxon_name[which(pbdb$taxon_rank == "phylum")]))
 (lhdb <- length(unique(occs$Phylum)))
 round(lhdb * 100 / l.pbdb, 2)
 
-pbdb$taxon_name[which(pbdb$taxon_rank=="class" & pbdb$difference=="")]
-(l.pbdb <- length(pbdb$taxon_name[which(pbdb$taxon_rank=="class" & 
-    pbdb$difference=="")]))
+pbdb$taxon_name[which(pbdb$taxon_rank=="class")]
+(l.pbdb <- length(pbdb$taxon_name[which(pbdb$taxon_rank=="class")]))
 (lhdb <- length(unique(occs$Class)))
 round(lhdb * 100 / l.pbdb, 2)
 
-pbdb$taxon_name[which(pbdb$taxon_rank=="order" & pbdb$difference=="")]
-(l.pbdb <- length(pbdb$taxon_name[which(pbdb$taxon_rank=="order" & 
-    pbdb$difference=="")]))
+pbdb$taxon_name[which(pbdb$taxon_rank=="order")]
+(l.pbdb <- length(pbdb$taxon_name[which(pbdb$taxon_rank=="order")]))
 (lhdb <- length(unique(occs$Order)))
 round(lhdb * 100 / l.pbdb, 2)
 
-pbdb$taxon_name[which(pbdb$taxon_rank=="superfamily" & pbdb$difference=="")]
-(l.pbdb <- length(pbdb$taxon_name[which(pbdb$taxon_rank=="superfamily" & 
-    pbdb$difference=="")]))
+pbdb$taxon_name[which(pbdb$taxon_rank=="superfamily")]
+(l.pbdb <- length(pbdb$taxon_name[which(pbdb$taxon_rank=="superfamily")]))
 (lhdb <- length(unique(occs$Superfamily)))
 round(lhdb * 100 / l.pbdb, 2)
 
-pbdb$taxon_name[which(pbdb$taxon_rank=="family" & pbdb$difference=="")]
-(l.pbdb <- length(pbdb$taxon_name[which(pbdb$taxon_rank=="family" & 
-    pbdb$difference=="")]))
+pbdb$taxon_name[which(pbdb$taxon_rank=="family")]
+(l.pbdb <- length(pbdb$taxon_name[which(pbdb$taxon_rank=="family")]))
 (lhdb <- length(unique(occs$Family)))
 round(lhdb * 100 / l.pbdb, 2)
 
-pbdb$taxon_name[which(pbdb$taxon_rank=="genus" & pbdb$difference=="")]
-(l.pbdb <- length(pbdb$taxon_name[which(pbdb$taxon_rank=="genus" & 
-    pbdb$difference=="")]))
+pbdb$taxon_name[which(pbdb$taxon_rank=="genus")]
+(l.pbdb <- length(pbdb$taxon_name[which(pbdb$taxon_rank=="genus")]))
 (lhdb <- length(unique(occs$Genus)))
 round(lhdb * 100 / l.pbdb, 2)
