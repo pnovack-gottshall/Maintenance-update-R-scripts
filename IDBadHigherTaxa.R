@@ -1,10 +1,11 @@
 ## Identify taxa placed inconsistently within higher taxa.
 
-rm(list=ls())
+rm(list = ls())
 setwd("C:/Users/pnovack-gottshall/Desktop/Databases/Maintenance & update R scripts")
 
-# Input file with following columns (Phylum, Subphylum, Class, Subclass, Order, Suborder, Superfamily, Family, Subfamily), making sure headers are included
-x <- read.csv(file="HigherTaxa.csv", header=TRUE)
+# Input file with following columns (Phylum, Subphylum, Class, Subclass, Order,
+# Suborder, Superfamily, Family, Subfamily), making sure headers are included
+x <- read.csv(file = "HigherTaxa.csv", header = TRUE)
 head(x)
 attach(x)
 
