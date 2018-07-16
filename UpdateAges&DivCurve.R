@@ -2,6 +2,7 @@
 ## Check for missing ID numbers. Check that extant/extincts are correct (but
 ## note false flag if a subgenus is extinct within a still-extant genus).
 
+
 ## IMPORT AND PROCESS FILES ############################################
 
 rm(list = ls())
@@ -50,6 +51,19 @@ which(table(occs$IDNumber) > 1)
 num <- seq(nrow(occs))
 all(num %in% sort(occs$IDNumber)) # TRUE if nothing missing
 which(num %in% sort(occs$IDNumber) == FALSE)
+
+# Any duplicated genus entries?
+if(length(table(table(occs$Genus))) > 1L) {
+  print(which(table(occs$Genus) > 1L))
+  stop("The above genus entries are entered twice. Delete the outdated entry/entries?")
+}
+# Ignore the 72 extant brachiopod genera with multiple species in the database
+# (mostly extant species, some fossil species), cases where multiple subgenera
+# are included in same genus, where there are ecologically quite different
+# species in same genus, and homonyms.
+
+
+
 
 ## PREP TIME SCALE #####################################################
 
