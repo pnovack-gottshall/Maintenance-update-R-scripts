@@ -21,25 +21,26 @@
 #
 # 2. If entry at sp/g/subg-level AND 1 or more measures are missing, proceed to
 # estimating using following logic:
-#      A. Find closest relative with ALL 3 ATD.
-#           1) if multiple relatives exist, pick the one (regardless of whether
-#           sp or genus) that is closest to the same age (earlyRel - earlyEntry
-#           + lateR - lateE, and pick using absolute difference). Why? Because
-#           size is known to change through time (although unclear if shape does)
 #
-#      B. If all 3 lengths are missing (not possible if sp/g?), drop in all 3
-#      measurements from relative.
+# A. Find closest relative with ALL 3 ATD. 1) if multiple relatives exist, pick
+# the one (regardless of whether sp or genus) that is closest to the same age
+# (earlyRel - earlyEntry + lateR - lateE, and pick using absolute difference).
+# Why? Because size is known to change through time (although unclear if shape
+# does)
 #
-#      C. If 2 lengths are missing, estimate the missing ones using the 
-#      relative's shape.
+# B. If all 3 lengths are missing (not possible if SizeScale=sp/g?), drop in all
+# 3 measurements from relative.
 #
-#      D. If 1 length is missing, estimating the missing length using mean of
-#      relative's shape (i.e., ratio of other lengths). (Using arithmetic mean
-#      instead of geometric mean to best estimate an isometric shape; use of
-#      geomean, in trials, does not produce equivalently shaped estimates.)
+# C. If 2 lengths are missing, estimate the missing ones using the relative's
+# shape.
 #
-#      E. Update "estimate" check boxes and metadata accordinging, for each if()
-#      step above.
+# D. If 1 length is missing, estimating the missing length using mean of
+# relative's shape (i.e., ratio of other lengths). (Using arithmetic mean
+# instead of geometric mean to best estimate an isometric shape; use of geomean,
+# in trials, does not produce equivalently shaped estimates.)
+#
+# E. Update "estimate" check boxes and metadata accordinging, for each if () step
+# above.
 #
 # 3. If entry is not at genus or better level (i.e., subfamily or greater), find
 # closest-aged relative and drop in all 3 measurements, updating metadata. Only
@@ -49,12 +50,21 @@
 
 
 
+## EXPORT DATA -------------------------------------------------------------
 
-## IMPORT DATA -------------------------------------------------------------
+# (0) Not required (because the code algorithmically updates), but if want a
+# "fresh" propogation, consider first deleting all body size data for any
+# estimates (EstAP, EstT, EstDV or non-species/subgenus/genus). (This is
+# recommended if, for example, a species/subgenus/genus A entry has at least one
+# estimated size measurement, and it might be used to estimate a missing size
+# for species B, which was originally used to estimate the missing size for A.)
+# IF DO THIS, PERFORM THE DELETIONS ON A COPY OF THE DATABASE RATHER THAN THE
+# MASTER DATABASE ITSELF!
 
-# Before exporting, (1) sort the entries so that BodySizeScale=Species is first,
+# (1) Before exporting, sort the entries so that BodySizeScale=Species is first,
 # followed by Subgenus, Genus, etc., and second by BodyVolume (in descending
-# order, with largest first).
+# order, with largest first). (This size sort order means taxa with all three
+# measurements are placed before those missing one or more sizes.)
 
 # (2) Export following data fields as 'PreSizes.tab' tab-delimited format. DO
 # NOT SAVE AS EXCEL FORMAT, AS DOING SO IDIOSYNCRATICALLY CHANGES NAs TO 0s AND
@@ -74,39 +84,44 @@
 # APScale, TransverseScale, DVScale, Est_AP, Est_T, Est_DV, AbsStratDist
 
 # (Note "Intact" is excluded because only appropriate to the raw (observed) 
-# species/genus-level entries.)
+# species/genus-level entries) and not the propogated ones.
 
-# (3) Open file in MSWord (turn off smart quotes are off: File > Options > 
-# Proofing > Autocorrect Options > Autoformat As You Type > uncheck Smart 
-# Quotes) and delete any hidden tabs and all problematic (i.e., double) 
-# quotation marks (replacing [UNLESS THE QUOTATION MARK IS CORRECTLY AT THE END
-# OF A TEXT FIELD] "^t with " and replacing ^t" with " and replacing "" with ").
+# (3) Open file in MSWord (make sure smart quotes are off: File > Options >
+# Proofing > Autocorrect Options > Autoformat As You Type > uncheck Smart
+# Quotes) and delete any hidden tabs (tab within a text field) and all
+# problematic (i.e., double) quotation marks (replacing [UNLESS THE QUOTATION
+# MARK IS CORRECTLY AT THE END OF A TEXT FIELD] "^t with ^t and replacing ^t"
+# with ^t and replacing "" with "). Re-save file in same format.
 
 # (4) In Excel, add a row for headers and confirm the column headers are correct
-# (and no cells are "hanging"). Then add a new column counting 'PhotoX' columns 
-# with values. TROUBLESHOOT: Confirm that all 'Sp/Subg/Gen' have at least 1
-# measurement!
+# (and no cells are "hanging"). (If "hanging", it means there is a hidden tab;
+# remove the tab, re-save the file, and re-open.)
 
-# (5) Sort the BodySizeScale = 'Sp/Subg/Gen' by (1) number of PhotoX columns 
-# (largest first) so entries with complete (all 3) size measurements are first 
-# and most incomplete are last. That way those with best scales and 
-# more-complete sizes are checked first, so that later entries can use the 
-# largest available pool of relatives. (2) Second, sort item by AbsStratDist, 
-# with largest values first (so those with estimated AbsStratDists are 
+# (5) Add a new column counting 'PhotoX' columns with values. TROUBLESHOOT:
+# Confirm that all 'Sp/Subg/Gen' have at least 1 measurement!
+
+# (6) Sort the BodySizeScale = 'Sp/Subg/Gen' rows by (1) number of PhotoX
+# columns (largest first) so entries with complete (all 3) size measurements are
+# first and most incomplete are last. That way those with best scales and
+# more-complete sizes are checked first, so that later entries can use the
+# largest available pool of relatives. (2) Second, sort item by AbsStratDist,
+# with largest values first (so those with estimated AbsStratDists are
 # considered first to propogate to those lacking them).
 
-# (6) Delete the added 'count' column and resave.
+# (7) Delete the added 'count' column and resave.
 
 
-rm(list=ls())
+## READ AND PROCESS DATA ---------------------------------------------------
+rm(list = ls())
 setwd("C:/Users/pnovack-gottshall/Desktop/Databases/Maintenance & update R scripts")
 # setwd("C:/Users/pnovack-gottshall/Documents/GSA (& NSF & NAPC)/2016GSA/GSA2016 analyses")
 
-pre.input <- read.delim(file="preSizes.tab", stringsAsFactors=FALSE)
+pre.input <- read.delim(file = "preSizes.tab", stringsAsFactors = FALSE)
 # pre.input <- read.delim(file="PreSizes_withPBDB.tab", stringsAsFactors=FALSE)
 est.cols <- which(colnames(pre.input) == "SizeChanged" | 
-    colnames(pre.input) == "Est_AP" | colnames(pre.input) == "Est_T" | 
-    colnames(pre.input) == "Est_DV")
+                    colnames(pre.input) == "Est_AP" |
+                    colnames(pre.input) == "Est_T" |
+                    colnames(pre.input) == "Est_DV")
 colCl <- c(rep(NA, ncol(pre.input)))
 colCl[est.cols] <- "character"
 rm(pre.input)
@@ -114,8 +129,8 @@ input <- read.delim(file="preSizes.tab", stringsAsFactors=FALSE, colClasses=colC
 # input <- read.delim(file="PreSizes_withPBDB.tab", stringsAsFactors=FALSE)
 scales <- c("Species", "Subgenus", "Genus", "Subfamily", "Family", "Superfamily",
   "Suborder", "Order", "Subclass", "Class", "Subphylum", "Phylum", "", NA)
-scales <- factor(scales, levels=scales, ordered=TRUE)
-input$BodySizeScale <- factor(input$BodySizeScale, levels=scales, ordered=TRUE)
+scales <- factor(scales, levels = scales, ordered = TRUE)
+input$BodySizeScale <- factor(input$BodySizeScale, levels = scales, ordered = TRUE)
 ATD.cols <- which(colnames(input) == "APLength" | colnames(input) == 
     "TransverseLength" | colnames(input) == "DVLength")
 photo.cols <- which(colnames(input) == "PhotoAP" | colnames(input) == 
@@ -137,7 +152,7 @@ colnames(out[T.cols])           # "TrLength", "PhotoTr", "TrScale"
 colnames(out[DV.cols])          # "DVLength", "PhotoDV", "DVScale"
 str(input)
 # TROUBLESHOOT: Make sure the 4 "SizeChanged" and "Est_X" columns are input as
-# characters. If a column is blank, it by default is classed as a logical (which
+# characters. If a column is blank, it is classed by default as a logical (which
 # causes errors below)
 head(input)
 tail(input)
@@ -145,53 +160,46 @@ table(input$BodySizeScale)
 
 # Troubleshooting
 if(any(is.na(input$early_age)) || any(is.na(input$late_age)))
-  stop("Some entries have missing age ranges. Update ages from the Paleobiology
-    Database before proceeding.\n")
-if(length(table(table(input$Genus))) > 1L) {
-  print(which(table(input$Genus) > 1L))
-  stop("The above genus entries are entered twice. Delete the outdated entry/entries?")
-  }
-# Ignore the 72 extant brachiopod genera with multiple species in the database
-# (mostly extant species, some fossil species), cases where multiple subgenera
-# are included in same genus, and where there are ecologically quite different
-# species in same genus: brachiopod Eoplectodonta, polychaete Glycera, trilobite
-# Isotelus, brachiopod Leangella, bivalve Modiolopsis, brachiopod Plectodonta,
-# rugose Streptelasma, brachiopod Strophomena, and Tentaculites
+  stop("Some entries have missing age ranges, which is used in body size propogation 
+algorithm. Update ages from the Paleobiology Database before proceeding.\n")
+
 
 
 ## FUNCTIONS ---------------------------------------
 
 ## FUNCTION TO FIND RELATIVES OF SIMILAR AGE CODED AT BEST AVAILABLE RESOLUTION
 ## (BUT ADDING THOSE CODED AS GENERA, SUBGENERA, AND SPECIES WHEN POSSIBLE)
-# x = data frame of all data.
-# i = index (row number for taxon entry being considered).
-# start = taxonomic level to start (default = subfamily, with 1=species and 14=NA)
-# end = taxonomic level to end (default = NA, running higher up through all levels,
+#  x = data frame of all data.
+#  i = index (row number for taxon entry being considered).
+#  start = taxonomic level to start (default = subfamily, with 1=species and 14=NA)
+#  end = taxonomic level to end (default = NA, running higher up through all levels,
 #     including unknowns).
-# photo.cols and est.cols = which columns to use when calling 'any.missing' to
+#  photo.cols and est.cols = which columns to use when calling 'any.missing' to
 #     extract relatives with complete measurements.
-# simtime = logical. If TRUE (default), uses similarity of geological range to
+#  simtime = logical. If TRUE (default), uses similarity of geological range to
 #     choose among multiple relatives. (If FALSE, returns all complete relatives)
-find.rel <- function(x, i, start=4, end=12, photo.cols=NULL, est.cols=NULL, sim.time=TRUE) {
-  if(any(is.null(photo.cols), is.null(est.cols)))
+find.rel <- function(x, i, start = 4, end = 12, photo.cols = NULL, 
+                     est.cols = NULL, sim.time = TRUE) {
+  if (any(is.null(photo.cols), is.null(est.cols)))
     stop("photo.cols and est.cols need to be specified\n")
   scales <- c("Species", "Subgenus", "Genus", "Subfamily", "Family", "Superfamily",
     "Suborder", "Order", "Subclass", "Class", "Subphylum", "Phylum")
-  scales <- factor(scales, levels=scales, ordered=TRUE)
+  scales <- factor(scales, levels = scales, ordered = TRUE)
   others <- x[-i, ] # Entry cannot be its own relative
-  for(e in start:end) {
+  for (e in start:end) {
     # Identify correct column for taxonomic scale being considered
     sc.col <- which(colnames(others) == scales[e])
     # Ignore if unassigned taxa
-    if(x[i,sc.col] == "") next
-    if(x[i,sc.col] == "UNCERTAIN") next
+    if (x[i, sc.col] == "") next
+    if (x[i, sc.col] == "UNCERTAIN") next
     # Identify relatives coded at species-, subgenus-, or genus-level AND with
     # all three measures
-    rels <- others[which(others[ ,sc.col] == x[i,sc.col]), ]
-    rels <- rels[which(rels$BodySizeScale == "Species" | rels$BodySizeScale ==
-        "Subgenus" | rels$BodySizeScale == "Genus"), ]
+    rels <- others[which(others[, sc.col] == x[i, sc.col]), ]
+    rels <- rels[which(rels$BodySizeScale == "Species" | 
+                         rels$BodySizeScale == "Subgenus" | 
+                         rels$BodySizeScale == "Genus"), ]
     nr <- nrow(rels)
-    if(nr == 0L) next
+    if (nr == 0L) next
     poss.rels <- rels
     # Test if any relatives with all 3 measurements complete
     sq <- seq.int(nr)
@@ -199,30 +207,30 @@ find.rel <- function(x, i, start=4, end=12, photo.cols=NULL, est.cols=NULL, sim.
       est.cols)$any)
     rels <- rels[complete, ]
     nr <- nrow(rels)
-    if(nr == 0L) {
+    if (nr == 0L) {
       # If not, do any relatives have at least 1 measured measurement?
       part.complete <- !sapply(sq, function(sq) any(is.na(poss.rels[sq,photo.cols])) ||
           any(poss.rels[sq,photo.cols] == ""))
-      rels <- poss.rels[part.complete, ]
+      rels <- poss.rels[part.complete,]
       nr <- nrow(rels)
     }
-    if(nr > 0L) break
+    if (nr > 0L) break
   }
   size.sc <- as.character(scales[e])
   # If multiple matches, pick one with most similar geologic range. If still
   # multiple matches, use character matching to find most likely type taxon.
-  if(nr > 1L & sim.time) {
+  if (nr > 1L & sim.time) {
     age.dev <- (out$early_age[i] - rels$early_age) ^ 2 +
       (out$late_age[i] - rels$late_age) ^ 2
-    if(length(which(age.dev == min(age.dev))) > 1L) {
-      higher.taxon <- rels[1,which(colnames(rels)==scales[e])]
-      sim.age.rels <- rels[which(age.dev == min(age.dev)),]
+    if (length(which(age.dev == min(age.dev))) > 1L) {
+      higher.taxon <- rels[1, which(colnames(rels) == scales[e])]
+      sim.age.rels <- rels[which(age.dev == min(age.dev)), ]
       type <- which.min(adist(sim.age.rels$Genus, higher.taxon,
-        cost=list(ins=2, del=1, sub=10)))
-      rel <- sim.age.rels[type, ]
+        cost = list(ins = 2, del = 1, sub = 10)))
+      rel <- sim.age.rels[type,]
     } else rel <- rels[which.min(age.dev), ]
   } else rel <- rels
-  return(list(rel=rel, size.sc=size.sc))
+  return(list(rel = rel, size.sc = size.sc))
 }
 
 
@@ -233,22 +241,24 @@ any.missing <- function(x, photo.cols, est.cols) {
   missing <- any(is.na(x[ ,photo.cols])) || any(x[ ,photo.cols] == "") ||
     (any(x[ ,est.cols] == "Estimated"))
   AP <- Trans <- DV <- NULL
-  if(missing & (is.na(x[ ,photo.cols[1]]) | x[ ,photo.cols[1]] == "" | x[ ,est.cols[1]] ==
-      "Estimated")) AP <- "AP"
-  if(missing & (is.na(x[ ,photo.cols[2]]) | x[ ,photo.cols[2]] == "" | x[ ,est.cols[2]] ==
-      "Estimated")) Trans <- "T"
-  if(missing & (is.na(x[ ,photo.cols[3]]) | x[ ,photo.cols[3]] == "" | x[ ,est.cols[3]] ==
-      "Estimated")) DV <- "DV"
-  return(list(any=missing, which=c(AP, Trans, DV)))
+  if(missing & (is.na(x[ ,photo.cols[1]]) | x[ ,photo.cols[1]] == "" | 
+                x[ ,est.cols[1]] == "Estimated")) AP <- "AP"
+  if(missing & (is.na(x[ ,photo.cols[2]]) | x[ ,photo.cols[2]] == "" | 
+                x[ ,est.cols[2]] == "Estimated")) Trans <- "T"
+  if(missing & (is.na(x[ ,photo.cols[3]]) | x[ ,photo.cols[3]] == "" | 
+                x[ ,est.cols[3]] == "Estimated")) DV <- "DV"
+  return(list(any = missing, which = c(AP, Trans, DV)))
 }
 
 
 ## PREPARE TEXT FOR DOCUMENTING ESTIMATION HISTORY
 # x = output from 'any.missing'
 pre.text <- function(x) {
-  if(length(x$which) == 1L) txt <- paste(x$which, "estimated from proportions")
-  if(length(x$which) == 2L) txt <- paste(x$which[1], "and", x$which[2],
-    "estimated from proportions")
+  if (length(x$which) == 1L)
+    txt <- paste(x$which, "estimated from proportions")
+  if (length(x$which) == 2L)
+    txt <- paste(x$which[1], "and", x$which[2],
+                 "estimated from proportions")
   return(txt)
 }
 
@@ -256,18 +266,19 @@ pre.text <- function(x) {
 ## IMPROVED ALL.EQUAL THAT JUST PRINTS THOSE THAT ARE CHANGED (IGNORING ROW 
 ## NUMBERS), USING SPECIFIED NUMBER OF SIGNIFICANT DIGITS AND SPECIFYING WHICH
 ## COLUMNS TO ROUND
-better.all.equal <- function(a, b, sig.digits=2, nums=sort(c(AP.cols, T.cols, 
+better.all.equal <- function(a, b, sig.digits = 2, nums = sort(c(AP.cols, T.cols, 
   DV.cols, AbsStratDist.col))) {
-  if(!identical(dim(a), dim(b))) stop("data frames have different sizes\n")
+  if (!identical(dim(a), dim(b)))
+    stop("data frames have different sizes\n")
   cn <- seq.int(ncol(a))
   row.names(a) <- row.names(b) <- NULL
   a.round <- a
   b.round <- b
   a.round[nums] <- signif(a[nums], sig.digits)
   b.round[nums] <- signif(b[nums], sig.digits)
-  wh.diff <- sapply(cn, function(cn) !identical(a.round[ ,cn], b.round[ ,cn]))
+  wh.diff <- sapply(cn, function(cn) ! identical(a.round[, cn], b.round[, cn]))
   ab <- rbind(a, b)
-  return(ab[ ,which(wh.diff), drop=FALSE])
+  return(ab[ , which(wh.diff), drop = FALSE])
 }
 
 
@@ -297,19 +308,21 @@ get.strat <- function(target, ref) {
 
 
 ## Examples --------------------------------------------------------------------
-i <- which(out$Genus=="Etoctenocystis")   # ctenocystoid Etoctenocystis
-# i <- which(out$Genus=="Isogramma")      # brachiopod Isogramma
-# i <- which(out$Genus=="Rhytimya")       # bivalve Rhytimya
-# i <- which(out$Genus=="Bighornia")      # rugose coral Bighornia
+# i <- which(out$Genus == "Etoctenocystis")   # ctenocystoid Etoctenocystis
+# i <- which(out$Genus == "Isogramma")      # brachiopod Isogramma
+# i <- which(out$Genus == "Rhytimya")       # bivalve Rhytimya
+# i <- which(out$Genus == "Bighornia")      # rugose coral Bighornia
+i <- which(out$Genus == "Caturus")      # fish Caturus
 out[i, c(1:16, 24:32, 36)]
 any.missing(out[i, ], photo.cols, est.cols)
-rel <- find.rel(out, i, photo.cols=photo.cols, est.cols=est.cols)
+rel <- find.rel(out, i, photo.cols = photo.cols, est.cols = est.cols)
 rel$size.sc
 rel$rel[c(1:16, 24:32, 36)]
-get.strat(target=out[i,], ref=rel$rel) # Only works if all 3 measures are in target
-rels <- find.rel(out, i, photo.cols=photo.cols, est.cols=est.cols, sim.time=FALSE)$rel
+get.strat(target = out[i, ], ref = rel$rel) # Only works if all 3 measures are in target
+rels <- find.rel(out, i, photo.cols = photo.cols, est.cols = est.cols, 
+                 sim.time = FALSE)$rel
 nr <- 1:nrow(rels)
-sapply(nr, function(nr) get.strat(out[i,], rels[nr,]))
+sapply(nr, function(nr) get.strat(out[i,], rels[nr, ]))
 
 rm(list=c("i", "rel"))
 
@@ -326,13 +339,13 @@ rm(list=c("i", "rel"))
 # relatives to estimate missing measurements), will need to log-transform the
 # measurements.
 
-index <- seq(100, nrow(input), by=100) # For keeping track
+index <- seq(100, nrow(input), by = 100) # For keeping track
 today <- format(Sys.Date(), "%m/%d/%Y")
 angle.30 <- sin(30 * pi / 180)
 angle.45 <- sin(45 * pi / 180)
 angle.60 <- sin(60 * pi / 180)
 proportions <- c(.25, (1 / 3), 0.5, (2 / 3), 0.75, 0.9, 2.0, 4.0)
-AbsStratDist.text <- c("AP.", "T.", "DV.",   "30 degrees (from horiz.) of AP, or half AP.", 
+AbsStratDist.text <- c("AP.", "T.", "DV.", "30 degrees (from horiz.) of AP, or half AP.", 
   "30 degrees (from horiz.) of T, or half AP.", 
   "30 degrees (from horiz.) of DV, or half AP.", "45 degrees (from horiz.) of AP.", 
   "45 degrees (from horiz.) of T.", "45 degrees (from horiz.) of DV.", 
@@ -349,51 +362,51 @@ if(interactive) par("ask"=TRUE) else par("ask"=FALSE)
 (start.t <- Sys.time())
 
 for(i in 1:nrow(out)) {
-
-  if(i %in% index) cat("record", i, "of", nrow(out), ":", out$Genus[i],
-    out$Species[i], "\n")
-
+  
+  if (i %in% index)
+    cat("record", i, "of", nrow(out), ":", out$Genus[i], out$Species[i], "\n")
+  
   # Ignore if no higher taxonomic information at all
-  if(all(input[i, 2:10] == "")) next
+  if (all(input[i, 2:10] == "")) next
   
   # Ignore if already coded at species, subgenus or genus level AND complete
   this.scale <- out$BodySizeScale[i]
   missing <- any.missing(out[i, ], photo.cols, est.cols)
   missing.strat <- is.na(out$AbsStratDistance[i])
-  if(!missing$any & !missing.strat &
-      (this.scale == "Species" | this.scale == "Subgenus" | this.scale == "Genus")) next
-
+  if (!missing$any & !missing.strat & (this.scale == "Species" | 
+      this.scale == "Subgenus" | this.scale == "Genus")) next
+  
   rel <- rels <- NULL
   change <- input$SizeChanged[i]
-
+  
   # If entry is at species-, subgenus-, or genus-level AND 1 or more measures
   # are missing, proceed to estimating missing measurements:
-  if(this.scale <= "Genus" & missing$any) {
-
+  if (this.scale <= "Genus" & missing$any) {
+    
     if(length(missing$any) == 3L) stop(paste("Entry", i, "(", out$Genus[i], ")",
       "is listed as species/subgenus/genus level, but is missing all measurements.\n"))
 
-    rel <- find.rel(x=out, i=i, photo.cols=photo.cols, est.cols=est.cols)
+    rel <- find.rel(x = out, i = i, photo.cols = photo.cols, est.cols = est.cols)
     if(nrow(rel$rel) == 0L) next
 
     AP.DV <- rel$rel$APLength / rel$rel$DVLength
     AP.Tr <- rel$rel$APLength / rel$rel$TransverseLength
     DV.Tr <- rel$rel$DVLength / rel$rel$TransverseLength
-
+    
     # If 2 measurements are missing, use shape of relative (with all 3
     # measurements) to estimating missing ones
-    if(length(missing$which) == 2L) {
-
+    if (length(missing$which) == 2L) {
+      
       # If A/P is only available measurement:
-      if(!"AP" %in% missing$which) {
-        out$TransverseScale[i]<- out$DVScale[i] <- out$APScale[i]
+      if (!"AP" %in% missing$which) {
+        out$TransverseScale[i] <- out$DVScale[i] <- out$APScale[i]
         out$Est_T[i] <- out$Est_DV[i] <- "Estimated"
         out$PhotoTransverse[i] <- out$TransverseScale[i] * out$APLength[i] / AP.Tr
         out$PhotoDV[i] <- out$DVScale[i] * out$APLength[i] / AP.DV
       }
 
       # If transverse is only available measurement:
-      if(!"T" %in% missing$which) {
+      if (!"T" %in% missing$which) {
         out$APScale[i] <- out$DVScale[i] <- out$TransverseScale[i]
         out$Est_AP[i] <- out$Est_DV[i] <- "Estimated"
         out$PhotoAP[i] <- out$APScale[i] * out$TransverseLength[i] * AP.Tr
@@ -401,7 +414,7 @@ for(i in 1:nrow(out)) {
       }
 
       # If D/V is only available measurement:
-      if(!"DV" %in% missing$which) {
+      if (!"DV" %in% missing$which) {
         out$TransverseScale[i] <- out$APScale[i] <- out$DVScale[i]
         out$Est_T[i] <- out$Est_AP[i] <- "Estimated"
         out$PhotoTransverse[i] <- out$TransverseScale[i] * out$DVLength[i] / DV.Tr
@@ -411,11 +424,11 @@ for(i in 1:nrow(out)) {
 
     # If 1 measurement is missing, use shape of relative (with all 3
     # measurements) to estimating missing one
-    if(length(missing$which) == 1L) {
+    if (length(missing$which) == 1L) {
       est1 <- est2 <- NA
-
+      
       # If A/P is only missing measurement:
-      if("AP" %in% missing$which) {
+      if ("AP" %in% missing$which) {
         out$APScale[i] <- out$TransverseScale[i]
         out$Est_AP[i] <- "Estimated"
         est1 <- out$APScale[i] * out$DVLength[i] * AP.DV
@@ -424,7 +437,7 @@ for(i in 1:nrow(out)) {
       }
 
       # If transverse is only missing measurement:
-      if("T" %in% missing$which) {
+      if ("T" %in% missing$which) {
         out$TransverseScale[i] <- out$APScale[i]
         out$Est_T[i] <- "Estimated"
         est1 <- out$TransverseScale[i] * out$APLength[i] / AP.Tr
@@ -433,7 +446,7 @@ for(i in 1:nrow(out)) {
       }
 
       # If D/V is only missing measurement:
-      if("DV" %in% missing$which) {
+      if ("DV" %in% missing$which) {
         out$DVScale[i] <- out$TransverseScale[i]
         out$Est_DV[i] <- "Estimated"
         est1 <- out$DVScale[i] * out$APLength[i] / AP.DV
@@ -441,7 +454,7 @@ for(i in 1:nrow(out)) {
         out$PhotoDV[i] <- mean(c(est1, est2))
       }
     }
-
+    
     change <- "maybe"
     out$History_Size[i] <- paste(pre.text(missing), "in same", rel$size.sc,
       as.character(rel$rel[which(colnames(rel$rel) == rel$size.sc)]), "of",
@@ -454,90 +467,98 @@ for(i in 1:nrow(out)) {
   # entered, and update metadata (and erasing history, in case previously
   # entered incorrectly). NOTE THIS REFERS TO PREVIOUSLY UPDATED DATA IN CASE
   # THERE IS A MORE SUITABLE RELATIVE.
-  if(this.scale > "Genus" | (this.scale <= "Genus" & length(missing$which) == 3L)) {
-    rel <- find.rel(x=out, i=i, photo.cols=photo.cols, est.cols=est.cols)
-    if(nrow(rel$rel) == 0L) next
+  if (this.scale > "Genus" |
+      (this.scale <= "Genus" & length(missing$which) == 3L)) {
+    rel <- find.rel(x = out, i = i, photo.cols = photo.cols, est.cols = est.cols)
+    if (nrow(rel$rel) == 0L) next
     out$RefGenusSize[i] <- rel$rel$RefGenusSize
     out$RefSpeciesSize[i] <- rel$rel$RefSpeciesSize
     out$BodySizeScale[i] <- rel$size.sc
-    out[i,AP.cols] <- rel$rel[AP.cols]
-    out[i,T.cols] <- rel$rel[T.cols]
-    out[i,DV.cols] <- rel$rel[DV.cols]
-    out[i,est.cols] <- "Estimated"
-    if(ncol(better.all.equal(input[i, ], out[i, ], sig.digits=4)) > 0L) {
+    out[i, AP.cols] <- rel$rel[AP.cols]
+    out[i, T.cols] <- rel$rel[T.cols]
+    out[i, DV.cols] <- rel$rel[DV.cols]
+    out[i, est.cols] <- "Estimated"
+    if (ncol(better.all.equal(input[i,], out[i,], sig.digits = 4)) > 0L) {
       # Only update metadata if actually changed (reference taxa and estimates
       # are always over-ridden in case there is new data)
       change <- "maybe"
       out$DateEntered_Size[i] <- rel$rel$DateEntered_Size
       out$Enterer[i] <- rel$rel$Enterer
       out$History_Size[i] <- ""
-      }
+    }
   }
-
+  
   # Update actual sizes. (Will be overridden by FileMakerPro, but need to update
   # because the raw lengths are used in estimating shape proportions.)
   out$APLength[i] <- out$PhotoAP[i] / out$APScale[i]
   out$TransverseLength[i] <- out$PhotoTransverse[i] / out$TransverseScale[i]
   out$DVLength[i] <- out$PhotoDV[i] / out$DVScale[i]
-
   # Propogate AbsStratDist 
-  if(missing.strat) {
+  if (missing.strat) {
     # ... if missing AbsStratDist but available via ALL best relatives (that are
     # within same suborder [end=7] or lower resolution)
-    rels <- find.rel(x=out, i=i, end=7, photo.cols=photo.cols, est.cols=est.cols, 
-      sim.time=FALSE)$rel
+    rels <- find.rel(x = out, i = i, end = 7, photo.cols = photo.cols, 
+                     est.cols = est.cols, sim.time = FALSE)$rel
     rels.with.strats <- 0L
-    if(!is.null(rels)) rels.with.strats <- length(na.omit(rels$AbsStratDistance))
-    if(missing.strat & rels.with.strats > 0L) {
+    if (!is.null(rels))
+      rels.with.strats <- length(na.omit(rels$AbsStratDistance))
+    if (missing.strat & rels.with.strats > 0L) {
       nr <- 1:nrow(rels)
-      poss.strats <- as.vector(na.omit(sapply(nr, function(nr) get.strat(out[i,], 
-        rels[nr,]))))
+      poss.strats <- as.vector(na.omit(sapply(nr, function(nr) get.strat(out[i, ], 
+        rels[nr, ]))))
       # Discard all if some aren't a canonical orientation (because ignored in 'get.strat')
-      if(length(poss.strats) != rels.with.strats) poss.strats <- NA
-      if(length(unique(na.omit(poss.strats))) == 1L) out$AbsStratDistance[i] <- 
-        poss.strats[1]
+      if (length(poss.strats) != rels.with.strats)
+        poss.strats <- NA
+      if (length(unique(na.omit(poss.strats))) == 1L)
+        out$AbsStratDistance[i] <- poss.strats[1]
     }
   } else {
     # Or update AbsStratDist if previously existed, but some measurements were updated
     orig.ms <- unlist(input[i, ATD.cols])
     poss.dists <- c(1, -1) %x% c(orig.ms, angle.30 * orig.ms, angle.45 * orig.ms, 
       angle.60 * orig.ms, proportions %x% orig.ms)
-    if(change == "maybe" & !missing.strat & 
+    if (change == "maybe" & !missing.strat &
         signif(input$AbsStratDistance[i], 3) %in% signif(poss.dists, 3))
-      out$AbsStratDistance[i] <- get.strat(out[i,], input[i,])
+      out$AbsStratDistance[i] <- get.strat(out[i, ], input[i, ])
   }
 
   # Add "check" tag if any size or AbsStratDist was changed (to 2 significant digits)
-  if(!identical(signif(input[i, photo.cols], 2), signif(out[i, photo.cols], 2)) || 
-      !identical(signif(input$AbsStratDistance[i], 2), signif(out$AbsStratDistance[i], 2))) {
+  if (!identical(signif(input[i, photo.cols], 2), signif(out[i, photo.cols], 2)) ||
+      !identical(signif(input$AbsStratDistance[i], 2),
+                 signif(out$AbsStratDistance[i], 2))) {
     out$SizeChanged[i] <- "Check"
   }
-
+  
   # Update history if AbsStratDist changed (using updated measurements)
-  if(!identical(signif(input$AbsStratDistance[i], 2), signif(out$AbsStratDistance[i], 2))) {
+  if (!identical(signif(input$AbsStratDistance[i], 2),
+                 signif(out$AbsStratDistance[i], 2))) {
     orig.ms <- unlist(out[i, ATD.cols])
     poss.dists <- c(1, -1) %x% c(orig.ms, angle.30 * orig.ms, angle.45 * orig.ms, 
       angle.60 * orig.ms, proportions %x% orig.ms)
     wh.m <- match(signif(out$AbsStratDistance[i], 3), signif(poss.dists, 3))
-    if(out$History_Size[i] == "") out$History_Size[i] <- 
-      paste("AbsStratDist estimated from", AbsStratDist.text[seq.AbsStratDist[wh.m]]) else 
-        out$History_Size[i] <- paste("AbsStratDist estimated from ", 
-          AbsStratDist.text[seq.AbsStratDist[wh.m]], " ", out$History_Size[i], sep="")
+    if (out$History_Size[i] == "")
+      out$History_Size[i] <- paste("AbsStratDist estimated from", 
+                                   AbsStratDist.text[seq.AbsStratDist[wh.m]])
+    else
+      out$History_Size[i] <- paste("AbsStratDist estimated from ",
+            AbsStratDist.text[seq.AbsStratDist[wh.m]], " ", out$History_Size[i],
+            sep = "")
   }
   
   # Interactive mode (to observe how states are being propogated)
-  if(interactive & ncol(better.all.equal(input[i, ], out[i, ], sig.digits = 3)) > 0L) {
-    plot(1, 1, type="n", bty="n", xaxt="n", yaxt="n", xlab="", ylab="")
-    text(1, 1, as.character(paste(out$Genus[i], out$Species[i])), cex=2)
+  if (interactive &
+      ncol(better.all.equal(input[i,], out[i,], sig.digits = 3)) > 0L) {
+    plot(1, 1, type = "n", bty = "n", xaxt = "n", yaxt = "n", xlab = "", ylab = "")
+    text(1, 1, as.character(paste(out$Genus[i], out$Species[i])), cex = 2)
     cat(as.character(paste(out$Genus[i], out$Species[i])), "\n")
     # print(better.all.equal(input[i, ], out[i, ]))
-    print(better.all.equal(input[i,-c(20, ATD.cols)], out[i,-c(20, ATD.cols)], 
-      nums=c(23:25, 32)))     # If want to mask date and calculated lengths
+    print(better.all.equal(input[i, -c(20, ATD.cols)], out[i, -c(20, ATD.cols)],
+                           nums = c(23:25, 32)))     # If want to mask date and calculated lengths
     cat("\n")
-    }
-
+  }
+  
 }
-(Sys.time() - start.t)    
+(Sys.time() - start.t)
 
 round(table(input$BodySizeScale) * 100 / nrow(input), 1)
 round(table(out$BodySizeScale) * 100 / nrow(out), 1)
@@ -545,15 +566,15 @@ table(input$BodySizeScale)
 table(out$BodySizeScale)
 
 rng <- range(na.omit(c(input$AbsStratDistance, out$AbsStratDistance)))
-hist(out$AbsStratDistance, xlim=rng, col="white", border="white", n=50)
-hist(out$AbsStratDistance, col="darkgray", border="white", add=TRUE, n=50)
-hist(input$AbsStratDistance, col="transparent", border="black", add=TRUE, n=50)
-abline(v=0, lwd=2, lty=2)
+hist(out$AbsStratDistance, xlim = rng, col = "white", border = "white", n = 50)
+hist(out$AbsStratDistance, col = "darkgray", border = "white", add = TRUE, n = 50)
+hist(input$AbsStratDistance, col = "transparent", border = "black", add = TRUE, n = 50)
+abline(v = 0, lwd = 2, lty = 2)
 
 
 ## EXPORT DATA -------------------------------------------------------------
-write.table(out, file="PostSizes.tab", quote=FALSE, sep="\t", row.names=FALSE)
-# write.table(out, file="PostSizes_withPBDB.tab", quote=FALSE, sep="\t", row.names=FALSE)
+write.table(out, file="PostSizes.tab", quote = FALSE, sep = "\t", row.names = FALSE)
+# write.table(out, file = "PostSizes_withPBDB.tab", quote = FALSE, sep = "\t", row.names = FALSE)
 
 # (1) Open in Excel to confirm looks acceptable. Replace (with Options=Match
 # entire cell contents) "NA"s in taxonomic names, body size data and

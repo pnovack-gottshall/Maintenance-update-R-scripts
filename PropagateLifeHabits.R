@@ -86,11 +86,11 @@
 # for completeness first.
 
 # (2) Export following data fields as 'PreLH.tab' tab-delimited format. Open and
-# add headers (easiest to do saving crap file in Excel format). DO NOT SAVE AS 
-# EXCEL FORMAT, AS DOING SO IDIOSYNCRATICALLY CHANGES NAs TO 0s AND 1s!! (MUST 
-# be tab-delimited, as several text fields contain commas!!!) Best to then open 
-# in MSWord and delete all quotation marks (replacing "^t, ^t", and "" with ^t
-# and ").
+# add headers (easiest to do saving crap file in Excel format). DO NOT SAVE AS
+# EXCEL FORMAT, AS DOING SO IDIOSYNCRATICALLY CHANGES NAs TO 0s AND 1s!! (MUST
+# be tab-delimited, as several text fields contain commas!!!) Best to then open
+# in MSWord and delete all quotation marks (replacing "^t with ^t, ^t" with ^t,
+# and "" with ").
 
 # IDNumber
 
