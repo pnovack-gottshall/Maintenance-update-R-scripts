@@ -475,7 +475,9 @@ for(i in 1:nrow(out)) {
       # Only update metadata if actually changed (reference taxa and estimates
       # are always over-ridden in case there is new data)
       change <- "maybe"
-      out$DateEntered_Size[i] <- rel$rel$DateEntered_Size
+      # Tag with date the size is propogated for record-keeping:
+      out$DateEntered_Size[i] <- today
+      # But credit the original data enterer:
       out$Enterer[i] <- rel$rel$Enterer
       out$History_Size[i] <- ""
     }
@@ -531,7 +533,8 @@ for(i in 1:nrow(out)) {
     wh.m <- match(signif(out$AbsStratDistance[i], 3), signif(poss.dists, 3))
     if (out$History_Size[i] == "")
       out$History_Size[i] <- paste("AbsStratDist estimated ", today, " from ", 
-                                   AbsStratDist.text[seq.AbsStratDist[wh.m]], " Prior AbsStratDist was ", signif(input$AbsStratDistance[i], 3), ".", sep="")
+            AbsStratDist.text[seq.AbsStratDist[wh.m]], " Prior AbsStratDist was ", 
+            signif(input$AbsStratDistance[i], 3), ".", sep="")
     else
       out$History_Size[i] <- paste("AbsStratDist estimated from ",
             AbsStratDist.text[seq.AbsStratDist[wh.m]], " ", out$History_Size[i],
