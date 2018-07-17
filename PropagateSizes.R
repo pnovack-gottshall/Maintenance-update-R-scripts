@@ -1,12 +1,5 @@
 ## PROPOGATE BODY SIZE CODINGS ACROSS ENTRIES, USING RELATIVES AS PROXIES
 
-## ISSUES TO FIX: The AbsStratDist, once entered previously by an auto-calculate
-## algorithm (with determination placed into the SizeHistory field), gets
-## removed if a newer estimate is calculated (even if the AbsStratDist is
-## changed). It is useful and informative to maintain the papertrail of how
-## AbsStratDist was calculated in this field, even if not new.
-
-
 
 ## BASIC LOGIC -------------------------------------------------------------
 
@@ -461,10 +454,10 @@ for(i in 1:nrow(out)) {
       rel$rel$BodyMeasureReference)
   }
 
-  # If entry is NOT at genus-or-better level (i.e., subfamily or greater) [OR, 
-  # if reported at genus or better level, but missing all 3 measurements], find 
-  # closest-aged relative and drop in all 3 measurements, maintain original date
-  # entered, and update metadata (and erasing history, in case previously
+  # If entry is NOT at genus-or-better level (i.e., subfamily or greater) [OR,
+  # if is reported at genus or better level, but missing all 3 measurements],
+  # find closest-aged relative and drop in all 3 measurements, maintain original
+  # date entered, and update metadata (and erasing history, in case previously
   # entered incorrectly). NOTE THIS REFERS TO PREVIOUSLY UPDATED DATA IN CASE
   # THERE IS A MORE SUITABLE RELATIVE.
   if (this.scale > "Genus" |
@@ -537,8 +530,8 @@ for(i in 1:nrow(out)) {
       angle.60 * orig.ms, proportions %x% orig.ms)
     wh.m <- match(signif(out$AbsStratDistance[i], 3), signif(poss.dists, 3))
     if (out$History_Size[i] == "")
-      out$History_Size[i] <- paste("AbsStratDist estimated from", 
-                                   AbsStratDist.text[seq.AbsStratDist[wh.m]])
+      out$History_Size[i] <- paste("AbsStratDist estimated ", today, " from ", 
+                                   AbsStratDist.text[seq.AbsStratDist[wh.m]], " Prior AbsStratDist was ", signif(input$AbsStratDistance[i], 3), ".", sep="")
     else
       out$History_Size[i] <- paste("AbsStratDist estimated from ",
             AbsStratDist.text[seq.AbsStratDist[wh.m]], " ", out$History_Size[i],
@@ -547,7 +540,7 @@ for(i in 1:nrow(out)) {
   
   # Interactive mode (to observe how states are being propogated)
   if (interactive &
-      ncol(better.all.equal(input[i,], out[i,], sig.digits = 3)) > 0L) {
+      ncol(better.all.equal(input[i, ], out[i, ], sig.digits = 3)) > 0L) {
     plot(1, 1, type = "n", bty = "n", xaxt = "n", yaxt = "n", xlab = "", ylab = "")
     text(1, 1, as.character(paste(out$Genus[i], out$Species[i])), cex = 2)
     cat(as.character(paste(out$Genus[i], out$Species[i])), "\n")
@@ -559,6 +552,12 @@ for(i in 1:nrow(out)) {
   
 }
 (Sys.time() - start.t)
+
+# Note that occasionally a rounding error [caused by minor differences between
+# the better.all.equal(sig,digits=2) amd better.all.equal(sig.digits=2)] occurs
+# that triggers a false positive change. This results in a 'data frame with 0
+# columns and 2 rows' result. You can ignore these 'results.'
+
 
 round(table(input$BodySizeScale) * 100 / nrow(input), 1)
 round(table(out$BodySizeScale) * 100 / nrow(out), 1)
@@ -589,7 +588,7 @@ write.table(out, file="PostSizes.tab", quote = FALSE, sep = "\t", row.names = FA
 # names and geological ranges.)
 
 ## Manual trouble-shooting: Some propogations are known to be (potentially)
-## incorrect. It would be more efficient it the following rules could be checked
+## incorrect. It would be more efficient if the following rules could be checked
 ## algorithmically, but that may be challenging because of the interpretative
 ## nuances involved. One possibility (for the size-related feeding and mobility
 ## rules, at least) is to add a code that uses some form of binned size
@@ -600,8 +599,9 @@ write.table(out, file="PostSizes.tab", quote = FALSE, sep = "\t", row.names = FA
 ## AbsStrat coding is still possible, or when the functional gill size in
 ## vermiculariids is best approximated by transverse width and A/P length).
 
-# Once imported, run following manual corrections. (Note the RelStrat should not
-# be deleted, but updated as needed, with other stratifications.)
+# Once imported AND THE LIFE HABITS are propogated, run the following
+# manual corrections. (Note the RelStrat should not be deleted, but updated as
+# needed, with other stratifications.)
 
 # (1) Pelagic taxa given benthic AbsStratDists: Find Fluidic=1 & Insubstantial=1
 # & AbsStratDist=">-10000" [ANY] & SizeChanged=CHECK and delete AbsStratDist (if
@@ -629,7 +629,7 @@ write.table(out, file="PostSizes.tab", quote = FALSE, sep = "\t", row.names = FA
 # general, if animal is epibenthic, self-supported, and filter-feeder, the
 # AbsFoodStrat will be same as AbsStrat; if surficial mass-feeder, AbsFoodStrat
 # will be 0; and if raptorial, AbsFoodStrat will be where food is located (often
-# 0.25 coding). For RelStrat, useful to sort of Phylum>Class>DV or AP length.
+# 0.25 coding). For RelStrat, useful to sort by Phylum>Class>DV or AP length.
 # For RelStrat, recall that for semi-infaunals this will correspond to the
 # animal's major axis and not the distance from sea floor.
 
@@ -653,12 +653,13 @@ write.table(out, file="PostSizes.tab", quote = FALSE, sep = "\t", row.names = FA
 # like Encope that emerge at surface to filter feed).
 
 # (8) Conirm that filter feeders that extend body above sea floor 
-# (AboveAbsStrat=1 & Filter=0 [rest=0]) have AbsFoodStrat at level to which body
+# (AboveAbsStrat=1 & Filter=1 [rest=0]) have AbsFoodStrat at level to which body
 # extends (and that food is also "Above" the seafloor). Exceptions include the
 # relatively deeply buried semi-infaunals, where a large portion of body may be
 # buried but only a small portion atop seafloor.
 
-# (9) Need to write out rules for hunters, scavengers, and mass feeders, 
-# especially regarding food tier (half D/V for predators to account for smaller 
+# (9) Need to write out rules for hunters, scavengers, and mass feeders,
+# especially regarding food tier (half D/V for predators to account for smaller
 # size of prey?) and sensory distances when scouting. (Speed can also be a proxy
-# for this.)
+# for this.) This might be best to sort by Phylum>Class>D/V or A/P because
+# different taxa may have distinct foraging strategies.
