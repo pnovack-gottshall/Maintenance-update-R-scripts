@@ -19,7 +19,8 @@
 # the one (regardless of whether sp or genus) that is closest to the same age
 # (earlyRel - earlyEntry + lateR - lateE, and pick using absolute difference).
 # Why? Because size is known to change through time (although unclear if shape
-# does)
+# does). Note that this means that taxa missing a range will not get an
+# estimated body size.
 #
 # B. If all 3 lengths are missing (not possible if SizeScale=sp/g?), drop in all
 # 3 measurements from relative.
@@ -32,8 +33,8 @@
 # instead of geometric mean to best estimate an isometric shape; use of geomean,
 # in trials, does not produce equivalently shaped estimates.)
 #
-# E. Update "estimate" check boxes and metadata accordinging, for each if () step
-# above.
+# E. Update "estimate" check boxes and metadata accordinging, for each if ()
+# step above.
 #
 # 3. If entry is not at genus or better level (i.e., subfamily or greater), find
 # closest-aged relative and drop in all 3 measurements, updating metadata. Only
@@ -155,7 +156,7 @@ table(input$BodySizeScale)
 # Troubleshooting
 if(any(is.na(input$early_age)) || any(is.na(input$late_age)))
   stop("Some entries have missing age ranges, which is used in body size propogation 
-algorithm. Update ages from the Paleobiology Database before proceeding.\n")
+algorithm. Leaving ranges empty will mean that missing size measurements will not be propogated for these taxa. Update ages from the Paleobiology Database before proceeding.\n")
 
 
 
@@ -578,14 +579,15 @@ legend("topright", inset = .1, legend = c("after", "before"), pch = 22,
        pt.bg = c("darkgray", "transparent"), col = c("white", "black"))
 abline(v = 0, lwd = 2, lty = 2)
 
+# If want to plot trends in body size evolution, see SizeTrends.R
 
 ## EXPORT DATA -------------------------------------------------------------
 write.table(out, file="PostSizes.tab", quote = FALSE, sep = "\t", row.names = FALSE)
 # write.table(out, file = "PostSizes_withPBDB.tab", quote = FALSE, sep = "\t", row.names = FALSE)
 
 # (1) Open in Excel to confirm looks acceptable. Replace (with Options=Match
-# entire cell contents) "NA"s in taxonomic names, body size data and
-# AbsStratDist with blank cells.
+# entire cell contents) "NA"s in taxonomic names, body size data, strat ranges,
+# and AbsStratDist with blank cells. (Essentially the entire output.)
 
 # (2) Open in Word to remove quotation marks around the text entries [UNLESS THE
 # QUOTATION MARK IS CORRECTLY AT THE END OF A TEXT FIELD], (replacing "^t with
@@ -593,7 +595,7 @@ write.table(out, file="PostSizes.tab", quote = FALSE, sep = "\t", row.names = FA
 
 # (3) Open FileMakerPro and import, updating records by matching names and using
 # the IDNumber as the matching identifier. (Fine to not import the taxonomic
-# names and geological ranges.)
+# names and geological ranges, but import everything else.)
 
 ## Manual trouble-shooting: Some propogations are known to be (potentially)
 ## incorrect. It would be more efficient if the following rules could be checked
