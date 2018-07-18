@@ -26,6 +26,8 @@ data <- read.delim(file="PostSizes.tab", sep="\t", header=TRUE)
 # data <- read.delim(file="Tiering.tab", sep="\t", header=TRUE)
 # data <- read.delim(file="PostSizes_withPBDB.tab", sep="\t", header=TRUE)
 
+# If does not open, may need to resave in different format.
+
 # Calculate biovolume:
 # BVOL = 0.5439 * (DVLength * TransverseLength * APLength / 1000) ^ 0.896
 data$BodyVolume <- 0.5439 * (data$DVLength * data$TransverseLength * data$APLength 
@@ -45,7 +47,7 @@ sort(table(data$Order))
 
 # Use first if want to analyze ALL data, or second if want to select a
 # particular group
-group <- data
+group <- data; group.name <- ""
 # group.name <- "Cephalopoda"; group <- data[which(data$Class == group.name),]
 group[1:10, 2:7]  # Confirm you've chosen the correct data
 
@@ -58,7 +60,7 @@ for(t in 1:length(mids)) {
 }
 
 # Plot size trend, with individual genus sizes and mean trend
-lim <- range(log10(sizes), na.rm=TRUE)
+lim <- range(log10(group$BodyVolume), na.rm=TRUE)
 # lim <- c(-0.4, 0.6) # Set manually to focus on mean trend
 geoscalePlot(mids, rep(lim[1], length(mids)), units=c("Epoch", "Period"),
              tick.scale="Period", boxes="Epoch", cex.age=0.65, cex.ts=0.75,
@@ -82,6 +84,15 @@ perc.95 <- rep(NA, length(mids))
 perc.95 <- apply(log10(sizes), 2, quantile, probs=0.95, na.rm=TRUE)
 lines(mids, perc.5, lty=2, lwd=2)
 lines(mids, perc.95, lty=2, lwd=2)
+
+# Just plot mean trend:
+lim <- c(-0.4, 0.9) # Set manually to focus on mean trend
+geoscalePlot(mids, rep(lim[1], length(mids)), units=c("Epoch", "Period"),
+             tick.scale="Period", boxes="Epoch", cex.age=0.65, cex.ts=0.75,
+             cex.pt=1, age.lim=c(540, 0), data.lim=lim, ts.col=TRUE,
+             label="log10 body volume (cm3)", vers="ICS2015", type="n")
+mtext(text=group.name, side=3, cex=1.25)
+lines(mids, means, lwd=3)
 
 
 
@@ -139,6 +150,3 @@ lines(mids, epif$top, lwd=2, col="gray25")
 # lines(mids, inf$q75, lwd=2, col="gray25")
 lines(mids, inf$top, lwd=2, col="gray25")
 abline(h=0, lwd=2)
-
-
-
