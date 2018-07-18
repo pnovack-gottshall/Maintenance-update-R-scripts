@@ -574,6 +574,8 @@ rng <- range(na.omit(c(input$AbsStratDistance, out$AbsStratDistance)))
 hist(out$AbsStratDistance, xlim = rng, col = "white", border = "white", n = 50)
 hist(out$AbsStratDistance, col = "darkgray", border = "white", add = TRUE, n = 50)
 hist(input$AbsStratDistance, col = "transparent", border = "black", add = TRUE, n = 50)
+legend("topright", inset = .1, legend = c("after", "before"), pch = 22, 
+       pt.bg = c("darkgray", "transparent"), col = c("white", "black"))
 abline(v = 0, lwd = 2, lty = 2)
 
 
