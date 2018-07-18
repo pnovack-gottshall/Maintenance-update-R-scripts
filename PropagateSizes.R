@@ -52,7 +52,8 @@
 # estimated size measurement, and it might be used to estimate a missing size
 # for species B, which was originally used to estimate the missing size for A.)
 # IF DO THIS, PERFORM THE DELETIONS ON A COPY OF THE DATABASE RATHER THAN THE
-# MASTER DATABASE ITSELF!
+# MASTER DATABASE ITSELF! (Once export, also go through and delete any relevent
+# History_Size notes.)
 
 # (1) Before exporting, sort the entries so that BodySizeScale=Species is first,
 # followed by Subgenus, Genus, etc., and second by BodyVolume (in descending
@@ -354,7 +355,7 @@ interactive <- TRUE   # If want to watch updates in real time
 if(interactive) par("ask"=TRUE) else par("ask"=FALSE)
 (start.t <- Sys.time())
 
-for(i in 1:nrow(out)) {
+for (i in 1:nrow(out)) {
   
   if (i %in% index)
     cat("record", i, "of", nrow(out), ":", out$Genus[i], out$Species[i], "\n")
@@ -449,7 +450,7 @@ for(i in 1:nrow(out)) {
     }
     
     change <- "maybe"
-    out$History_Size[i] <- paste(pre.text(missing), "in same", rel$size.sc,
+    out$History_Size[i] <- paste("On", today, pre.text(missing), "in same", rel$size.sc,
       as.character(rel$rel[which(colnames(rel$rel) == rel$size.sc)]), "of",
       rel$rel$BodyMeasureReference)
   }
@@ -488,6 +489,7 @@ for(i in 1:nrow(out)) {
   out$APLength[i] <- out$PhotoAP[i] / out$APScale[i]
   out$TransverseLength[i] <- out$PhotoTransverse[i] / out$TransverseScale[i]
   out$DVLength[i] <- out$PhotoDV[i] / out$DVScale[i]
+
   # Propogate AbsStratDist 
   if (missing.strat) {
     # ... if missing AbsStratDist but available via ALL best relatives (that are
@@ -522,7 +524,7 @@ for(i in 1:nrow(out)) {
       !identical(signif(input$AbsStratDistance[i], 2),
                  signif(out$AbsStratDistance[i], 2))) {
     out$SizeChanged[i] <- "Check"
-  }
+    }
   
   # Update history if AbsStratDist changed (using updated measurements)
   if (!identical(signif(input$AbsStratDistance[i], 2),
@@ -536,8 +538,9 @@ for(i in 1:nrow(out)) {
             AbsStratDist.text[seq.AbsStratDist[wh.m]], " Prior AbsStratDist was ", 
             signif(input$AbsStratDistance[i], 3), ".", sep="")
     else
-      out$History_Size[i] <- paste("AbsStratDist estimated from ",
-            AbsStratDist.text[seq.AbsStratDist[wh.m]], " ", out$History_Size[i],
+      out$History_Size[i] <- paste("AbsStratDist updated ", today, " from ",
+            AbsStratDist.text[seq.AbsStratDist[wh.m]], " Prior AbsStratDist was ", 
+            signif(input$AbsStratDistance[i], 3), ". ", out$History_Size[i],
             sep = "")
   }
   
