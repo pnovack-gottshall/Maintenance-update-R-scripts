@@ -16,19 +16,19 @@
 ## should the EcoRef be the consensus best reference (e.g., Dromia sp.), or
 ## switch to "Xanthoidea indet."? As currently done, not really copying Dromia,
 ## but copying the consensus across that taxon's relatives instead.
-## 
+##
 ## 4. Why are some seemingly fine AbsStratDists being deleted? (Ex., Homalonotus
 ## and Colpocoryphe) It seems it happens when the entry being processed has
 ## BodySizeScale > Genus level.
-## 
+##
 ## 5. Confirm 'signif()' and orientation handling is consistent here and in the
 ## PropogateSizes.R algorithms.
-## 
+##
 ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ##
 ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ##
 ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ##
 
-## FUTURE FEATURE REQUEST? Add AbsStratDist here instead, so that propogated 
+## FUTURE FEATURE REQUEST? Add AbsStratDist here instead, so that propogated
 ## based not only on size, but also on life habit coding? Would require
 ## exporting canonical body size lengths!
 
@@ -44,15 +44,15 @@
 # "Relative' means the smallest inclusive taxonomic group the entry is related
 # to whose life habit has been coded.
 
-# 1. If an entry is already coded at species-, subgenus-, or genus-level, skip; 
+# 1. If an entry is already coded at species-, subgenus-, or genus-level, skip;
 # unless life habits are partly blank (uncoded), in which case use closest
 # relatives to populate remaining codings.
 
-# 2. If an entry is above genus-level, use closest relatives to update 
-# (override) the pre-existing codings. If unchanged (identical to relative), 
-# abort and go to the next entry, leaving the 'DateEntered_Ecology' and 
-# 'EcoScale' fields unchanged. If multiple relatives exist, enter the value if 
-# constant or 'NA' if varies. (Use 'grep''s 'adist' to approximate type taxon 
+# 2. If an entry is above genus-level, use closest relatives to update
+# (override) the pre-existing codings. If unchanged (identical to relative),
+# abort and go to the next entry, leaving the 'DateEntered_Ecology' and
+# 'EcoScale' fields unchanged. If multiple relatives exist, enter the value if
+# constant or 'NA' if varies. (Use 'grep''s 'adist' to approximate type taxon
 # for reference when multiple relatives exist.) If any states remain uncoded, go
 # to higher taxa in case they have codings for these states, using the same
 # logic.
@@ -74,9 +74,9 @@
 
 
 
-## IMPORT DATA ------------------------------------------------------------- 
+## IMPORT DATA -------------------------------------------------------------
 
-# Make sure the stratifications are updated from the size propogation BEFORE 
+# Make sure the stratifications are updated from the size propogation BEFORE
 # running this algorithm! (The algorithm reverts to original stratifications
 # when size was coded as genus or species level, but still adds a size "Check"
 # to trigger a second look-over afterwards.)
@@ -97,7 +97,7 @@
 # Taxonomy: Phylum, Subphylum, Class, Subclass, Order, Suborder, Superfamily,
 # Family, Subfamily, Genus, Subgenus, Species
 
-# Proxy fields: EcologyScale, RefGenusEco, RefSpeciesEco, DateEntered_Ecology, 
+# Proxy fields: EcologyScale, RefGenusEco, RefSpeciesEco, DateEntered_Ecology,
 # SizeChanged, BodySizeScale, History_Ecology
 
 # Life habit characters (can really be in any order, as called by name):
@@ -110,16 +110,16 @@
 # RelStratification, SelfSupport, Sexual, SoftSubstratum, SolutionFeeder,
 # Supported, WithinImmediate, WithinPrimary
 
-rm(list=ls())
+rm(list = ls())
 setwd("C:/Users/pnovack-gottshall/Desktop/Databases/Maintenance & update R scripts")
 # setwd("C:/Users/pnovack-gottshall/Documents/GSA (& NSF & NAPC)/2016GSA/GSA2016 analyses")
-input <- read.delim(file="preLH.tab", colClasses="character")
-# input <- read.delim(file="preLH_withPBDB.tab", colClasses="character")
+input <- read.delim(file = "preLH.tab", colClasses = "character")
+# input <- read.delim(file = "preLH_withPBDB.tab", colClasses = "character")
 scales <- c("Species", "Subgenus", "Genus", "Subfamily", "Family", "Superfamily", 
   "Suborder", "Order", "Subclass", "Class", "Subphylum", "Phylum", "", NA)
-scales <- factor(scales, levels=scales, ordered=TRUE)
-input$EcologyScale <- factor(input$EcologyScale, levels=scales, ordered=TRUE)
-input$BodySizeScale <- factor(input$BodySizeScale, levels=scales, ordered=TRUE)
+scales <- factor(scales, levels = scales, ordered = TRUE)
+input$EcologyScale <- factor(input$EcologyScale, levels = scales, ordered = TRUE)
+input$BodySizeScale <- factor(input$BodySizeScale, levels = scales, ordered = TRUE)
 out <- input      # Work with 'out', saving 'input' for reference
 str(input)
 head(input)
@@ -136,39 +136,41 @@ table(input$EcologyScale)
 # start = taxonomic level to start (default = subfamily, with 1=species and 14=NA)
 # end = taxonomic level to end (default = NA, running higherup through all levels, 
 #     including unknowns)
-find.rels <- function(x, i, min.rels=1, start=4, end=12, ref.g.col=15, 
-  ref.sp.col=16, eco.col=21:58) {
+find.rels <- function(x, i, min.rels = 1, start = 4, end = 12, ref.g.col = 15, 
+  ref.sp.col = 16, eco.col = 21:58) {
   scales <- c("Species", "Subgenus", "Genus", "Subfamily", "Family", "Superfamily", 
     "Suborder", "Order", "Subclass", "Class", "Subphylum", "Phylum")
-  scales <- factor(scales, levels=scales, ordered=TRUE)
+  scales <- factor(scales, levels = scales, ordered = TRUE)
   others <- x[-i, ] # Entry cannot be its own relative
   low.res <- NA
-  for(e in start:end) {
+  for (e in start:end) {
     # Identify correct column for taxonomic scale being considered
-    sc.col <- which(colnames(others) == scales[e]) 
+    sc.col <- which(colnames(others) == scales[e])
     # Ignore if unassigned taxa
-    if(x[i,sc.col] == "") next
-    if(x[i,sc.col] == "UNCERTAIN") next
+    if (x[i, sc.col] == "") next
+    if (x[i, sc.col] == "UNCERTAIN") next
     # Identify taxonomic relatives (removing duplicates)
-    rels <- others[which(others[ ,sc.col] == x[i,sc.col]), ]
+    rels <- others[which(others[, sc.col] == x[i, sc.col]), ]
     rels <- rels[which(rels$EcologyScale != ""), ]
-    u.rels <- unique(rels[ ,c(ref.g.col, ref.sp.col, eco.col)])
-    if(nrow(u.rels) < min.rels) next
+    u.rels <- unique(rels[, c(ref.g.col, ref.sp.col, eco.col)])
+    if (nrow(u.rels) < min.rels) next
     # Identify those relatives coded at best resolution
     low.res <- min(rels$EcologyScale)
     # Discard if equal to or higher than entry being considered (i.e., entry is 
     # their best proxy, or equally as well known), or if not including all 
     # potential relatives [i.e., ending too early for specified scale]
-    if(low.res < x$EcologyScale[i] & as.character(low.res) <= scales[e]) break
+    if (low.res < x$EcologyScale[i] &
+        as.character(low.res) <= scales[e]) break
   }
   # Also include genera and subgenera (in addition to species coding, if present)
-  rels <- rels[which(rels$EcologyScale == as.character(low.res) | 
-      rels$EcologyScale == "Species" | rels$EcologyScale == "Subgenus" | 
+  rels <- rels[which(rels$EcologyScale == as.character(low.res) |
+      rels$EcologyScale == "Species" |
+      rels$EcologyScale == "Subgenus" |
       rels$EcologyScale == "Genus"), ]
-  u.rels <- unique(rels[ ,c(ref.g.col, ref.sp.col, eco.col)])
+  u.rels <- unique(rels[, c(ref.g.col, ref.sp.col, eco.col)])
   rels <- x[as.integer(row.names(u.rels)), ]
   eco.sc <- as.character(scales[e])
-  return(list(rels=rels, eco.sc=eco.sc))
+  return(list(rels = rels, eco.sc = eco.sc))
 }
 
 
@@ -183,15 +185,19 @@ Mode <- function(x) {
 ## VARIABLE)
 # rels = the data frame containing identified relatives.
 # cols  = identifies which columns to check across.
-consensus <- function(rels, cols, method="constant") {
-  cs <- data.frame(rels[1,cols])
+consensus <- function(rels, cols, method = "constant") {
+  cs <- data.frame(rels[1, cols])
   row.names(cs) <- NULL
-  cs[ , ] <- ""
-  for(c in seq_len(length(cols))) {
-    if(method == "constant") {
-      if(length(unique(rels[ ,cols[c]])) == 1L) cs[c] <- rels[ ,cols[c]][1] else 
-        cs[c] <- NA       }
-    if(method == "mode") cs[c] <- Mode(rels[ ,cols[c]])
+  cs[, ] <- ""
+  for (c in seq_len(length(cols))) {
+    if (method == "constant") {
+      if (length(unique(rels[, cols[c]])) == 1L)
+        cs[c] <- rels[, cols[c]][1]
+      else
+        cs[c] <- NA
+    }
+    if (method == "mode")
+      cs[c] <- Mode(rels[, cols[c]])
   }
   return(cs)
 }
@@ -209,24 +215,27 @@ consensus <- function(rels, cols, method="constant") {
 # pick the one closest in time? or with the more similar body size? or the more
 # similar shape? Size is probably the easiest to code, but requires propogating
 # the body sizes first!)
-best.ref <- function(rels, cols, scale=NULL) {
-  if(is.null(scale)) stop("scale not specified, with no default\n")
+best.ref <- function(rels, cols, scale = NULL) {
+  if (is.null(scale))
+    stop("scale not specified, with no default\n")
   scales <- c("Species", "Subgenus", "Genus", "Subfamily", "Family", "Superfamily", 
     "Suborder", "Order", "Subclass", "Class", "Subphylum", "Phylum")
   wh.min <- 1
-  if(nrow(rels) > 1L) {
-    csm <- consensus(rels=rels, cols=cols, method="mode")
-    d <- dist(rbind(csm, rels[ ,cols]))
-    dm <- as.matrix(d)[-1,1]
+  if (nrow(rels) > 1L) {
+    csm <- consensus(rels = rels, cols = cols, method = "mode")
+    d <- dist(rbind(csm, rels[, cols]))
+    dm <- as.matrix(d)[-1, 1]
     # If multiple best matches, use text matching to identify most likely type 
     # taxon (where deletions are penalized less than insertions, both of which
     # are penalized much less than substitutions)
-    if(length(dm==min(dm)) > 1) {
-      higher.taxon <- rels[1,which(colnames(rels)==scales[which(scales==scale)])]
+    if (length(dm == min(dm)) > 1) {
+      higher.taxon <-
+        rels[1, which(colnames(rels) == scales[which(scales == scale)])]
       wh.min <- which.min(adist(rels$Genus, higher.taxon, 
-        cost=list(ins=2, del=1, sub=10)))
-      } else wh.min <- which.min(dm)
-    }
+        cost = list(ins = 2, del = 1, sub = 10)))
+    } else
+      wh.min <- which.min(dm)
+  }
   return(as.integer(row.names(rels)[wh.min]))
 }
 
@@ -235,20 +244,26 @@ best.ref <- function(rels, cols, scale=NULL) {
 ## ARE ANY STATES NA OR ABSENT, AND WHICH?
 # cols  = identifies which columns to check across.
 any.missing <- function(x, cols) {
-  out <- any(is.na(x[ ,cols])) || any(x[ ,cols] == "")
-  if(out) { wh <- cols[which(is.na(x[ ,cols]) | x[ ,cols] == "")] } else { wh=NA }
-  return(list(any=out, which=wh))
+  out <- any(is.na(x[, cols])) || any(x[, cols] == "")
+  if (out) {
+    wh <-
+      cols[which(is.na(x[, cols]) | x[, cols] == "")]
+  } else {
+    wh = NA
+  }
+  return(list(any = out, which = wh))
 }
 
 
 ## IMPROVED ALL.EQUAL THAT JUST PRINTS THOSE THAT ARE CHANGED (IGNORING ROW NUMBERS)
 better.all.equal <- function(a, b) {
-  if(!identical(dim(a), dim(b))) stop("data frames have different sizes\n")
+  if (!identical(dim(a), dim(b)))
+    stop("data frames have different sizes\n")
   cn <- seq.int(ncol(a))
   row.names(a) <- row.names(b) <- NULL
-  wh.diff <- sapply(cn, function(cn) !identical(a[ ,cn], b[ ,cn]))
-  ab <- rbind(a,b)
-  return(ab[ ,which(wh.diff), drop=FALSE])
+  wh.diff <- sapply(cn, function(cn) !identical(a[, cn], b[, cn]))
+  ab <- rbind(a, b)
+  return(ab[, which(wh.diff), drop = FALSE])
 }
 
 
@@ -256,11 +271,11 @@ better.all.equal <- function(a, b) {
 
 ## Examples --------------------------------------------------------------------
 cols <- 21:58
-i <- which(out$Genus=="Taxocrinus") # Crinoid Taxocrinus
+i <- which(out$Genus == "Taxocrinus") # Crinoid Taxocrinus
 out[i, cols]
 (r <- find.rels(input, i))
 rels <- r$rels
-(cs <- consensus(rels=rels, cols=cols, method="constant"))
+(cs <- consensus(rels = rels, cols = cols, method = "constant"))
 any.missing(cs, seq.int(ncol(cs)))
 best <- best.ref(rels=rels, cols=cols, scale=r$eco.sc)
 input[best, ] # Notice the proper type taxon chosen that is in same higher taxon
