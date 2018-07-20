@@ -1,5 +1,18 @@
 ## PROPOGATE BODY SIZE CODINGS ACROSS ENTRIES, USING RELATIVES AS PROXIES
 
+## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ##
+## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ##
+## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ##
+##
+## 1. Why are some seemingly fine AbsStratDists being deleted? (Ex., Homalonotus
+## and Colpocoryphe) It seems it happens when the entry being processed has
+## BodySizeScale > Genus level but EcoScale at Genus or Species. Perhaps the new
+## Est_AbsStratDist will fix? (Need to incorporate this into the code!)
+##
+## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ##
+## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ##
+## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ##
+
 
 ## BASIC LOGIC -------------------------------------------------------------
 
@@ -341,8 +354,8 @@ angle.45 <- sin(45 * pi / 180)
 angle.60 <- sin(60 * pi / 180)
 proportions <- c(.25, (1 / 3), 0.5, (2 / 3), 0.75, 0.9, 2.0, 4.0)
 AbsStratDist.text <- c("AP.", "T.", "DV.", "30 degrees (from horiz.) of AP, or half AP.", 
-  "30 degrees (from horiz.) of T, or half AP.", 
-  "30 degrees (from horiz.) of DV, or half AP.", "45 degrees (from horiz.) of AP.", 
+  "30 degrees (from horiz.) of T, or half T.", 
+  "30 degrees (from horiz.) of DV, or half DV.", "45 degrees (from horiz.) of AP.", 
   "45 degrees (from horiz.) of T.", "45 degrees (from horiz.) of DV.", 
   "60 degrees (from horiz.) of AP.", "60 degrees (from horiz.) of T.", 
   "60 degrees (from horiz.) of DV.", "25% of AP.", "25% of T.", "25% of DV.", 
@@ -609,28 +622,30 @@ write.table(out, file="PostSizes.tab", quote = FALSE, sep = "\t", row.names = FA
 ## AbsStrat coding is still possible, or when the functional gill size in
 ## vermiculariids is best approximated by transverse width and A/P length).
 
-# Once imported AND THE LIFE HABITS are propogated, run the following
-# manual corrections. (Note the RelStrat should not be deleted, but updated as
-# needed, with other stratifications.)
+# Once imported (BEFORE THE LIFE HABITS are propogated, but then again
+# afterwards, too), run the following manual corrections. (Note the RelStrat
+# should not be deleted, but updated as needed, with other stratifications.)
 
 # (1) Pelagic taxa given benthic AbsStratDists: Find Fluidic=1 & Insubstantial=1
 # & AbsStratDist=">-10000" [ANY] & SizeChanged=CHECK and delete AbsStratDist (if
 # needs correcting).
 
-# (2) Supported taxa given self-supported AbsStratDists: Find
+# (2) "Supported" taxa given self-supported (i.e., benthic) AbsStratDists: Find
 # SupportedByOthers=1 & AbsStratDist=">-10000" [ANY] & SizeChanged=CHECK and
 # delete AbsStratDist (if needs correcting).
 
-# (3) Epibiotic (but barely raised, so should be coded as self-supported) taxa 
+# (3) Epibiotic (but barely raised, so should be coded as "self-supported") taxa
 # given incorrect benthic (as if not epibiotic) AbsStratDists: Find Biotic=1 &
-# AbsStratDist=">-10000" [ANY] & SizeChanged=CHECK and delete AbsStratDist (if
-# needs correcting).
+# SupportedByOthers=0 & AbsStratDist=">-10000" [ANY] & SizeChanged=CHECK and
+# delete AbsStratDist (if needs correcting). (AbsStrat should be same as
+# RelStrat.)
 
-# (4) Confirm all exclusively infaunal taxa have negative AbsStratDists and 
-# exclusively epifaunal taxa have positive values. (But don't be surprised by 
-# semi-infaunal taxa that are simultaneously epifaunal and infaunal.)
-# Alternatively, confirm that all with negative AbsStratDists have
-# WithinAbsStrat=1 and that all with positive AbsStratDists have
+# (4) Confirm all exclusively infaunal taxa have negative AbsStratDists and
+# exclusively epifaunal taxa have positive values. (But don't be surprised by
+# semi-infaunal taxa that are simultaneously epifaunal and infaunal.) Test that
+# all above=1/in=0 have positive AbsStratDists and all above=0/in=1 have
+# negative ones. Double confirm that all with negative AbsStratDists
+# have WithinAbsStrat=1 and that all with positive AbsStratDists have
 # AboveAbsStrat=1.
 
 # (5) Confirm that taxa with AbsStratDist=">-100000" values [ANY] match the
