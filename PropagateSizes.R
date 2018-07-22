@@ -658,17 +658,18 @@ write.table(out, file="PostSizes.tab", quote = FALSE, sep = "\t", row.names = FA
 # For RelStrat, recall that for semi-infaunals this will correspond to the
 # animal's major axis and not the distance from sea floor.
 
-# (6) Confirm RelFoodStrat for filter feeders, sorting by phyla and then either 
-# AbsStratDist or A/P length. For ambient filter feeders (PORIFERA and 
-# suspension-feeding ECHINODERMATA and CNIDARIA) where flow rate depends on 
-# distance from sea floor, confirm those 15-200 mm tall are 0.5; refer to 
-# LifeHabitNotes.docs for additional categorizations. For active filter feeders,
-# the coding depends on the size of the pumping organ. All BRYOZOANS, 
-# GRAPTOLITES, and PTEROBRANCHS should be 0.25. BRACHIOPODS should be half the 
-# A/P length. Filter-feeding mollusks (BIVALVES, ROSTROCONCHS, and GASTROPODS) 
-# should be twice the A/P length. POLYCHAETES and TENTACULITIDS should be twice 
-# the transverse length. Filter-feeding MICROCRUSTACEANS (amphipods, mysids, 
-# etc.) generally should be 0.25. ASCIDIANS should generally be 0.5.
+# (6) Confirm RelFoodStrat for filter feeders, sorting by phyla and then either
+# AbsStratDist or A/P length. For ambient filter feeders (PORIFERA and
+# suspension-feeding ECHINODERMATA and CNIDARIA and CIRRIPEDIA) where flow rate
+# depends on distance from sea floor, confirm those ~15-200 mm tall are 0.5;
+# refer to LifeHabitNotes.docs for additional categorizations. For active filter
+# feeders, the coding depends on the size of the pumping organ. All BRYOZOANS,
+# GRAPTOLITES, and PTEROBRANCHS should be 0.25. BRACHIOPODS should be half the
+# A/P length. Filter-feeding mollusks (BIVALVES, ROSTROCONCHS, and GASTROPODS)
+# should be twice the A/P length. POLYCHAETES and TENTACULITIDS should be twice
+# the transverse length. Filter-feeding MICROCRUSTACEANS (amphipods, mysids,
+# etc.) and burrowing filter-feeding SHRIMP generally should be 0.25. ASCIDIANS
+# should generally be 0.5.
 
 # (7) Confirm that wholly infaunal filter-feeders (AboveAbsStrat=0, WithinAbs=1,
 # Filter=1 [rest 0]) have AbsFoodStrat at 0.25 (typically) and that AbsFood is 
