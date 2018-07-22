@@ -659,8 +659,8 @@ write.table(out, file="PostSizes.tab", quote = FALSE, sep = "\t", row.names = FA
 # animal's major axis and not the distance from sea floor.
 
 # (6) Confirm RelFoodStrat for filter feeders, sorting by phyla and then either 
-# AbsStratDist or A/P length. For ambient filter feeders (SPONGES and 
-# suspension-feeding ECHINODERMS and CNIDARIANS) where flow rate depends on 
+# AbsStratDist or A/P length. For ambient filter feeders (PORIFERA and 
+# suspension-feeding ECHINODERMATA and CNIDARIA) where flow rate depends on 
 # distance from sea floor, confirm those 15-200 mm tall are 0.5; refer to 
 # LifeHabitNotes.docs for additional categorizations. For active filter feeders,
 # the coding depends on the size of the pumping organ. All BRYOZOANS, 
