@@ -678,14 +678,28 @@ write.table(out, file="PostSizes.tab", quote = FALSE, sep = "\t", row.names = FA
 # productids that rested within the sediment with gape at seafloor, or echinoids
 # like Encope that emerge at surface to filter feed).
 
-# (8) Conirm that filter feeders that extend body above sea floor 
-# (AboveAbsStrat=1 & Filter=1 [rest=0]) have AbsFoodStrat at level to which body
-# extends (and that food is also "Above" the seafloor). Exceptions include the
-# relatively deeply buried semi-infaunals, where a large portion of body may be
-# buried but only a small portion atop seafloor.
+# (8) Conirm that filter feeders (whether infaunal or epifaunal) that extend
+# body above sea floor (AboveAbsStrat=1 & FeedAbovePrimary=1 & Filter=1
+# [rest=0]) have AbsFoodStrat at level to which body extends (and that food is
+# also "Above" the seafloor). Easiest to sort by AbsStrat > AbsFoodStrat >
+# AbsStratDist, Exceptions include the relatively deeply buried semi-infaunals,
+# where a large portion of body may be buried but only a small portion atop
+# seafloor, and some strophomenids/productids/chonetoideans where FoodStrat is
+# closer to sediment.
 
-# (9) Need to write out rules for hunters, scavengers, and mass feeders,
+# (9) Confirm that RelStrat corresponds to appropriate body axis. Best to sort
+# by Phylum > Class > D/V / A/P because different taxa have different living
+# orientations. If list is too long to run through, can limit to
+# Sizechanged="checked". (Alternatively, can find all taxa with all major axes
+# in the same size range [e.g., 0.1-1], which should all have the same
+# RelStrat.) Exceptions: Watch out for crinoids, blastoids, rhombiferans,
+# pedunculately raised (Cambrian) lingulids, and other stemmed animalswhere the
+# measured body part may not correspond to the intact animal, and animals close
+# to a size-boundary that are diagonally oriented (such as pedunculate
+# brachiopods and some rugose corals).
+
+# (10) Need to write out rules for hunters, scavengers, and mass feeders,
 # especially regarding food tier (half D/V for predators to account for smaller
 # size of prey?) and sensory distances when scouting. (Speed can also be a proxy
-# for this.) This might be best to sort by Phylum>Class>D/V or A/P because
-# different taxa may have distinct foraging strategies.
+# for this.) This might be best to sort by Phylum > Class > A/P / D/V because
+# different taxa often have distinct foraging strategies.
