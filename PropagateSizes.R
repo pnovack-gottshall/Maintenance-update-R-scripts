@@ -687,7 +687,10 @@ write.table(out, file="PostSizes.tab", quote = FALSE, sep = "\t", row.names = FA
 # seafloor, and some strophomenids/productids/chonetoideans where FoodStrat is
 # closer to sediment.
 
-# (9) Confirm that RelStrat corresponds to appropriate body axis. Best to sort
+# (9) Confirm that "Self-supported" taxa have the same tier for AbsStrat and
+# RelStrat.
+
+# (10) Confirm that RelStrat corresponds to appropriate body axis. Best to sort
 # by Phylum > Class > D/V / A/P because different taxa have different living
 # orientations. If list is too long to run through, can limit to
 # Sizechanged="checked". (Alternatively, can find all taxa with all major axes
@@ -698,7 +701,7 @@ write.table(out, file="PostSizes.tab", quote = FALSE, sep = "\t", row.names = FA
 # to a size-boundary that are diagonally oriented (such as pedunculate
 # brachiopods and some rugose corals).
 
-# (10) Need to write out rules for hunters, scavengers, and mass feeders,
+# (11) Need to write out rules for hunters, scavengers, and mass feeders,
 # especially regarding food tier (half D/V for predators to account for smaller
 # size of prey?) and sensory distances when scouting. (Speed can also be a proxy
 # for this.) This might be best to sort by Phylum > Class > A/P / D/V because
