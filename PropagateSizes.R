@@ -688,7 +688,7 @@ write.table(out, file="PostSizes.tab", quote = FALSE, sep = "\t", row.names = FA
 # closer to sediment.
 
 # (9) Confirm that "Self-supported" taxa have the same tier for AbsStrat and
-# RelStrat.
+# RelStrat. (And that "supported" taxa have different values.)
 
 # (10) Confirm that RelStrat corresponds to appropriate body axis. Best to sort
 # by Phylum > Class > D/V / A/P because different taxa have different living
