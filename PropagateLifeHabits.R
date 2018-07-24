@@ -17,13 +17,6 @@
 ## switch to "Xanthoidea indet."? As currently done, not really copying Dromia,
 ## but copying the consensus across that taxon's relatives instead.
 ##
-## 4. Why are some seemingly fine AbsStratDists being deleted? (Ex., Homalonotus
-## and Colpocoryphe) It seems it happens when the entry being processed has
-## BodySizeScale > Genus level.
-##
-## 5. Confirm 'signif()' and orientation handling is consistent here and in the
-## PropogateSizes.R algorithms.
-##
 ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ##
 ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ##
 ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ##
@@ -104,11 +97,15 @@
 # AboveImmediate, AbovePrimary, AbsFoodStratification, AbsStratification,
 # AmbientFeeder, Asexual, Attached, AttachmentFeeder, Autotroph, Biotic,
 # BulkFeeder, Carnivore, FeedingAboveImm, FeedingAbovePrimary, FeedingWithinImm,
-# FeedingWithinPrimary, FilterFeeder, Fluidic, FreeLiving, HardSubstratum,
-# Herbivore, Incorporeal, Insubstantial, Lithic, MassFeeder, Microbivore,
-# Mobility, ParticleFeeder, RaptorFeeder, RelFoodStratification,
-# RelStratification, SelfSupport, Sexual, SoftSubstratum, SolutionFeeder,
-# Supported, WithinImmediate, WithinPrimary
+# FeedingWithinPrimary, [FilterDensity field (only used with suspension-feeding
+# echinoderms)], FilterFeeder, Fluidic, FreeLiving, HardSubstratum, Herbivore,
+# Incorporeal, Insubstantial, Lithic, MassFeeder, Microbivore, Mobility,
+# ParticleFeeder, RaptorFeeder, RelFoodStratification, RelStratification,
+# SelfSupport, Sexual, SoftSubstratum, SolutionFeeder, Supported,
+# WithinImmediate, WithinPrimary
+
+# The same characters, with in Est_X form (excluding Est_AbsStratDist, Est_AP,
+# Est_DV, and EstT).
 
 rm(list = ls())
 setwd("C:/Users/pnovack-gottshall/Desktop/Databases/Maintenance & update R scripts")
@@ -203,7 +200,7 @@ consensus <- function(rels, cols, method = "constant") {
 }
 
 
-## FIND THE MOST SIMILAR REFERENCE TAXON TO TYPICAL STATES, WHERE MOST SIMILAR
+## FIND THE MOST SIMILAR REFERENCE TAXON TO TYPICAL STATES, WHERE 'MOST SIMILAR'
 ## IS CALCULATED USING EUCLIDEAN DISTANCE TO THE MODAL STATES
 # (Unclear how mobility is treated, but doesn't really matter)
 # rels = the data frame containing identified relatives. Make sure that the columns
@@ -240,7 +237,6 @@ best.ref <- function(rels, cols, scale = NULL) {
 }
 
 
-
 ## ARE ANY STATES NA OR ABSENT, AND WHICH?
 # cols  = identifies which columns to check across.
 any.missing <- function(x, cols) {
@@ -252,6 +248,22 @@ any.missing <- function(x, cols) {
     wh = NA
   }
   return(list(any = out, which = wh))
+}
+
+
+## ARE ANY STATES ESTIMATED, AND WHICH?
+#  est.cols = which columns contain the Est_X tags, used to identify life habit
+#     states to propogate.
+# Note that estimates are placed in the same order as est.cols, so if need a
+#   particular sort order for est.cols, sort PRIOR to running the code.
+any.est <- function(x, est.cols) {
+  missing <- x[, est.cols] == "Estimated"
+  if (any(missing)) {
+    wh <- est.cols[which(missing)]
+  } else {
+    wh <- NA
+  }
+  return(list(any = any(missing), which = wh))
 }
 
 
@@ -268,15 +280,16 @@ better.all.equal <- function(a, b) {
 
 
 
-
 ## Examples --------------------------------------------------------------------
-cols <- 21:58
-i <- which(out$Genus == "Taxocrinus") # Crinoid Taxocrinus
+cols <- 21:59 # LH cols
+est.cols <- 60:98 # Est_X cols
+i <- which(out$Genus == "Menippe") # Crap Menippe
 out[i, cols]
 (r <- find.rels(input, i))
 rels <- r$rels
 (cs <- consensus(rels = rels, cols = cols, method = "constant"))
 any.missing(cs, seq.int(ncol(cs)))
+any.est(cs, seq.int(ncol(cs)))
 best <- best.ref(rels=rels, cols=cols, scale=r$eco.sc)
 input[best, ] # Notice the proper type taxon chosen that is in same higher taxon
 r$eco.sc
@@ -309,15 +322,69 @@ rm(list=c("i", "r", "cols", "cs", "best", "proxy1", "proxy2", "rel.1",
 # Go through each record and life-habit state one by one, propogating codings as
 # relevant
 index <- seq(100, nrow(input), by=100) # For keeping track
-eco.col <- 21:58 # Confirm right columns for life habit codings
+today <- format(Sys.Date(), "%m/%d/%Y")
+
+# Confirm correct columns for life habit codings (match manually):
+eco.col <- which(colnames(input) == "AboveImmediate" |
+    colnames(input) == "AbovePrimary" |
+    colnames(input) == "AbsFoodStratification" |
+    colnames(input) == "AbsStratification" |
+    colnames(input) == "AmbientFeeder" |
+    colnames(input) == "Asexual" |
+    colnames(input) == "Attached" |
+    colnames(input) == "AttachmentFeeder" |
+    colnames(input) == "Autotroph" |
+    colnames(input) == "Biotic" |
+    colnames(input) == "BulkFeeder" |
+    colnames(input) == "Carnivore" |
+    colnames(input) == "FeedingAboveImm" |
+    colnames(input) == "FeedingAbovePrimary" |
+    colnames(input) == "FeedingWithinImm" |
+    colnames(input) == "FeedingWithinPrimary" |
+    colnames(input) == "FilterDensity" |    # Only for filter-feeding echinoderms
+    colnames(input) == "FilterFeeder" |
+    colnames(input) == "Fluidic" |
+    colnames(input) == "FreeLiving" |
+    colnames(input) == "HardSubstratum" |
+    colnames(input) == "Herbivore" |
+    colnames(input) == "Incorporeal" |
+    colnames(input) == "Insubstantial" |
+    colnames(input) == "Lithic" |
+    colnames(input) == "MassFeeder" |
+    colnames(input) == "Microbivore" |
+    colnames(input) == "Mobility" |
+    colnames(input) == "ParticleFeeder" |
+    colnames(input) == "RaptorFeeder" |
+    colnames(input) == "RelFoodStratification" |
+    colnames(input) == "RelStratification" |
+    colnames(input) == "SelfSupport" |
+    colnames(input) == "Sexual" |
+    colnames(input) == "SoftSubstratum" |
+    colnames(input) == "SolutionFeeder" |
+    colnames(input) == "Supported" |
+    colnames(input) == "WithinImmediate" |
+    colnames(input) == "WithinPrimary")
+
+# Automate the Est_X assignments so in same order as raw columns:
+ec <- seq.int(length(eco.col))
+est.col.names <- sapply(ec, function(ec) paste0("Est_", colnames(input)[eco.col][ec]))
+est.col <- match(est.col.names, colnames(input))
+
+# Life habit columns with ordered numeric characters are treated separately:
 size.col <- which(colnames(input[ ,eco.col]) == "AbsFoodStratification" | 
     colnames(input[ ,eco.col]) == "AbsStratification" | 
     colnames(input[ ,eco.col]) == "RelFoodStratification" |  
     colnames(input[ ,eco.col]) == "RelStratification")
+
+# Confirm assignments
+if (length(eco.col) != 39) stop("double-check the life habit column assignments!")
 colnames(input)[eco.col]              # AboveImmediate  < ----- >  WithinPrimary
+colnames(input)[est.col]              # Est_AboveImmediate  < -- >  Est_WithinPrimary
+if (length(eco.col) != length(est.col)) stop("the raw and Est_X assignments have different lengths!")
+cbind(colnames(input[eco.col]), colnames(input[est.col])) # These should match
 colnames(input)[eco.col[size.col]]    #  Four size-related stratification states
-colnames(input)[-eco.col]             #      IDNumber   < ---- >  History_Ecology
-today <- format(Sys.Date(), "%m/%d/%Y")
+colnames(input)[-c(eco.col, est.col)] #      IDNumber   < ---- >  History_Ecology
+
 # Which consensus method ('constant' or 'mode' to use for propogating from relatives
 method <- "constant"
 # method <- "mode"
@@ -459,6 +526,8 @@ write.table(out, file="PostLH_withPBDB_constant.tab", quote=FALSE, sep="\t", row
 # Open FileMakerPro and import, updating records by matching names and using the
 # IDNumber as the matching identifier. (Fine to not import the taxonomic names
 # and geological ranges.)
+
+# Refer to PropogateSizes.R for common troubleshooting corrections to override.
 
   
   
