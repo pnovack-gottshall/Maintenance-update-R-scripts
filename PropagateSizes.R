@@ -695,7 +695,9 @@ write.table(out, file="PostSizes.tab", quote = FALSE, sep = "\t", row.names = FA
 # (Note this only applies to epifaunal taxa because pelagic and infaunal
 # organisms can be self-supported despite having different absolute and
 # immediate stratifications. Set fluidic=0, above primary = 1, within primary =
-# 0.)
+# 0.) Be aware that there will be a few exceptions (e.g., very long crinoid
+# Traumatocrinus that is attached to floating logs, crinoid Paracatillocrinus
+# that has an unusual means of "wrapped" attachment).
 
 # (10) Confirm that RelStrat corresponds to appropriate body axis. Best to sort
 # by Phylum > Class > D/V / A/P because different taxa have different living
