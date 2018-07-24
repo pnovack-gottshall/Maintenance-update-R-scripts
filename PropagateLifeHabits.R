@@ -383,6 +383,12 @@ colnames(input)[eco.col]              # AboveImmediate  < ----- >  WithinPrimary
 colnames(input)[est.col]              # Est_AboveImmediate  < -- >  Est_WithinPrimary
 if (length(eco.col) != length(est.col))
   stop("the raw and Est_X assignments have different lengths!")
+if (length(eco.col) != 39)
+  stop("double-check the life habit column assignments!")
+colnames(input)[eco.col]              # AboveImmediate  < ----- >  WithinPrimary
+colnames(input)[est.col]              # Est_AboveImmediate  < -- >  Est_WithinPrimary
+if (length(eco.col) != length(est.col))
+  stop("the raw and Est_X assignments have different lengths!")
 cbind(colnames(input[eco.col]), colnames(input[est.col])) # These should match
 colnames(input)[eco.col[size.col]]    #  Four size-related stratification states
 colnames(input)[-c(eco.col, est.col)] #      IDNumber   < ---- >  History_Ecology
