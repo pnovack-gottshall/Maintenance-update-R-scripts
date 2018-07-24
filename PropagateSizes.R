@@ -8,6 +8,8 @@
 ## and Colpocoryphe) It seems it happens when the entry being processed has
 ## BodySizeScale > Genus level but EcoScale at Genus or Species. Perhaps the new
 ## Est_AbsStratDist will fix? (Need to incorporate this into the code!)
+## 2. Need to add code to deal with "Est_AbsStratDist" that tags when to
+## override the AbsStratDist versus keep it.
 ##
 ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ##
 ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ##
@@ -244,7 +246,10 @@ find.rel <- function(x, i, start = 4, end = 12, photo.cols = NULL,
 
 
 ## ARE ANY MEASUREMENTS MISSING OR PREVIOUSLY ABSENT, AND WHICH?
-# cols  = identifies which columns to check across.
+#  photo.cols = which columns contain the PhotoAP, PhotoDV, and PhotoT
+#     measurements, used to extract relatives with complete measurements.
+#  est.cols = which columns contain the Est_AP, Est_DV, and Est_T measurements,
+#     used to extract relatives with complete measurements.
 any.missing <- function(x, photo.cols, est.cols) {
   missing <- any(is.na(x[ ,photo.cols])) || any(x[ ,photo.cols] == "") ||
     (any(x[ ,est.cols] == "Estimated"))
