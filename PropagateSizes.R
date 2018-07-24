@@ -626,6 +626,9 @@ write.table(out, file="PostSizes.tab", quote = FALSE, sep = "\t", row.names = FA
 # afterwards, too), run the following manual corrections. (Note the RelStrat
 # should not be deleted, but updated as needed, with other stratifications.)
 
+# For the first run-through (BEFORE propogating life habits), only need to check
+# entries where EcoScale="species" and "genus".
+
 # (1) Pelagic taxa given benthic AbsStratDists: Find Fluidic=1 & Insubstantial=1
 # & AbsStratDist=">-10000" [ANY] & SizeChanged=CHECK and delete AbsStratDist (if
 # needs correcting).
@@ -687,8 +690,12 @@ write.table(out, file="PostSizes.tab", quote = FALSE, sep = "\t", row.names = FA
 # seafloor, and some strophomenids/productids/chonetoideans where FoodStrat is
 # closer to sediment.
 
-# (9) Confirm that "Self-supported" taxa have the same tier for AbsStrat and
-# RelStrat. (And that "supported" taxa have different values.)
+# (9) Confirm that epifaunal "Self-supported" taxa have the same tier for
+# AbsStrat and RelStrat. (And that "supported" taxa have different values.)
+# (Note this only applies to epifaunal taxa because pelagic and infaunal
+# organisms can be self-supported despite having different absolute and
+# immediate stratifications. Set fluidic=0, above primary = 1, within primary =
+# 0.)
 
 # (10) Confirm that RelStrat corresponds to appropriate body axis. Best to sort
 # by Phylum > Class > D/V / A/P because different taxa have different living
