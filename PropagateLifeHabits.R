@@ -81,9 +81,10 @@
 # (2) Export following data fields as 'PreLH.tab' tab-delimited format. Open and
 # add headers (easiest to do saving crap file in Excel format). DO NOT SAVE AS
 # EXCEL FORMAT, AS DOING SO IDIOSYNCRATICALLY CHANGES NAs TO 0s AND 1s!! (MUST
-# be tab-delimited, as several text fields contain commas!!!) Best to then open
-# in MSWord and delete all quotation marks (replacing "^t with ^t, ^t" with ^t,
-# and "" with ").
+# be tab-delimited, as several text fields contain commas!!!)
+
+# (3) Open in MSWord and delete all quotation marks (replacing "^t with ^t, ^t"
+# with ^t, and "" with ").
 
 # IDNumber
 
@@ -131,10 +132,14 @@ table(input$EcologyScale)
 # x = data frame of all data
 # i = index (row number for taxon entry being considered)
 # start = taxonomic level to start (default = subfamily, with 1=species and 14=NA)
-# end = taxonomic level to end (default = NA, running higherup through all levels, 
-#     including unknowns)
+# end = taxonomic level to end (default = NA, running higher up through all
+#    levels, including unknowns)
+# min.rels = minimum number of relatives needed in output
+# ref.g.col = column for reference genus name
+# ref.sp.col = column for reference species epithet name
+# eco.col = columns to check for life habit traits
 find.rels <- function(x, i, min.rels = 1, start = 4, end = 12, ref.g.col = 15, 
-  ref.sp.col = 16, eco.col = 21:58) {
+  ref.sp.col = 16, eco.col = 21:59) {
   scales <- c("Species", "Subgenus", "Genus", "Subfamily", "Family", "Superfamily", 
     "Suborder", "Order", "Subclass", "Class", "Subphylum", "Phylum")
   scales <- factor(scales, levels = scales, ordered = TRUE)
@@ -153,9 +158,10 @@ find.rels <- function(x, i, min.rels = 1, start = 4, end = 12, ref.g.col = 15,
     if (nrow(u.rels) < min.rels) next
     # Identify those relatives coded at best resolution
     low.res <- min(rels$EcologyScale)
-    # Discard if equal to or higher than entry being considered (i.e., entry is 
-    # their best proxy, or equally as well known), or if not including all 
-    # potential relatives [i.e., ending too early for specified scale]
+    # Discard if equal to or higher than entry being considered (i.e., entry is
+    # the best proxy for the relatives, or equally as well known as the
+    # relatives), or if not including all potential relatives [i.e., ending too
+    # early for specified scale]
     if (low.res < x$EcologyScale[i] &
         as.character(low.res) <= scales[e]) break
   }
@@ -252,18 +258,26 @@ any.missing <- function(x, cols) {
 
 
 ## ARE ANY STATES ESTIMATED, AND WHICH?
-#  est.cols = which columns contain the Est_X tags, used to identify life habit
+#  est.col = which columns contain the Est_X tags, used to identify life habit
 #     states to propogate.
-# Note that estimates are placed in the same order as est.cols, so if need a
-#   particular sort order for est.cols, sort PRIOR to running the code.
-any.est <- function(x, est.cols) {
-  missing <- x[, est.cols] == "Estimated"
+# Note that estimates are placed in the same order as est.col, so if need a
+#   particular sort order for est.col, sort PRIOR to running the code.
+any.est <- function(x, cols) {
+  missing <- x[, cols] == "Estimated"
   if (any(missing)) {
-    wh <- est.cols[which(missing)]
+    wh <- cols[which(missing)]
   } else {
     wh <- NA
   }
   return(list(any = any(missing), which = wh))
+}
+
+
+## COMBINE RESULTS FOR any.missing() AND any.est()
+# Combine the results of the checking functions into a single list
+combined.any.missing <- function(missing, estimated) {
+  return(list(any = any(missing$any, estimated$any), 
+              which = sort(unique(missing$which, estimated$which))))
 }
 
 
@@ -288,8 +302,9 @@ out[i, cols]
 (r <- find.rels(input, i))
 rels <- r$rels
 (cs <- consensus(rels = rels, cols = cols, method = "constant"))
-any.missing(cs, seq.int(ncol(cs)))
-any.est(cs, seq.int(ncol(cs)))
+(missings <- any.missing(cs, seq.int(ncol(cs))))
+(estimateds <- any.est(cs, seq.int(ncol(cs))))
+combined.any.missing(missings, estimateds)
 best <- best.ref(rels=rels, cols=cols, scale=r$eco.sc)
 input[best, ] # Notice the proper type taxon chosen that is in same higher taxon
 r$eco.sc
@@ -310,10 +325,9 @@ rel.10$rels[ ,5:14]; rel.10$eco.sc; nrow(rel.10$rels)
 rel.20$rels[ ,5:14]; rel.20$eco.sc; nrow(rel.20$rels)
 rel.50$rels[ ,5:14]; rel.50$eco.sc; nrow(rel.50$rels)
 
-rm(list=c("i", "r", "cols", "cs", "best", "proxy1", "proxy2", "rel.1", 
-  "rel.5", "rel.10", "rel.20"))
-
-
+rm(list = c("i", "r", "cols", "est.cols", "missings", "estimateds", "cs", 
+            "best", "proxy1", "proxy2", "rels", "rel.1", "rel.5", "rel.10", 
+            "rel.20", "rel.50"))
 
 
 
@@ -363,7 +377,8 @@ eco.col <- which(colnames(input) == "AboveImmediate" |
     colnames(input) == "SolutionFeeder" |
     colnames(input) == "Supported" |
     colnames(input) == "WithinImmediate" |
-    colnames(input) == "WithinPrimary")
+    colnames(input) == "WithinPrimary"
+    )
 
 # Automate the Est_X assignments so in same order as raw columns:
 ec <- seq.int(length(eco.col))
@@ -378,17 +393,17 @@ size.col <- which(colnames(input[ ,eco.col]) == "AbsFoodStratification" |
 
 # Confirm assignments
 if (length(eco.col) != 39)
-  stop("double-check the life habit column assignments!")
+  stop("double-check the life habit column assignments")
 colnames(input)[eco.col]              # AboveImmediate  < ----- >  WithinPrimary
 colnames(input)[est.col]              # Est_AboveImmediate  < -- >  Est_WithinPrimary
 if (length(eco.col) != length(est.col))
-  stop("the raw and Est_X assignments have different lengths!")
+  stop("the raw and Est_X assignments have different lengths")
 if (length(eco.col) != 39)
-  stop("double-check the life habit column assignments!")
+  stop("double-check the life habit column assignments")
 colnames(input)[eco.col]              # AboveImmediate  < ----- >  WithinPrimary
 colnames(input)[est.col]              # Est_AboveImmediate  < -- >  Est_WithinPrimary
 if (length(eco.col) != length(est.col))
-  stop("the raw and Est_X assignments have different lengths!")
+  stop("the raw and Est_X assignments have different lengths")
 cbind(colnames(input[eco.col]), colnames(input[est.col])) # These should match
 colnames(input)[eco.col[size.col]]    #  Four size-related stratification states
 colnames(input)[-c(eco.col, est.col)] #      IDNumber   < ---- >  History_Ecology
@@ -403,92 +418,102 @@ ncs <- 14:98 # For printing interactive data
 (start.t <- Sys.time())
 
 for(i in 1:nrow(out)) {
-  if(i %in% index) cat("record", i, "of", nrow(out), ":", out$Genus[i], 
-    out$Species[i], "\n")
-
+  if (i %in% index) cat("record", i, "of", nrow(out), ":", out$Genus[i],
+        out$Species[i], "\n")
+  
   # Ignore if no higher taxonomic information at all
-  if(all(input[i, 2:10] == "")) next
+  if (all(input[i, 2:10] == "")) next
   
   # Ignore if already coded at species, subgenus or genus level AND complete
   this.scale <- out$EcologyScale[i]
-  if(any.missing(out[i, ], eco.col)$any == FALSE & (this.scale == "Species" |
-      this.scale == "Subgenus" | this.scale == "Genus")) next
+  if (combined.any.missing(any.missing(out[i, ], eco.col), 
+                           any.est(out[i, ], est.col))$any == FALSE &
+      (this.scale == "Species" | this.scale == "Subgenus" | 
+       this.scale == "Genus")) next
   rels <- cs <- eco.sc <- exemplar <- NA
-  # rels <- data.frame(out[1, ])
-  # rels[ , ] <- ""
-  
+
   # Propogate (and update, if needed) life habit codings if higher taxon
-  if(this.scale > "Genus") {
-    rels <- find.rels(x=out, i=i, start=4, end=min(12, which(scales == this.scale)))
+  if (this.scale > "Genus") {
+    rels <- find.rels(x = out, i = i, eco.col = eco.col, start = 4, 
+                      end = min(12, which(scales == this.scale)))
     # If entry is sole record for higher taxon and has at least 33% states
     # coded, include as a reasonable life habit
-    if(this.scale < "" & nrow(rels$rels) == 0L & length(any.missing(out[i, ], 
-      eco.col)$which) < 0.33 * length(eco.col)) {
-      rels$rels <- out[i, ]
-      }
+    if (this.scale < "" & nrow(rels$rels) == 0L &
+        length(combined.any.missing(any.missing(out[i, ], eco.col),
+                                    any.est(out[i, ], est.col))$which) < 0.33 * length(eco.col)) {
+      rels$rels <- out[i,]
+    }
     
-    if(nrow(rels$rels) < 1L) warning(paste("no relatives for", i, "\n"))
-    if(nrow(rels$rels) < 1L) next
-
+    if (nrow(rels$rels) < 1L)
+      warning(paste("no relatives for", i, "\n"))
+    if (nrow(rels$rels) < 1L)
+      next
+    
     # Propogate codings, identify exemplar relative, and update metadata (but
     # only if non-size states changed)
-    cs <- consensus(rels=rels$rels, cols=eco.col, method=method)
-    exemplar <- best.ref(rels=rels$rels, cols=eco.col, scale=rels$eco.sc)
+    cs <- consensus(rels = rels$rels, cols = eco.col, method = method)
+    exemplar <- best.ref(rels = rels$rels, cols = eco.col, scale = rels$eco.sc)
     # If old reference taxon is no longer a good relative, pick different
     # exemplar (if possible)
-    if(!out$RefGenusEco[i] %in% rels$rels$Genus & nrow(rels$rels) > 1) {
+    if (!out$RefGenusEco[i] %in% rels$rels$Genus &
+        nrow(rels$rels) > 1) {
       wh.row <- which(rels$rels$Genus == out$Genus[i])
-      exemplar <- best.ref(rels=rels$rels[-2, ], cols=eco.col, 
-        scale=rels$eco.sc)
-      }
+      exemplar <- best.ref(rels = rels$rels[-2, ], cols = eco.col, 
+                           scale = rels$eco.sc)
+    }
     out$RefGenusEco[i] <- out$RefGenusEco[exemplar]
     out$RefSpeciesEco[i] <- out$RefSpeciesEco[exemplar]
     out$EcologyScale[i] <- rels$eco.sc
     
     # Confirm true states changed (i.e., ignore if only change was a
     # size-related coding to NA)
-    what.sizes.changed <- better.all.equal(input[i,eco.col[size.col]], 
-      cs[size.col])
+    what.sizes.changed <-
+      better.all.equal(input[i, eco.col[size.col]], cs[size.col])
     size.changed <- ncol(what.sizes.changed) > 0L
     size.changed.to.NAs <- all(is.na(what.sizes.changed[2, ]))
     # Revert to original size-related states if size was coded at genus or
     # better (but trigger "check" to confirm correct)
     revert <- size.changed & input$BodySizeScale[i] <= "Genus"
-    if(revert) cs[size.col] <- input[i,eco.col[size.col]]
-    others.changed <- nrow(unique(rbind(input[i,eco.col[-size.col]], 
-      cs[-size.col]))) > 1L
-    num.changed <- ncol(better.all.equal(input[i,eco.col], cs))
+    if (revert) cs[size.col] <- input[i, eco.col[size.col]]
+    others.changed <- nrow(unique(rbind(input[i, eco.col[-size.col]],
+                                        cs[-size.col]))) > 1L
+    num.changed <- ncol(better.all.equal(input[i, eco.col], cs))
     
-    if(size.changed | others.changed) {
-      out[i,eco.col] <- cs
-      if(!size.changed.to.NAs | revert) out$SizeChanged[i] <- "Check"
-      if(num.changed > 0L) out$DateEntered_Ecology[i] <- today
-      if(num.changed > 0L & out$DateEntered_Ecology[i] != "" & 
-          (any(!is.na(input$History_Ecology[i]), 
-            input$History_Ecology[i] != "")==FALSE)) {
-        out$History_Ecology[i] <- paste(num.changed, " states updated ", today, 
+    if (size.changed | others.changed) {
+      out[i, eco.col] <- cs
+      if (!size.changed.to.NAs | revert)
+        out$SizeChanged[i] <- "Check"
+      if (num.changed > 0L)
+        out$DateEntered_Ecology[i] <- today
+      if (num.changed > 0L & out$DateEntered_Ecology[i] != "" &
+          (any(!is.na(input$History_Ecology[i]),
+               input$History_Ecology[i] != "") == FALSE)) {
+        out$History_Ecology[i] <- paste0(num.changed, " states updated ", today, 
           " to ", rels$eco.sc, " ", out[i, which(colnames(out) == rels$eco.sc)], 
           " from ", input$RefGenusEco[i], " ", input$RefSpeciesEco[i], " in same ", 
           tolower(this.scale),", last updated on ", input$DateEntered_Ecology[i], 
-          ". ", input$History_Ecology[i], sep="")
+          ". ", input$History_Ecology[i])
       }
       if(num.changed > 0L & out$DateEntered_Ecology[i] != "" & 
           (is.na(input$History_Ecology[i]) | input$History_Ecology[i] == "")) {
-        out$History_Ecology[i] <- paste(num.changed, " states updated ", today, 
+        out$History_Ecology[i] <- paste0(num.changed, " states updated ", today, 
           " to ", rels$eco.sc, " ", out[i, which(colnames(out) == rels$eco.sc)], 
           " from ", input$RefGenusEco[i], " ", input$RefSpeciesEco[i], " in same ", 
           tolower(this.scale), ", last updated on ", input$DateEntered_Ecology[i], 
-          ".", sep="")
+          ".")
       }
     }
   }
 
-  # Go through any remaining missing / unknowns, and propogate using higher taxa,
-  # if constant (not recorded in history because constant across this higher taxon)
-  still.missing <- any.missing(out[i, ], cols=eco.col)
-  if(still.missing$any) {
-    higher.rels <- find.rels(x=out, i=i, 
-      start=which(scales==as.character(out$EcologyScale[i])), end=12, min.rels=5)
+  # Go through any remaining missing / unknowns / previously estimated, and
+  # propogate using higher taxa, if constant across at least 5 relatives (not
+  # recorded in history because constant across the higher taxon, but tagged in
+  # "Est_X" fields)
+  still.missing <- combined.any.missing(any.missing(out[i, ], eco.col), 
+                                        any.est(out[i, ], est.col))
+  if (still.missing$any) {
+    higher.rels <- find.rels(x = out, i = i, eco.col = eco.col, min.rels = 5,
+      start = which(scales == as.character(out$EcologyScale[i])), end = 12)
     higher.cs <- consensus(rels=higher.rels$rels, cols=still.missing$which, 
       method=method)
     if(!all(is.na(higher.cs))) out[i,still.missing$which] <- higher.cs
