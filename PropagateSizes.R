@@ -553,14 +553,13 @@ for (i in 1:nrow(out)) {
       angle.60 * orig.ms, proportions %x% orig.ms)
     wh.m <- match(signif(out$AbsStratDistance[i], 3), signif(poss.dists, 3))
     if (out$History_Size[i] == "")
-      out$History_Size[i] <- paste("AbsStratDist estimated ", today, " from ", 
+      out$History_Size[i] <- paste0("AbsStratDist estimated ", today, " from ", 
             AbsStratDist.text[seq.AbsStratDist[wh.m]], " Prior AbsStratDist was ", 
-            signif(input$AbsStratDistance[i], 3), ".", sep="")
+            signif(input$AbsStratDistance[i], 3), ".")
     else
-      out$History_Size[i] <- paste("AbsStratDist updated ", today, " from ",
+      out$History_Size[i] <- paste0("AbsStratDist updated ", today, " from ",
             AbsStratDist.text[seq.AbsStratDist[wh.m]], " Prior AbsStratDist was ", 
-            signif(input$AbsStratDistance[i], 3), ". ", out$History_Size[i],
-            sep = "")
+            signif(input$AbsStratDistance[i], 3), ". ", out$History_Size[i])
   }
   
   # Interactive mode (to observe how states are being propogated)
