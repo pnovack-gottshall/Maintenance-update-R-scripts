@@ -1,17 +1,5 @@
 ## PROPOGATE LIFE HABIT CODINGS ACROSS ENTRIES, USING RELATIVES AS PROXIES
 
-
-## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ##
-## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ##
-## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ##
-##
-## 2. When a blank life habit is propogated, the paste() doesn't work properly.
-## Add switch for when no pre-existing RefGenusEco?
-##
-## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ##
-## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ##
-## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ##
-
 ## FUTURE FEATURE REQUEST? Add AbsStratDist here instead, so that propogated
 ## based not only on size, but also on life habit coding? Would require
 ## exporting canonical body size lengths!
@@ -20,12 +8,6 @@
 ## that all found relatives have a coded value for each life habit character.
 ## Thus, the consensus (for example) among 5 relatives might really only be the
 ## 1 relative coded for that character (if the others were left uncoded).
-
-
-
-
-
-
 
 
 ## BASIC LOGIC -------------------------------------------------------------
@@ -436,7 +418,6 @@ for(i in 1:nrow(out)) {
        this.scale == "Genus")) next
 
   rels <- cs <- eco.sc <- exemplar <- char.changed <- NA
-  num.changed <- l.char <- 0
 
   # Propogate (and update, if needed) life habit codings if higher taxon
   if (this.scale > "Genus") {
@@ -473,8 +454,9 @@ for(i in 1:nrow(out)) {
                            scale = rels$eco.sc)
     }
 
-    # When proxies are consensus across higher taxa, use the higher taxon as the
-    # reference taxon (or the )
+    # When proxies are consensus across multiple higher taxa, use the higher
+    # taxon as the reference taxon (or the sole related species is only single
+    # reference relative)
     if (nrow(rels$rels) > 1L){
       out$RefGenusEco[i] <- rels$rels[1, which(colnames(rels$rels) == rels$eco.sc)]
       out$RefSpeciesEco[i] <- "indet."
@@ -519,16 +501,25 @@ for(i in 1:nrow(out)) {
   }
 
   # Go through any remaining missing / unknowns / previously estimated, and
-  # propogate using higher taxa, if constant across at least 5 relatives (not
+  # propogate using higher taxa, if constant across at least 5 relatives, but
+  # ignoring size-related characters if size was coded at species/genus. (not
   # recorded in history because constant across the higher taxon, but tagged in
   # "Est_X" fields)
-  still.missing <- combined.any.missing(any.missing(out[i, ], eco.col), 
-                                        any.est(out[i, ], est.col))
+  if (input$BodySizeScale[i] <= "Genus") {
+    still.missing <-
+      combined.any.missing(any.missing(out[i,], eco.col[-size.col]),
+                           any.est(out[i,], est.col[-size.col]))
+  } else {
+    still.missing <-
+      combined.any.missing(any.missing(out[i,], eco.col),
+                           any.est(out[i,], est.col))
+  }
   if (still.missing$any) {
     higher.rels <- find.rels(x = out, i = i, eco.col = eco.col, min.rels = 5,
       start = max(2, which(scales == as.character(out$EcologyScale[i]))), end = 12)
     higher.cs <- consensus(rels = higher.rels$rels, cols = still.missing$which, 
       method = method)
+    # Drop size columns, if 'reverted' above
     # Ignore if consensus is missing or NA: 
     l.cs <- seq_along(still.missing$which)
     wh.changed <- !sapply(l.cs, function(l.cs) is.na(higher.cs[l.cs]) | 
@@ -548,12 +539,7 @@ for(i in 1:nrow(out)) {
   # estimated) and add changes to history:
   char.changed <-
     colnames(better.all.equal(input[i, eco.col], out[i, eco.col]))
-  l.char <- length(char.changed)
-  # Compare 'l.char' to 'num.changed' (which was reset to 0 at start) so that
-  # only record any new updates (which is filling in blanks from prior states).
-  # If new changes, only tag those that are new as "Estimated".
-  if (l.char > num.changed) {
-    # char.changed <- colnames(better.all.equal(input[i, eco.col], out[i, eco.col]))
+  if (any(wh.changed)) {
     changed.col <- match(char.changed, colnames(input[i, eco.col]))
     out[i, est.col[changed.col]] <- "Estimated"
     dropped <-
@@ -564,14 +550,16 @@ for(i in 1:nrow(out)) {
     # previously recorded (if changed) for the proxy relative. Rest are updating
     # empty cells, either for a genus/species entry or for higher taxon proxy.
     if (out$DateEntered_Ecology[i] == today) {
-      out$History_Ecology[i] <- paste0(l.char, " additional states updated ", today,
+      out$History_Ecology[i] <- paste0(length(which(wh.changed)), 
+                          " additional states updated ", today,
                           " based on consensus of ", higher.rels$eco.sc, " ", 
                           out[i, which(colnames(out) == higher.rels$eco.sc)], 
-                          ".", out$History_Ecology[i])
+                          ". ", out$History_Ecology[i])
     } else {
-      out$History_Ecology[i] <- paste0(l.char, " additional states updated ", today,
+      out$History_Ecology[i] <- paste0(length(which(wh.changed)), 
+                          " additional states updated ", today,
                           " based on consensus of ", higher.rels$eco.sc, " ", 
-                          out[i, which(colnames(out) == higher.rels$eco.sc)], ". ")
+                          out[i, which(colnames(out) == higher.rels$eco.sc)], ".")
     }
   }
   
@@ -608,17 +596,18 @@ write.table(out, file="PostLH_constant.tab", quote=FALSE, sep="\t", row.names=FA
 # write.table(out, file="PostLH_withPBDB_mode.tab", quote=FALSE, sep="\t", row.names=FALSE)
 # write.table(out, file="PostLH_withPBDB_constant.tab", quote=FALSE, sep="\t", row.names=FALSE)
 
-# Open in Excel to confirm looks acceptable. Replace (matching entire cell 
+# (1) Open in Excel to confirm looks acceptable. Replace (matching entire cell
 # contents) "NA"s in life habit data.
 
-# Next open in Word to remove quotation marks around the text entries,
-# (replacing "^t with ^t and ^t" with ^t and "" with ^t and ").
+# (2) Open in Word to remove quotation marks around the text entries, (replacing
+# "^t with ^t and ^t" with ^t and "" with ^t and ").
 
-# Open FileMakerPro and import, updating records by matching names and using the
-# IDNumber as the matching identifier. (Fine to not import the taxonomic names
-# and geological ranges.)
+# (3) Open FileMakerPro and import, updating records by matching names and using
+# the IDNumber as the matching identifier. (Fine to not import the taxonomic
+# names and geological ranges.)
 
-# Refer to PropogateSizes.R for common troubleshooting corrections to override.
+# (4) Refer to PropogateSizes.R for common troubleshooting corrections to run
+# through in case of manual overrides.
 
   
   
