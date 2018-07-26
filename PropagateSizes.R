@@ -631,7 +631,11 @@ write.table(out, file="PostSizes.tab", quote = FALSE, sep = "\t", row.names = FA
 # should not be deleted, but updated as needed, with other stratifications.)
 
 # For the first run-through (BEFORE propogating life habits), only need to check
-# entries where EcoScale="species" and "genus".
+# entries where ECOSCALE OR BODYSIZESCALE="SPECIES" OR "GENUS". (The
+# life-habit algorithm maintains the four body-size-scale-related states
+# [AbsStrat, RelStrat, etc.] when EcoScale=Species/Genus, and uses the consensus
+# across relatives when missing or not EcoScale=Species/Genus, but reverts back
+# to the originaly codings when BodySizeScale-Species/Genus.)
 
 # (1) Pelagic taxa given benthic AbsStratDists: Find Fluidic=1 & Insubstantial=1
 # & AbsStratDist=">-10000" [ANY] & SizeChanged=CHECK and delete AbsStratDist (if
