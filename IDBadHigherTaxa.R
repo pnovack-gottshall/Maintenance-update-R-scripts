@@ -15,7 +15,7 @@ for(i in 1:length(tax)) {
   if(i==1) cat("Subfamilies:\n")
   wh <- which(Subfamily==tax[i])
   if(length(wh)==1L) next
-  higher <- unique(x[wh, 1:6])
+  higher <- unique(x[wh, 1:8])
   if(nrow(higher)==1) next
   cat(as.character(tax[i]), "\n")
 }
@@ -27,7 +27,7 @@ for(i in 1:length(tax)) {
   if(i==1) cat("Families:\n")
   wh <- which(Family==tax[i])
   if(length(wh)==1L) next
-  higher <- unique(x[wh, 1:6])
+  higher <- unique(x[wh, 1:7])
   if(nrow(higher)==1) next
   cat(as.character(tax[i]), "\n")
 }
@@ -39,7 +39,7 @@ for(i in 1:length(tax)) {
   if(i==1) cat("Superfamilies:\n")
   wh <- which(Superfamily==tax[i])
   if(length(wh)==1L) next
-  higher <- unique(x[wh, 1:5])
+  higher <- unique(x[wh, 1:6])
   if(nrow(higher)==1) next
   cat(as.character(tax[i]), "\n")
 }
@@ -50,7 +50,7 @@ for(i in 1:length(tax)) {
   if(i==1) cat("Suborders:\n")
   wh <- which(Suborder==tax[i])
   if(length(wh)==1L) next
-  higher <- unique(x[wh, 1:4])
+  higher <- unique(x[wh, 1:5])
   if(nrow(higher)==1) next
   cat(as.character(tax[i]), "\n")
 }
@@ -61,7 +61,7 @@ for(i in 1:length(tax)) {
   if(i==1) cat("Orders:\n")
   wh <- which(Order==tax[i])
   if(length(wh)==1L) next
-  higher <- unique(x[wh, 1:3])
+  higher <- unique(x[wh, 1:4])
   if(nrow(higher)==1) next
   cat(as.character(tax[i]), "\n")
 }
@@ -72,7 +72,7 @@ for(i in 1:length(tax)) {
   if(i==1) cat("Subclasses:\n")
   wh <- which(Subclass==tax[i])
   if(length(wh)==1L) next
-  higher <- unique(x[wh, 1:2])
+  higher <- unique(x[wh, 1:3])
   if(nrow(higher)==1) next
   cat(as.character(tax[i]), "\n")
 }
@@ -83,7 +83,7 @@ for(i in 1:length(tax)) {
   if(i==1) cat("Classes:\n")
   wh <- which(Class==tax[i])
   if(length(wh)==1L) next
-  higher <- unique(x[wh, 1])
+  higher <- unique(x[wh, 2])
   if(length(higher)==1L) next
   cat(as.character(tax[i]), "\n")
 }
