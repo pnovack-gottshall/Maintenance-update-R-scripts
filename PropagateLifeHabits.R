@@ -612,7 +612,7 @@ write.table(out, file="PostLH_constant.tab", quote=FALSE, sep="\t", row.names=FA
 
 # (3) Open FileMakerPro and import, updating records by matching names and using
 # the IDNumber as the matching identifier. (Fine to not import the taxonomic
-# names and geological ranges.)
+# names.)
 
 # (4) Refer to PropogateSizes.R for common troubleshooting corrections to run
 # through in case of manual overrides.
