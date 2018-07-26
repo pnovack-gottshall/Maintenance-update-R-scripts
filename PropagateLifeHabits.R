@@ -1,7 +1,6 @@
 ## PROPOGATE LIFE HABIT CODINGS ACROSS ENTRIES, USING RELATIVES AS PROXIES
 
 
-
 ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ##
 ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ##
 ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ##
@@ -489,24 +488,17 @@ for(i in 1:nrow(out)) {
       out[i, eco.col] <- cs
       if (!size.changed.to.NAs | revert)
         out$SizeChanged[i] <- "Check"
-      if (num.changed > 0L)
+      if (num.changed > 0L) {
         out$DateEntered_Ecology[i] <- today
-      if (num.changed > 0L & out$DateEntered_Ecology[i] != "" &
-          (any(!is.na(input$History_Ecology[i]),
-               input$History_Ecology[i] != "") == FALSE)) {
-        out$History_Ecology[i] <- paste0(num.changed, " states updated ", today, 
-          " to ", rels$eco.sc, " ", out[i, which(colnames(out) == rels$eco.sc)], 
-          " from ", input$RefGenusEco[i], " ", input$RefSpeciesEco[i], " in same ", 
-          tolower(this.scale),", last updated on ", input$DateEntered_Ecology[i], 
-          ". ", input$History_Ecology[i])
-      }
-      if(num.changed > 0L & out$DateEntered_Ecology[i] != "" & 
-          (is.na(input$History_Ecology[i]) | input$History_Ecology[i] == "")) {
-        out$History_Ecology[i] <- paste0(num.changed, " states updated ", today, 
-          " to ", rels$eco.sc, " ", out[i, which(colnames(out) == rels$eco.sc)], 
-          " from ", input$RefGenusEco[i], " ", input$RefSpeciesEco[i], " in same ", 
-          tolower(this.scale), ", last updated on ", input$DateEntered_Ecology[i], 
-          ".")
+        if (input$RefGenusEco[i] == "") {
+          out$History_Ecology[i] <- ""
+        } else {
+          out$History_Ecology[i] <- paste0(num.changed, " states updated ",
+              today, " to ", rels$eco.sc, " ", out[i, which(colnames(out) == rels$eco.sc)],
+              " from ", input$RefGenusEco[i], " ", input$RefSpeciesEco[i], 
+              " in same ", tolower(this.scale), ", last updated on ", 
+              input$DateEntered_Ecology[i], ".")
+        }
       }
     }
   }
