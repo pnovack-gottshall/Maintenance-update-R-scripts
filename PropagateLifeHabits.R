@@ -418,6 +418,7 @@ for(i in 1:nrow(out)) {
        this.scale == "Genus")) next
 
   rels <- cs <- eco.sc <- exemplar <- char.changed <- NA
+  wh.changed <- FALSE
 
   # Propogate (and update, if needed) life habit codings if higher taxon
   if (this.scale > "Genus") {
@@ -444,15 +445,15 @@ for(i in 1:nrow(out)) {
     # Propogate codings, identify exemplar relative, and update metadata (but
     # only if non-size states changed)
     cs <- consensus(rels = rels$rels, cols = eco.col, method = method)
-    exemplar <- best.ref(rels = rels$rels, cols = eco.col, scale = rels$eco.sc)
+    # Following lines works but deprecated for now 
+    # exemplar <- best.ref(rels = rels$rels, cols = eco.col, scale = rels$eco.sc)
     # If old reference taxon is no longer a good relative, pick different
     # exemplar (if possible)
-    if (!out$RefGenusEco[i] %in% rels$rels$Genus &
-        nrow(rels$rels) > 1L) {
-      wh.row <- which(rels$rels$Genus == out$Genus[i])
-      exemplar <- best.ref(rels = rels$rels[-2, ], cols = eco.col, 
-                           scale = rels$eco.sc)
-    }
+    # if (!out$RefGenusEco[i] %in% rels$rels$Genus & nrow(rels$rels) > 1L) {
+    #  wh.row <- which(rels$rels$Genus == out$Genus[i])
+    #  exemplar <- best.ref(rels = rels$rels[-2, ], cols = eco.col, 
+    #                       scale = rels$eco.sc)
+    # }
 
     # When proxies are consensus across multiple higher taxa, use the higher
     # taxon as the reference taxon (or the sole related species is only single
@@ -461,8 +462,8 @@ for(i in 1:nrow(out)) {
       out$RefGenusEco[i] <- rels$rels[1, which(colnames(rels$rels) == rels$eco.sc)]
       out$RefSpeciesEco[i] <- "indet."
     } else {
-      out$RefGenusEco[i] <- out$RefGenusEco[exemplar]
-      out$RefSpeciesEco[i] <- out$RefSpeciesEco[exemplar]
+      out$RefGenusEco[i] <- out$RefGenusEco[exemplar][1]
+      out$RefSpeciesEco[i] <- out$RefSpeciesEco[exemplar][1]
       }
     out$EcologyScale[i] <- rels$eco.sc
     
@@ -500,6 +501,7 @@ for(i in 1:nrow(out)) {
     }
   }
 
+  
   # Go through any remaining missing / unknowns / previously estimated, and
   # propogate using higher taxa, if constant across at least 5 relatives, but
   # ignoring size-related characters if size was coded at species/genus. (not
@@ -537,9 +539,9 @@ for(i in 1:nrow(out)) {
   
   # If changed, tag any changes as "Estimated" (or remove if no longer
   # estimated) and add changes to history:
-  char.changed <-
-    colnames(better.all.equal(input[i, eco.col], out[i, eco.col]))
   if (any(wh.changed)) {
+    char.changed <-
+      colnames(better.all.equal(input[i, eco.col], out[i, eco.col]))
     changed.col <- match(char.changed, colnames(input[i, eco.col]))
     out[i, est.col[changed.col]] <- "Estimated"
     dropped <-
@@ -584,6 +586,11 @@ for(i in 1:nrow(out)) {
 # the state input into the database based on PropogateSizes.R updates for
 # entries with size values at species/genus level.
 
+warnings()
+# Warnings about "no suitable relatives" typically means the EcoScale in
+# "PreLH.tab" is incorrect. Check and re-run, if so. (Otherwise it means there
+# are literally no other relatives, not even other members of their phylum.)
+
 round(table(input$EcologyScale) * 100 / nrow(input), 1)
 round(table(out$EcologyScale) * 100 / nrow(out), 1)
 table(input$EcologyScale)
@@ -608,14 +615,3 @@ write.table(out, file="PostLH_constant.tab", quote=FALSE, sep="\t", row.names=FA
 
 # (4) Refer to PropogateSizes.R for common troubleshooting corrections to run
 # through in case of manual overrides.
-
-  
-  
-## DIAGNOSTIC TESTING ------------------------------------------------------ 
-  
-# Good entries (i) to use for testing: 1458 (Adelphobolbina, nothing should 
-# change), 1664 (Bembexia, scale should improve), 1908 (Echinarachnius, codings 
-# should fill in), 2518 (Caprina, some should fill in), 2560 (Atreta, consensus
-# has missing values)
-identical(input[i, ], out[i, ])
-better.all.equal(input[i, ], out[i, ])
