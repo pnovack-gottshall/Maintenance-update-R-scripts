@@ -35,23 +35,30 @@
 
 # 1. If an entry is already coded at species-, subgenus-, or genus-level, skip;
 # unless life habits are partly blank (uncoded), in which case use closest
-# relatives to populate remaining codings.
+# relatives to populate remaining codings. (In these cases, tag the states as
+# "Estimated" and record the changes in the History_Ecology field.)
 
 # 2. If an entry is above genus-level, use closest relatives to update
 # (override) the pre-existing codings. If unchanged (identical to relative),
 # abort and go to the next entry, leaving the 'DateEntered_Ecology' and
-# 'EcoScale' fields unchanged. If multiple relatives exist, enter the value if
-# constant or 'NA' if varies. (Use 'grep''s 'adist' to approximate type taxon
-# for reference when multiple relatives exist.) If any states remain uncoded, go
-# to higher taxa in case they have codings for these states, using the same
-# logic.
+# 'EcoScale' fields unchanged. If multiple relatives exist, enter the value (if
+# constant) or 'NA' (if varies). (Record the relative as "Higher taxon indet."
+# NO LONGER USED (July 2018): Use 'grep''s 'adist' to approximate type taxon for
+# reference species when multiple relatives exist.) If any states remain
+# uncoded, go to higher taxa in case they have codings for these states, using
+# the same logic as step 1.
 
-# If any life habit codings are changed, add record-keeping text to
-# History_Ecology field. This documents a history of life habit changes that can
-# be restored using earlier back-up database copies. Add this new tag IN FRONT
-# OF any prior tag via 'paste' to maintain a complete history. If there is no
-# date is in the 'DateEntered_Ecology' date field (i.e., this is the first
-# update), just update the date (without an update to the history text).
+# The four body-size-related states (ABsStrat, RelStrat, etc.) are only
+# over-written when missing or EcoScale > Species/Genus. If any of these fouor
+# states are changed AND the BodySizeScale was Species/Genus (implying they were
+# originally checked after the Propogatesizes.R algorithm), add a "check" tag to
+# force a manual check. If any life habit codings are changed, add (or override)
+# record-keeping text to History_Ecology field. This documents a history of life
+# habit changes that can be restored using earlier back-up database copies. If
+# there is no date in the 'DateEntered_Ecology' date field (i.e., this is the
+# first update), just update the date (without an update to the history text).
+# But if piecemeal states are changed (that are different than the consensus),
+# record those changes to the History field.
 
 # A benefit of this update-higher-taxon approach is that as we get more data, we
 # can feel more confident in codings when there are many relatives (because it
@@ -272,11 +279,18 @@ combined.any.missing <- function(missing, estimated) {
 
 
 ## IMPROVED ALL.EQUAL THAT JUST PRINTS THOSE THAT ARE CHANGED (IGNORING ROW NUMBERS)
+#  NAs, blanks, and character("NA") are all treated as identical.
 better.all.equal <- function(a, b) {
   if (!identical(dim(a), dim(b)))
     stop("data frames have different sizes\n")
   cn <- seq.int(ncol(a))
   row.names(a) <- row.names(b) <- NULL
+  # Replace empty cells with "NA" because empty and logical(NA) is not same as
+  # character("NA") (as used as a factor level), allowing false positives
+  a <- replace(a, a == "", "NA")
+  b <- replace(b, b == "", "NA")
+  a <- replace(a, is.na(a), "NA")
+  b <- replace(b, is.na(b), "NA")
   wh.diff <- sapply(cn, function(cn) !identical(a[, cn], b[, cn]))
   ab <- rbind(a, b)
   return(ab[, which(wh.diff), drop = FALSE])
@@ -408,8 +422,8 @@ ncs <- 14:98 # For printing interactive data
 (start.t <- Sys.time())
 
 for(i in 1:nrow(out)) {
-  if (i %in% index) cat("record", i, "of", nrow(out), ":", out$Genus[i],
-        out$Species[i], "\n")
+  if (i %in% index)
+    cat("record", i, "of", nrow(out), ":", out$Genus[i], out$Species[i], "\n")
   
   # Ignore if no higher taxonomic information at all
   if (all(input[i, 2:10] == "")) next
@@ -421,7 +435,8 @@ for(i in 1:nrow(out)) {
       (this.scale == "Species" | this.scale == "Subgenus" | 
        this.scale == "Genus")) next
 
-  rels <- cs <- eco.sc <- exemplar <- NA
+  rels <- cs <- eco.sc <- exemplar <- char.changed <- NA
+  num.changed <- l.char <- 0
 
   # Propogate (and update, if needed) life habit codings if higher taxon
   if (this.scale > "Genus") {
@@ -530,17 +545,35 @@ for(i in 1:nrow(out)) {
     out$SizeChanged[i] <- "Check"
   
   # If changed, tag any changes as "Estimated" (or remove if no longer
-  # estimated):
+  # estimated) and add changes to history:
   char.changed <-
     colnames(better.all.equal(input[i, eco.col], out[i, eco.col]))
-  if (length(char.changed) > 0L) {
+  l.char <- length(char.changed)
+  # Compare 'l.char' to 'num.changed' (which was reset to 0 at start) so that
+  # only record any new updates (which is filling in blanks from prior states).
+  # If new changes, only tag those that are new as "Estimated".
+  if (l.char > num.changed) {
+    # char.changed <- colnames(better.all.equal(input[i, eco.col], out[i, eco.col]))
     changed.col <- match(char.changed, colnames(input[i, eco.col]))
     out[i, est.col[changed.col]] <- "Estimated"
     dropped <-
       is.na(out[i, eco.col[changed.col]]) | out[i, eco.col[changed.col]] == ""
     if (any(dropped))
       out[i, est.col[changed.col[which(dropped)]]] <- ""
+    # Note: Those entered today will only be > genus, where History_Ecology
+    # previously recorded (if changed) for the proxy relative. Rest are updating
+    # empty cells, either for a genus/species entry or for higher taxon proxy.
+    if (out$DateEntered_Ecology[i] == today) {
+      out$History_Ecology[i] <- paste0(l.char, " additional states updated ", today,
+                          " based on consensus of ", higher.rels$eco.sc, " ", 
+                          out[i, which(colnames(out) == higher.rels$eco.sc)], 
+                          ".", out$History_Ecology[i])
+    } else {
+      out$History_Ecology[i] <- paste0(l.char, " additional states updated ", today,
+                          " based on consensus of ", higher.rels$eco.sc, " ", 
+                          out[i, which(colnames(out) == higher.rels$eco.sc)], ". ")
     }
+  }
   
   # Interactive mode (to observe how states are being propogated)
   if (interactive) {
