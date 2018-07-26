@@ -417,7 +417,8 @@ for(i in 1:nrow(out)) {
       (this.scale == "Species" | this.scale == "Subgenus" | 
        this.scale == "Genus")) next
 
-  rels <- cs <- eco.sc <- exemplar <- char.changed <- NA
+  rels <- cs <- eco.sc <- char.changed <- NA
+  # exemplar <- NA # Deprecated
   wh.changed <- FALSE
 
   # Propogate (and update, if needed) life habit codings if higher taxon
@@ -462,8 +463,8 @@ for(i in 1:nrow(out)) {
       out$RefGenusEco[i] <- rels$rels[1, which(colnames(rels$rels) == rels$eco.sc)]
       out$RefSpeciesEco[i] <- "indet."
     } else {
-      out$RefGenusEco[i] <- out$RefGenusEco[exemplar][1]
-      out$RefSpeciesEco[i] <- out$RefSpeciesEco[exemplar][1]
+      out$RefGenusEco[i] <- rels$rels$Genus
+      out$RefSpeciesEco[i] <- rels$rels$Species
       }
     out$EcologyScale[i] <- rels$eco.sc
     
