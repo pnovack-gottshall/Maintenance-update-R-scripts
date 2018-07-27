@@ -173,6 +173,12 @@ if(any(is.na(input$early_age)) || any(is.na(input$late_age)))
   stop("Some entries have missing age ranges, which is used in body size propogation 
 algorithm. Leaving ranges empty will mean that missing size measurements will not be propogated for these taxa. Update ages from the Paleobiology Database before proceeding.\n")
 
+## Any duplicated ID numbers?
+# Will match the incorrect life habits when importing
+if (any(table(input$IDNumber) > 1)) {
+  print(which(table(input$IDNumber) > 1))
+  stop("There are duplicate IDNumbers. Fix before proceeding! See above for list.")
+}
 
 
 ## FUNCTIONS ---------------------------------------
@@ -597,6 +603,14 @@ legend("topright", inset = .1, legend = c("after", "before"), pch = 22,
 abline(v = 0, lwd = 2, lty = 2)
 
 # If want to plot trends in body size evolution, see SizeTrends.R
+
+## Any duplicated ID numbers?
+# Will match the incorrect life habits when importing
+if (any(table(input$IDNumber) > 1)) {
+  print(which(table(input$IDNumber) > 1))
+  stop("There are duplicate IDNumbers. Fix before proceeding! See above for list.")
+}
+
 
 ## EXPORT DATA -------------------------------------------------------------
 write.table(out, file="PostSizes.tab", quote = FALSE, sep = "\t", row.names = FALSE)
