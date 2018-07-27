@@ -108,6 +108,12 @@ str(input)
 head(input)
 table(input$EcologyScale)
 
+## Any duplicated ID numbers?
+if (any(table(input$IDNumber) > 1)) {
+  print(which(table(input$IDNumber) > 1))
+  stop("There are duplicate IDNumbers. Fix before proceeding! See above for list.")
+}
+
 
 
 ## FUNCTIONS ---------------------------------------
@@ -166,6 +172,7 @@ Mode <- function(x) {
 # rels = the data frame containing identified relatives.
 # cols  = identifies which columns to check across.
 consensus <- function(rels, cols, method = "constant") {
+  method <- tolower(method) # In case capitalized
   cs <- data.frame(rels[1, cols])
   row.names(cs) <- NULL
   cs[, ] <- ""
@@ -431,7 +438,7 @@ for(i in 1:nrow(out)) {
     # essentially coded at genus/species scale already.)
     if (this.scale < "" & nrow(rels$rels) == 0L &
         length(combined.any.missing(any.missing(out[i, ], eco.col),
-                                    any.est(out[i, ], est.col))$which) < 0.33 * length(eco.col)) {
+                any.est(out[i, ], est.col))$which) < 0.33 * length(eco.col)) {
       rels$rels <- out[i,]
     }
     
@@ -597,7 +604,13 @@ round(table(out$EcologyScale) * 100 / nrow(out), 1)
 table(input$EcologyScale)
 table(out$EcologyScale)
 
-  
+## Any duplicated ID numbers?
+# Will match the incorrect life habits when importing
+if (any(table(input$IDNumber) > 1)) {
+  print(which(table(input$IDNumber) > 1))
+  stop("There are duplicate IDNumbers. Fix before proceeding! See above for list.")
+}
+
 ## EXPORT DATA -------------------------------------------------------------
 write.table(out, file="PostLH_constant.tab", quote=FALSE, sep="\t", row.names=FALSE)
 # write.table(out, file="PostLH_mode.tab", quote=FALSE, sep="\t", row.names=FALSE)
