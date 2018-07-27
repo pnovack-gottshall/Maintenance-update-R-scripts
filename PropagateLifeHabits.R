@@ -161,6 +161,9 @@ find.rels <- function(x, i, min.rels = 1, start = 4, end = 12, ref.g.col = 15,
 
 
 ## CALCULATE THE MODE AMONG OBSERVED CHARACTER STATES
+#Note that ties are won based on which state is listed first (which generally
+#leans conservatively toward the absence of a state). The standard solution (an
+#intermediate value) is nonsensical when dealing with discrete states.
 Mode <- function(x) {
   ux <- unique(x)
   ux[which.max(tabulate(match(x, ux)))]
