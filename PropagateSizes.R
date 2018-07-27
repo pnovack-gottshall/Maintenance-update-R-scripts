@@ -192,7 +192,7 @@ if (any(table(input$IDNumber) > 1)) {
 #     including unknowns).
 #  photo.cols and est.cols = which columns to use when calling 'any.missing' to
 #     extract relatives with complete measurements.
-#  simtime = logical. If TRUE (default), uses similarity of geological range to
+#  sim.time = logical. If TRUE (default), uses similarity of geological range to
 #     choose among multiple relatives. (If FALSE, returns all complete relatives)
 find.rel <- function(x, i, start = 4, end = 12, photo.cols = NULL, 
                      est.cols = NULL, sim.time = TRUE) {
