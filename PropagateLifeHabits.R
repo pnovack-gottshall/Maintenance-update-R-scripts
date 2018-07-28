@@ -632,3 +632,7 @@ write.table(out, file="PostLH_constant.tab", quote=FALSE, sep="\t", row.names=FA
 
 # (4) Refer to PropogateSizes.R for common troubleshooting corrections to run
 # through in case of manual overrides.
+
+# On the post-life-habit propogation, focus on the SizeChanged=Check tagged
+# entries, but also check ALL entries using the following criteria.
+

@@ -653,6 +653,11 @@ write.table(out, file="PostSizes.tab", quote = FALSE, sep = "\t", row.names = FA
 # across relatives when missing or not EcoScale=Species/Genus, but reverts back
 # to the originaly codings when BodySizeScale-Species/Genus.)
 
+# On the pre-life-habit propogation, focus on the scales above, and also the
+# SizeChanged=Check tagged entries. On the post-life-habit propogation, focus on
+# the SizeChanged=Check tagged entries, but also check ALL entries using the
+# following criteria.
+
 # (1) Pelagic taxa given benthic AbsStratDists: Find Fluidic=1 & Insubstantial=1
 # & AbsStratDist=">-10000" [ANY] & SizeChanged=CHECK and delete AbsStratDist (if
 # needs correcting).
