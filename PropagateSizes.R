@@ -665,14 +665,15 @@ write.table(out, file="PostSizes.tab", quote = FALSE, sep = "\t", row.names = FA
 # (2) "Supported" taxa given self-supported (i.e., benthic) AbsStratDists: Find
 # SupportedByOthers=1 & AbsStratDist=">-10000" [ANY] & SizeChanged=CHECK and
 # delete AbsStratDist (if needs correcting). (The valid exceptions will
-# typically have AbsStratDist values that do not correspond to the organism's
+# typically have AbsStratDist values that do NOT correspond to the organism's
 # major axes.)
 
 # (3) Epibiotic (but barely raised, so should be coded as "self-supported") taxa
 # given incorrect benthic (as if not epibiotic) AbsStratDists: Find Biotic=1 &
 # SupportedByOthers=0 & AbsStratDist=">-10000" [ANY] & SizeChanged=CHECK and
 # delete AbsStratDist (if needs correcting). (AbsStrat should be same as
-# RelStrat.)
+# RelStrat.) (The valid exceptions will typically have AbsStratDist values that
+# do NOT correspond to the organism's major axes.)
 
 # (4) Confirm all exclusively infaunal taxa have negative AbsStratDists and
 # exclusively epifaunal taxa have positive values. (But don't be surprised by
