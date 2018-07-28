@@ -664,7 +664,9 @@ write.table(out, file="PostSizes.tab", quote = FALSE, sep = "\t", row.names = FA
 
 # (2) "Supported" taxa given self-supported (i.e., benthic) AbsStratDists: Find
 # SupportedByOthers=1 & AbsStratDist=">-10000" [ANY] & SizeChanged=CHECK and
-# delete AbsStratDist (if needs correcting).
+# delete AbsStratDist (if needs correcting). (The valid exceptions will
+# typically have AbsStratDist values that do not correspond to the organism's
+# major axes.)
 
 # (3) Epibiotic (but barely raised, so should be coded as "self-supported") taxa
 # given incorrect benthic (as if not epibiotic) AbsStratDists: Find Biotic=1 &
@@ -744,3 +746,6 @@ write.table(out, file="PostSizes.tab", quote = FALSE, sep = "\t", row.names = FA
 # size of prey?) and sensory distances when scouting. (Speed can also be a proxy
 # for this.) This might be best to sort by Phylum > Class > A/P / D/V because
 # different taxa often have distinct foraging strategies.
+
+# (12) Once these checks are run, re-run them and clear the SizeChanged=Check
+# tags.
