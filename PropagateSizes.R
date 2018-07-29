@@ -656,7 +656,9 @@ write.table(out, file="PostSizes.tab", quote = FALSE, sep = "\t", row.names = FA
 # On the pre-life-habit propogation, focus on the scales above, and also the
 # SizeChanged=Check tagged entries. On the post-life-habit propogation, focus on
 # the SizeChanged=Check tagged entries, but also check ALL entries using the
-# following criteria.
+# following criteria. (Can omit those coded at EcoScale=Species/Genus.) MAKE
+# SURE THAT IF ADD/CHANGE A STATE FOR A EcoScale=SPECIES/GENUS, to tag as
+# "Estimated."
 
 # (1) Pelagic taxa given benthic AbsStratDists: Find Fluidic=1 & Insubstantial=1
 # & AbsStratDist=">-10000" [ANY] & SizeChanged=CHECK and delete AbsStratDist (if
@@ -679,8 +681,8 @@ write.table(out, file="PostSizes.tab", quote = FALSE, sep = "\t", row.names = FA
 # exclusively epifaunal taxa have positive values. (But don't be surprised by
 # semi-infaunal taxa that are simultaneously epifaunal and infaunal.) Test that
 # all above=1/in=0 have positive AbsStratDists and all above=0/in=1 have
-# negative ones. Double confirm that all with negative AbsStratDists
-# have WithinAbsStrat=1 and that all with positive AbsStratDists have
+# negative ones. Converse, confirm that all with negative AbsStratDists have
+# WithinAbsStrat=1 and that all with positive AbsStratDists have
 # AboveAbsStrat=1.
 
 # (5) Confirm that taxa with AbsStratDist=">-100000" values [ANY] match the
@@ -689,9 +691,10 @@ write.table(out, file="PostSizes.tab", quote = FALSE, sep = "\t", row.names = FA
 # general, if animal is epibenthic, self-supported, and filter-feeder, the
 # AbsFoodStrat will be same as AbsStrat; if surficial mass-feeder, AbsFoodStrat
 # will be 0; and if raptorial, AbsFoodStrat will be where food is located (often
-# 0.25 coding). For RelStrat, useful to sort by Phylum>Class>DV or AP length.
-# For RelStrat, recall that for semi-infaunals this will correspond to the
-# animal's major axis and not the distance from sea floor.
+# 0.25 coding if epibenthic prey). For RelStrat, useful to sort by
+# Phylum>Class>DV or AP length. For RelStrat, recall that for semi-infaunals
+# this will correspond to the animal's major axis and not the distance from sea
+# floor.
 
 # (6) Confirm RelFoodStrat for filter feeders, sorting by phyla and then either
 # AbsStratDist or A/P length. For ambient filter feeders (PORIFERA and
@@ -699,21 +702,22 @@ write.table(out, file="PostSizes.tab", quote = FALSE, sep = "\t", row.names = FA
 # depends on distance from sea floor, confirm those ~15-200 mm tall are 0.5;
 # refer to LifeHabitNotes.docs for additional categorizations. For active filter
 # feeders, the coding depends on the size of the pumping organ. All BRYOZOANS,
-# GRAPTOLITES, and PTEROBRANCHS should be 0.25. BRACHIOPODS should be half the
-# A/P length. Filter-feeding mollusks (BIVALVES, ROSTROCONCHS, and GASTROPODS)
-# should be twice the A/P length. POLYCHAETES and TENTACULITIDS should be twice
-# the transverse length. Filter-feeding MICROCRUSTACEANS (amphipods, mysids,
-# etc.) and burrowing filter-feeding SHRIMP generally should be 0.25. ASCIDIANS
-# should generally be 0.5.
+# GRAPTOLITES, and PTEROBRANCHS should be 0.25. Filter-feeding MICROCRUSTACEANS
+# (amphipods, mysids, etc.) and burrowing filter-feeding SHRIMP generally should
+# be 0.25. ASCIDIANS should generally be 0.5. Filter-feeding fishes and whales
+# should generally be 1.0. BRACHIOPODS should be half the A/P length. (Enormous)
+# filter-feeding mollusks (BIVALVES, ROSTROCONCHS, and GASTROPODS) should be
+# twice the A/P length. POLYCHAETES and TENTACULITIDS should be twice the
+# transverse length.
 
 # (7) Confirm that wholly infaunal filter-feeders (AboveAbsStrat=0, WithinAbs=1,
 # Filter=1 [rest 0]) have AbsFoodStrat at 0.25 (typically) and that AbsFood is 
 # "Above" the seafloor (with exceptions, like callianassoids that also ingest 
 # sediment from burrow wall, or Cenozoic cave-dwelling brachiopods, or thin 
 # productids that rested within the sediment with gape at seafloor, or echinoids
-# like Encope that emerge at surface to filter feed).
+# like Encope that emerge at surface to filter feed, or interstitial meifaunal).
 
-# (8) Conirm that filter feeders (whether infaunal or epifaunal) that extend
+# (8) Confirm that filter feeders (whether infaunal or epifaunal) that extend
 # body above sea floor (AboveAbsStrat=1 & FeedAbovePrimary=1 & Filter=1
 # [rest=0]) have AbsFoodStrat at level to which body extends (and that food is
 # also "Above" the seafloor). Easiest to sort by AbsStrat > AbsFoodStrat >
