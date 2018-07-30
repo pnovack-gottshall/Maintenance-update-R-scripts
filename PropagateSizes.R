@@ -670,14 +670,31 @@ write.table(out, file="PostSizes.tab", quote = FALSE, sep = "\t", row.names = FA
 # typically have AbsStratDist values that do NOT correspond to the organism's
 # major axes.)
 
-# (3) Epibiotic (but barely raised, so should be coded as "self-supported") taxa
+# (3) Confirm that epifaunal "Self-supported" taxa have the same tier for
+# AbsStrat and RelStrat. (And that "supported" taxa have different values.)
+# (Note this only applies to epifaunal taxa because pelagic and infaunal
+# organisms can be self-supported despite having different absolute and
+# immediate stratifications.) Set fluidic=0, above primary = 1, within primary =
+# 0, and supported/self-supported as either 0/1 or 1/0. Then sort by AbsStrat >
+# RelStrat. In many cases, the AbsStrat and AbsFoodStrat should also match. Be
+# aware that there will be a few exceptions (e.g., very long crinoid
+# Traumatocrinus that is attached to floating logs, crinoid Paracatillocrinus
+# that has an unusual means of "wrapped" attachment that warrants being
+# "attached" despite not being raised significantly higher into water column).
+# During post-life-habit-propogation processing, add back in appropriate
+# "self-supported" AbsStrat, and AbsFoodStrat (if filter-feeding) and
+# AbsStratDist (if obvious), BUT ONLY FOR TAXA SCALED AT > GENUS/SPECIES! Be
+# reminded that stemmed echinoderms (crinoids, blastoids, etc.) will frequently
+# lack AbsStrat and AbsFoodStrat because of unknown stem lengths.
+
+# (4) Epibiotic (but barely raised, so should be coded as "self-supported") taxa
 # given incorrect benthic (as if not epibiotic) AbsStratDists: Find Biotic=1 &
 # SupportedByOthers=0 & AbsStratDist=">-10000" [ANY] & SizeChanged=CHECK and
 # delete AbsStratDist (if needs correcting). (AbsStrat should be same as
 # RelStrat.) (The valid exceptions will typically have AbsStratDist values that
 # do NOT correspond to the organism's major axes.)
 
-# (4) Confirm all exclusively infaunal taxa have negative AbsStratDists and
+# (5) Confirm all exclusively infaunal taxa have negative AbsStratDists and
 # exclusively epifaunal taxa have positive values. (But don't be surprised by
 # semi-infaunal taxa that are simultaneously epifaunal and infaunal.) Test that
 # all above=1/in=0 have positive AbsStratDists and all above=0/in=1 have
@@ -685,7 +702,18 @@ write.table(out, file="PostSizes.tab", quote = FALSE, sep = "\t", row.names = FA
 # WithinAbsStrat=1 and that all with positive AbsStratDists have
 # AboveAbsStrat=1.
 
-# (5) Confirm that taxa with AbsStratDist=">-100000" values [ANY] match the
+# (6) Confirm that RelStrat corresponds to appropriate body axis. Best to sort
+# by Phylum > Class (and for some groups subclass/order) > D/V / A/P because
+# different taxa have different living orientations. If list is too long to run
+# through, can limit to Sizechanged="checked". (Alternatively, can find all taxa
+# with all major axes in the same size range [e.g., 0.1-1], which should all
+# have the same RelStrat.) Exceptions: Watch out for crinoids, blastoids,
+# rhombiferans, pedunculately raised (Cambrian) lingulids, and other stemmed
+# animals where the measured body part may not correspond to the intact animal,
+# and animals close to a size-boundary that are diagonally oriented (such as
+# pedunculate brachiopods and some rugose corals).
+
+# (7) Confirm that taxa with AbsStratDist=">-100000" values [ANY] match the
 # correct AbsStrat coding. (Sort by AbsStratDist when checking manually.) When
 # checking this, also worth checking the RelStrat and AbsFoodStrat codings. In
 # general, if animal is epibenthic, self-supported, and filter-feeder, the
@@ -696,7 +724,7 @@ write.table(out, file="PostSizes.tab", quote = FALSE, sep = "\t", row.names = FA
 # this will correspond to the animal's major axis and not the distance from sea
 # floor.
 
-# (6) Confirm RelFoodStrat for filter feeders, sorting by phyla and then either
+# (8) Confirm RelFoodStrat for filter feeders, sorting by phyla and then either
 # AbsStratDist or A/P length. For ambient filter feeders (PORIFERA and
 # suspension-feeding ECHINODERMATA and CNIDARIA and CIRRIPEDIA) where flow rate
 # depends on distance from sea floor, confirm those ~15-200 mm tall are 0.5;
@@ -710,14 +738,14 @@ write.table(out, file="PostSizes.tab", quote = FALSE, sep = "\t", row.names = FA
 # twice the A/P length. POLYCHAETES and TENTACULITIDS should be twice the
 # transverse length.
 
-# (7) Confirm that wholly infaunal filter-feeders (AboveAbsStrat=0, WithinAbs=1,
+# (9) Confirm that wholly infaunal filter-feeders (AboveAbsStrat=0, WithinAbs=1,
 # Filter=1 [rest 0]) have AbsFoodStrat at 0.25 (typically) and that AbsFood is 
 # "Above" the seafloor (with exceptions, like callianassoids that also ingest 
 # sediment from burrow wall, or Cenozoic cave-dwelling brachiopods, or thin 
 # productids that rested within the sediment with gape at seafloor, or echinoids
 # like Encope that emerge at surface to filter feed, or interstitial meifaunal).
 
-# (8) Confirm that filter feeders (whether infaunal or epifaunal) that extend
+# (10) Confirm that filter feeders (whether infaunal or epifaunal) that extend
 # body above sea floor (AboveAbsStrat=1 & FeedAbovePrimary=1 & Filter=1
 # [rest=0]) have AbsFoodStrat at level to which body extends (and that food is
 # also "Above" the seafloor). Easiest to sort by AbsStrat > AbsFoodStrat >
@@ -726,31 +754,14 @@ write.table(out, file="PostSizes.tab", quote = FALSE, sep = "\t", row.names = FA
 # seafloor, and some strophomenids/productids/chonetoideans where FoodStrat is
 # closer to sediment.
 
-# (9) Confirm that epifaunal "Self-supported" taxa have the same tier for
-# AbsStrat and RelStrat. (And that "supported" taxa have different values.)
-# (Note this only applies to epifaunal taxa because pelagic and infaunal
-# organisms can be self-supported despite having different absolute and
-# immediate stratifications. Set fluidic=0, above primary = 1, within primary =
-# 0.) Be aware that there will be a few exceptions (e.g., very long crinoid
-# Traumatocrinus that is attached to floating logs, crinoid Paracatillocrinus
-# that has an unusual means of "wrapped" attachment).
+# (11) Make sure that all "above primary" organisms that have RelStrat = 1 also
+# have AbsStrat = 1.
 
-# (10) Confirm that RelStrat corresponds to appropriate body axis. Best to sort
-# by Phylum > Class > D/V / A/P because different taxa have different living
-# orientations. If list is too long to run through, can limit to
-# Sizechanged="checked". (Alternatively, can find all taxa with all major axes
-# in the same size range [e.g., 0.1-1], which should all have the same
-# RelStrat.) Exceptions: Watch out for crinoids, blastoids, rhombiferans,
-# pedunculately raised (Cambrian) lingulids, and other stemmed animalswhere the
-# measured body part may not correspond to the intact animal, and animals close
-# to a size-boundary that are diagonally oriented (such as pedunculate
-# brachiopods and some rugose corals).
-
-# (11) Need to write out rules for hunters, scavengers, and mass feeders,
+# (12) Need to write out rules for hunters, scavengers, and mass feeders,
 # especially regarding food tier (half D/V for predators to account for smaller
 # size of prey?) and sensory distances when scouting. (Speed can also be a proxy
 # for this.) This might be best to sort by Phylum > Class > A/P / D/V because
 # different taxa often have distinct foraging strategies.
 
-# (12) Once these checks are run, re-run them and clear the SizeChanged=Check
+# (13) Once these checks are run, re-run them and clear the SizeChanged=Check
 # tags.
