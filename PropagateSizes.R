@@ -8,6 +8,7 @@
 ## and Colpocoryphe) It seems it happens when the entry being processed has
 ## BodySizeScale > Genus level but EcoScale at Genus or Species. Perhaps the new
 ## Est_AbsStratDist will fix? (Need to incorporate this into the code!)
+## 
 ## 2. Need to add code to deal with "Est_AbsStratDist" that tags when to
 ## override the AbsStratDist versus keep it.
 ##

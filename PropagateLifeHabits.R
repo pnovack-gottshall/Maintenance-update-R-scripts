@@ -1,5 +1,17 @@
 ## PROPOGATE LIFE HABIT CODINGS ACROSS ENTRIES, USING RELATIVES AS PROXIES
 
+## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ##
+## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ##
+## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ##
+##
+## 1. Why are some "higher-level" traits (such as sexual vs. asexual) not
+## propogating across all members of the higher taxon. Check the "Go through any
+## remaining missing" (startings line 528) to double-check whether these cases
+## are being properly flagged.
+##
+## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ##
+## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ##
+## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ##
 ## FUTURE FEATURE REQUEST? Add AbsStratDist here instead, so that propogated
 ## based not only on size, but also on life habit coding? Would require
 ## exporting canonical body size lengths!
