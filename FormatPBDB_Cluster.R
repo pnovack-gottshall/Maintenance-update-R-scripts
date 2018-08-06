@@ -178,9 +178,6 @@ marine.exceptions <- c("Chelonioidea", "Ophidiomorpha", "Mosasauroidea", "Thalat
                        "Pelecaniformes", "Pelagornithidae", "Plotopteridae", "Charadriiformes", "Cetacea",
                        "Sirenia", "Pinnipedia", "Desmostylia", "Ariidae", "Plotosidae")
 
-write.csv(x, file="PBDBformatted_NoTerr.csv", row.names=FALSE)
-# x <- read.csv(file="PBDBformatted_NoTerr.csv", header=TRUE, stringsAsFactors=FALSE)
-
 sq <- 1:nrow(x)
 marine.vert.exceptions <- x[sapply(sq, function(sq) any(marine.exceptions %in% x[sq, ])), ]
 # Remove the exceptions here, and add back in (in case of non-tetrapod duplicates)
@@ -190,6 +187,9 @@ marine.taxa <- rbind(marine.typical, marine.vert.exceptions)
 table(marine.taxa$Class)
 nrow(x)
 nrow(marine.taxa)
+
+write.csv(x, file="PBDBformatted_NoTerr.csv", row.names=FALSE)
+# x <- read.csv(file="PBDBformatted_NoTerr.csv", header=TRUE, stringsAsFactors=FALSE)
 
 
 ## Run following to manually combine my database and the PBDB databases
