@@ -142,7 +142,7 @@ alarm()
 write.csv(output2, file="PBDBformatted.csv", row.names=FALSE)
 
 
-# Parallel lapply version takes 60.2 secs for 1000 (or min for all)
+# Parallel lapply version takes 60.2 secs for 1000 (or 27.8 min for all)
 # Parallel lapply version (w/o export time) takes 19.7 secs for 1000 (or 23.7 mins for all)
 # Parallel lapplyLB version takes 642 secs for 1000 (or 12.8 hrs for all)
 # Parallel lapplyLB version (w/o export time) takes 602 secs for 1000 (or 12.0 hrs for all)
@@ -154,10 +154,11 @@ rbind(x[1000, ], output[1000, ], output2[1000, ])
 
 
 # x <- read.csv(file="PBDBformatted.csv", header=TRUE, stringsAsFactors=FALSE)
+head(x)
 
-
-## Remove terrestrial and non-marine taxa, but include marine tetrapods (list
-## courtesy of Bush and Bambach 2015)
+# Remove terrestrial and non-marine taxa, but include marine tetrapods (list
+# courtesy of Bush and Bambach, 2015, but modified to explicitly list three
+# cetacean suborders because Cetacea listed within Order Artiodactyla in PBDB)
 non.marine <- c("Arachnida", "Insecta", "Collembola", "Palaeophreatoicidae", 
                 "Limnocytheridae", "Darwinuloidea", "Cypridoidea", "Cytherideidae", 
                 "Assimineidae", "Stenothyridae", "Hydrobiidae", "Ampullariidae", "Cyclophoridae", 
@@ -176,7 +177,8 @@ marine.exceptions <- c("Chelonioidea", "Ophidiomorpha", "Mosasauroidea", "Thalat
                        "Sauropterygia", "Ichthyopterygia", "Mesoeucrocodylia", "Pterosauria", 
                        "Hesperornithiformes", "Ichthyornithiformes", "Sphenisciformes", "Procellariiformes", 
                        "Pelecaniformes", "Pelagornithidae", "Plotopteridae", "Charadriiformes", "Cetacea",
-                       "Sirenia", "Pinnipedia", "Desmostylia", "Ariidae", "Plotosidae")
+                       "Sirenia", "Pinnipedia", "Desmostylia", "Ariidae", "Plotosidae", "Archaeoceti", 
+                       "Mysticeti", "Odontoceti")
 
 sq <- 1:nrow(x)
 marine.vert.exceptions <- x[sapply(sq, function(sq) any(marine.exceptions %in% x[sq, ])), ]
@@ -188,7 +190,7 @@ table(marine.taxa$Class)
 nrow(x)
 nrow(marine.taxa)
 
-write.csv(x, file="PBDBformatted_NoTerr.csv", row.names=FALSE)
+write.csv(marine.taxa, file="PBDBformatted_NoTerr.csv", row.names=FALSE)
 # x <- read.csv(file="PBDBformatted_NoTerr.csv", header=TRUE, stringsAsFactors=FALSE)
 
 
