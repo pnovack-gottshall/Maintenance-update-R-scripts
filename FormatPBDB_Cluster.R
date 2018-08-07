@@ -135,6 +135,7 @@ prep <- NA
 prep <- sfLapply(x = gen.seq, fun = prep.PBDB, gen.names = gen.names, pbdb = pbdb) # Version without load-balancing
 # prep <- sfClusterApplyLB(x = gen.seq, fun = prep.PBDB, gen.names = gen.names, pbdb = pbdb) 	# Version using load-balancing
 sfStop()
+(Sys.time() - t.start1)
 output2 <- unpack.PBDB(prep)
 (Sys.time() - t.start0)
 (Sys.time() - t.start1)
@@ -142,7 +143,7 @@ alarm()
 write.csv(output2, file="PBDBformatted.csv", row.names=FALSE)
 
 
-# Parallel lapply version takes 60.2 secs for 1000 (or 27.8 min for all)
+# Parallel lapply version takes 60.2 secs for 1000 (21 s for the sfLapply) (or 27.8 min for all)
 # Parallel lapply version (w/o export time) takes 19.7 secs for 1000 (or 23.7 mins for all)
 # Parallel lapplyLB version takes 642 secs for 1000 (or 12.8 hrs for all)
 # Parallel lapplyLB version (w/o export time) takes 602 secs for 1000 (or 12.0 hrs for all)
