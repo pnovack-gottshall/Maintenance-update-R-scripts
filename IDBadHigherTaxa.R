@@ -8,7 +8,6 @@ setwd("C:/Users/pnovack-gottshall/Desktop/Databases/Maintenance & update R scrip
 x <- read.csv(file = "HigherTaxa.csv", header = TRUE)
 head(x)
 attach(x)
-# Huh?
 
 # Subfamilies
 tax <- levels(Subfamily)

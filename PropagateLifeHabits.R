@@ -7,7 +7,9 @@
 ## 1. Why are some "higher-level" traits (such as sexual vs. asexual) not
 ## propogating across all members of the higher taxon. Check the "Go through any
 ## remaining missing" (startings line 528) to double-check whether these cases
-## are being properly flagged.
+## are being properly flagged. (I think the issue is that when filling in these
+## cases, the find.rels() algorithm is not guaranteeing that the relatives have
+## missing traits filled in. See feature request below for additional details.)
 ##
 ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ##
 ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ##
