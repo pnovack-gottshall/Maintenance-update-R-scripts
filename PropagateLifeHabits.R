@@ -4,25 +4,13 @@
 ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ##
 ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ##
 ##
-## 1. Why are some "higher-level" traits (such as sexual vs. asexual) not
-## propogating across all members of the higher taxon. Check the "Go through any
-## remaining missing" (startings line 528) to double-check whether these cases
-## are being properly flagged. (I think the issue is that when filling in these
-## cases, the find.rels() algorithm is not guaranteeing that the relatives have
-## missing traits filled in. See feature request below for additional details.)
+## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ##
+## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ##
+## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ##
 ##
-## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ##
-## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ##
-## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ##
 ## FUTURE FEATURE REQUEST? Add AbsStratDist here instead, so that propogated
 ## based not only on size, but also on life habit coding? Would require
 ## exporting canonical body size lengths!
-
-## FUTURE FEATURE REQUEST? Note that the find.rel function does not guarantee
-## that all found relatives have a coded value for each life habit character.
-## Thus, the consensus (for example) among 5 relatives might really only be the
-## 1 relative coded for that character (if the others were left uncoded).
-
 
 ## BASIC LOGIC -------------------------------------------------------------
 
@@ -175,14 +163,14 @@ find.rels <- function(x, i, min.rels = 1, start = 4, end = 12, ref.g.col = 15,
 
 
 ## CALCULATE THE MODE AMONG OBSERVED CHARACTER STATES
-# NAs can be omitted (with default to include to match behavior of mean() and
-# median(). The standard 'mode' solution in case of ties (an intermediate value)
-# is nonsensical when dealing with discrete states. Here, ties are won based on
-# which state is listed first in the input data, which is a pseudorandom way to
-# 'flip a coin'.
+# NAs (and missing "" data) can be omitted (with default to include to match
+# behavior of mean() and median(). The standard 'mode' solution in case of ties
+# (an intermediate value) is nonsensical when dealing with discrete states.
+# Here, ties are won based on which state is listed first in the input data,
+# which is a pseudorandom way to 'flip a coin'.
 Mode <- function(x, na.rm = FALSE) {
   if (na.rm)
-    ux <- unique(na.omit(x))
+    ux <- unique(x[!is.na(x) & x != ""])
   else
     ux <- unique(x)
   ux[which.max(tabulate(match(x, ux)))]
@@ -193,20 +181,26 @@ Mode <- function(x, na.rm = FALSE) {
 ## VARIABLE)
 # rels = the data frame containing identified relatives.
 # cols  = identifies which columns to check across.
-consensus <- function(rels, cols, method = "constant") {
+# na.rm = should NAs and "" missing data be removed? Default is TRUE
+consensus <- function(rels, cols, method = "constant", na.rm = TRUE) {
   method <- tolower(method) # In case capitalized
   cs <- data.frame(rels[1, cols])
   row.names(cs) <- NULL
   cs[, ] <- ""
   for (c in seq_along(cols)) {
+    if (na.rm) {
+      state.c <- rels[, cols[c]]
+      state.c <- state.c[!is.na(state.c) & state.c != ""]
+    } else
+      state.c <- rels[, cols[c]]
     if (method == "constant") {
-      if (length(unique(rels[, cols[c]])) == 1L)
-        cs[c] <- rels[, cols[c]][1]
+      if (length(unique(state.c)) == 1L)
+        cs[c] <- state.c[1]
       else
         cs[c] <- NA
     }
     if (method == "mode")
-      cs[c] <- Mode(rels[, cols[c]], na.rm = TRUE)
+      cs[c] <- Mode(state.c, na.rm = na.rm)
   }
   return(cs)
 }
@@ -233,7 +227,7 @@ best.ref <- function(rels, cols, scale = NULL) {
     "Suborder", "Order", "Subclass", "Class", "Subphylum", "Phylum")
   wh.min <- 1
   if (nrow(rels) > 1L) {
-    csm <- consensus(rels = rels, cols = cols, method = "mode")
+    csm <- consensus(rels = rels, cols = cols, method = "mode", na.rm = TRUE)
     d <- dist(rbind(csm, rels[, cols]))
     dm <- as.matrix(d)[-1, 1]
     # If multiple best matches, use text matching to identify most likely type 
@@ -429,7 +423,7 @@ method <- "constant"
 interactive <- TRUE   # If want to watch updates in real time
 # interactive <- FALSE
 if (interactive) par("ask" = TRUE) else par("ask" = FALSE)
-ncs <- 14:98 # For printing interactive data
+ncs <- 14:98          # For printing interactive data
 (start.t <- Sys.time())
 
 for(i in 1:nrow(out)) {
@@ -474,7 +468,8 @@ for(i in 1:nrow(out)) {
     
     # Propogate codings, identify exemplar relative, and update metadata (but
     # only if non-size states changed)
-    cs <- consensus(rels = rels$rels, cols = eco.col, method = method)
+    cs <- consensus(rels = rels$rels, cols = eco.col, method = method, 
+                    na.rm = TRUE)
     # Following lines works but deprecated for now 
     # exemplar <- best.ref(rels = rels$rels, cols = eco.col, scale = rels$eco.sc)
     # If old reference taxon is no longer a good relative, pick different
@@ -546,11 +541,12 @@ for(i in 1:nrow(out)) {
       combined.any.missing(any.missing(out[i,], eco.col),
                            any.est(out[i,], est.col))
   }
+
   if (still.missing$any) {
     higher.rels <- find.rels(x = out, i = i, eco.col = eco.col, min.rels = 5,
       start = max(2, which(scales == as.character(out$EcologyScale[i]))), end = 12)
     higher.cs <- consensus(rels = higher.rels$rels, cols = still.missing$which, 
-      method = method)
+      method = method, na.rm = TRUE)
     # Drop size columns, if 'reverted' above
     # Ignore if consensus is missing or NA: 
     l.cs <- seq_along(still.missing$which)
