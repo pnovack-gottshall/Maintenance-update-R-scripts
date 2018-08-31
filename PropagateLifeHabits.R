@@ -175,10 +175,11 @@ find.rels <- function(x, i, min.rels = 1, start = 4, end = 12, ref.g.col = 15,
 
 
 ## CALCULATE THE MODE AMONG OBSERVED CHARACTER STATES
-# NAs can be omitted. The standard 'mode' solution in case of ties (an
-# intermediate value) is nonsensical when dealing with discrete states. Here,
-# ties are won based on which state is listed first in the input data, which is
-# a pseudorandom way to 'flip a coin'.
+# NAs can be omitted (with default to include to match behavior of mean() and
+# median(). The standard 'mode' solution in case of ties (an intermediate value)
+# is nonsensical when dealing with discrete states. Here, ties are won based on
+# which state is listed first in the input data, which is a pseudorandom way to
+# 'flip a coin'.
 Mode <- function(x, na.rm = FALSE) {
   if (na.rm)
     ux <- unique(na.omit(x))
@@ -205,7 +206,7 @@ consensus <- function(rels, cols, method = "constant") {
         cs[c] <- NA
     }
     if (method == "mode")
-      cs[c] <- Mode(rels[, cols[c]])
+      cs[c] <- Mode(rels[, cols[c]], na.rm = TRUE)
   }
   return(cs)
 }
