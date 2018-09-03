@@ -4,12 +4,12 @@
 ## PREPARE TIME SCALE -------------------------------------------------------------
 rm(list=ls())
 library(geoscale)
-library(paleobioDB)
-strat_names <- pbdb_intervals(limit="all", vocab="pbdb")
+strat_names <-
+  read.csv("https://www.paleobiodb.org/data1.2/intervals/list.csv?all_records&vocab=pbdb")
 head(strat_names)
 ## "Level-4" "subperiods" (eons are level 1, eras=level 2, periods=3,
 ## subperiods=4, epochs=5)
-ages <- strat_names[which(strat_names$level==4), ]
+ages <- strat_names[which(strat_names$scale_level == 4),]
 ## Add in Ediacaran, too:
 edia <- strat_names[which(strat_names$interval_name=="Ediacaran"), ]
 ages <- rbind(ages, edia)
@@ -17,8 +17,8 @@ ages[ ,1:5]
 
 # Get base, top, and midpoint ages for PBDB subperiods
 mids <- apply(ages[ ,4:5], 1, mean)
-base <- ages$early_age
-top <- ages$late_age
+base <- ages$max_ma
+top <- ages$min_ma
 
 # IMPORT DATA -------------------------------------------------------------
 setwd("C:/Users/pnovack-gottshall/Desktop/Databases/Maintenance & update R scripts")

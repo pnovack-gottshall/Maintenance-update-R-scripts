@@ -23,6 +23,9 @@ pbdb <- pbdb.all[which(pbdb.all$taxon_rank == "genus" |
                          pbdb.all$taxon_rank == "subgenus"), ]
 nrow(pbdb)
 
+## Run relevant code in SelectCols.R for UpdateAges&DivCurve.R to obtain
+## following output.
+
 ## Export occurrences as .csv file named "occs.csv" from "LifeHabits.fmp12" (in
 ## any sort order) with following columns: IDNumber, Phylum, Class, Order,
 ## Superfamily, Family, Genus, Subgenus, Species, early_period, early_age,
@@ -37,11 +40,11 @@ or.tbl <- table(occs$Order)
 sort(or.tbl, decreasing = FALSE)
 
 # Confirm that early_period and late_period are factors
-is.factor(occs$early_period)
-is.factor(occs$late_period)
+is.factor(occs$max_age)
+is.factor(occs$min_age)
 # If not, run following:
-# occs$early_period <- as.character(occs$early_period)
-# occs$late_period <- as.character(occs$late_period)
+# occs$max_age <- as.character(occs$max_age)
+# occs$min_age <- as.character(occs$min_age)
 head(occs)
 
 ## Any duplicated ID numbers?
@@ -68,12 +71,12 @@ if(length(table(table(occs$Genus))) > 1L) {
 ## PREP TIME SCALE #####################################################
 
 ## Get updated PBDB intervals and ages
-library(paleobioDB)
-strat_names <- pbdb_intervals(limit = "all", vocab = "pbdb")
+strat_names <-
+  read.csv("https://www.paleobiodb.org/data1.2/intervals/list.csv?all_records&vocab=pbdb")
 head(strat_names)
 ## "Level-4" "subperiods" (eons are level 1, eras=level 2, periods=3,
 ## subperiods=4, epochs=5)
-l4s <- strat_names[which(strat_names$level == 4),]
+l4s <- strat_names[which(strat_names$scale_level == 4),]
 ## Add in Ediacaran, too:
 edia <- strat_names[which(strat_names$interval_name == "Ediacaran"),]
 l4s <- rbind(l4s, edia)
@@ -81,7 +84,7 @@ l4s[, 1:5]
 
 ## Any disallowed intervals? (Allow blank ("") and Recent, although not official
 ## subperiods)
-ints <- unique(c(levels(occs$early_period), levels(occs$late_period)))
+ints <- unique(c(levels(occs$max_age), levels(occs$min_age)))
 ints[which(!ints %in% l4s$interval_name)]
 
 ## Manually replace the bad interval (one at a time, within FMP file [and
@@ -93,7 +96,7 @@ ints[which(!ints %in% l4s$interval_name)]
 
 ## With this one: 
 
-# l4s[c(length(which(l4s$late_age <= wh.bad$late_age)), length(which(l4s$late_age < wh.bad$early_age))), 3:5]
+# l4s[c(length(which(l4s$min_ma <= wh.bad$min_ma)), length(which(l4s$min_ma < wh.bad$max_ma))), 3:5]
 
 
 
@@ -133,38 +136,38 @@ for (i in 1:length(Gen)) {
   if (len.pbdb.G == 0L) override <- TRUE
   if (override) {
     # If only range is provided, give correct interval name :
-    if (occs$early_period[wh.occs.G] == "" &
-        occs$late_period[wh.occs.G] == "" &
-        !is.na(occs$early_age[wh.occs.G]) &
-        !is.na(occs$late_age[wh.occs.G])) {
-      occs$early_period[wh.occs.G] <-
-        rep(as.character(l4s$interval_name[length(which(l4s$late_age < occs$early_age[wh.occs.G]))]), len.g)
-      occs$late_period[wh.occs.G] <-
-        rep(as.character(l4s$interval_name[length(which(l4s$late_age <= occs$late_age[wh.occs.G]))]), len.g)
+    if (occs$max_age[wh.occs.G] == "" &
+        occs$min_age[wh.occs.G] == "" &
+        !is.na(occs$max_ma[wh.occs.G]) &
+        !is.na(occs$min_ma[wh.occs.G])) {
+      occs$max_age[wh.occs.G] <-
+        rep(as.character(l4s$interval_name[length(which(l4s$min_ma < occs$max_ma[wh.occs.G]))]), len.g)
+      occs$min_age[wh.occs.G] <-
+        rep(as.character(l4s$interval_name[length(which(l4s$min_ma <= occs$min_ma[wh.occs.G]))]), len.g)
     }
     # If only interval names are given, give correct range (be aware range could be overextended):
-    if (occs$early_period[wh.occs.G] != "" &
-        occs$late_period[wh.occs.G] != "" &
-        is.na(occs$early_age[wh.occs.G]) &
-        is.na(occs$late_age[wh.occs.G])) {
-      if (occs$early_period[wh.occs.G] == "Recent") {
-        occs$early_age[wh.occs.G] <- rep(0, len.g)
+    if (occs$max_age[wh.occs.G] != "" &
+        occs$min_age[wh.occs.G] != "" &
+        is.na(occs$max_ma[wh.occs.G]) &
+        is.na(occs$min_ma[wh.occs.G])) {
+      if (occs$max_age[wh.occs.G] == "Recent") {
+        occs$max_ma[wh.occs.G] <- rep(0, len.g)
       } else {
-        occs$early_age[wh.occs.G] <-
-          rep(l4s$early_age[which(l4s$interval_name == as.character(occs$early_period[wh.occs.G]))], len.g)
+        occs$max_ma[wh.occs.G] <-
+          rep(l4s$max_ma[which(l4s$interval_name == as.character(occs$max_age[wh.occs.G]))], len.g)
       }
-      if (occs$late_period[wh.occs.G] == "Recent") { 
-        occs$late_age[wh.occs.G] <- rep(0, len.g)
+      if (occs$min_age[wh.occs.G] == "Recent") { 
+        occs$min_ma[wh.occs.G] <- rep(0, len.g)
       } else {
-        occs$late_age[wh.occs.G] <-
-          rep(l4s$late_age[which(l4s$interval_name == as.character(occs$late_period[wh.occs.G]))], len.g)
+        occs$min_ma[wh.occs.G] <-
+          rep(l4s$min_ma[which(l4s$interval_name == as.character(occs$min_age[wh.occs.G]))], len.g)
       }
     }
     # If no stratigraphic information is available:
-    if (occs$early_period[wh.occs.G] == "" &
-        occs$late_period[wh.occs.G] == "" &
-        is.na(occs$early_age[wh.occs.G]) &
-        is.na(occs$late_age[wh.occs.G])) {
+    if (occs$max_age[wh.occs.G] == "" &
+        occs$min_age[wh.occs.G] == "" &
+        is.na(occs$max_ma[wh.occs.G]) &
+        is.na(occs$min_ma[wh.occs.G])) {
       cat(paste("  - check ", gen, " (", occs$Class[wh.occs.G], 
         "): no age known in PBDB; check Treatise/Sepkoski\n", sep=""))
     }
@@ -172,10 +175,11 @@ for (i in 1:length(Gen)) {
   
   if(override) next
 
-  # In case of homonyms, reconfirm "by hand" (using PBDB) so that do not assign
-  # range to wrong taxon. (The PBDB uses the same 'accepted_name' for synonyms,
-  # making it challenging in the raw data to distinguish homonyms from synonyms,
-  # but synonym are assigned the same strat ranges whereas homonyms will not.)
+  # In case of homonyms, reconfirm "by hand" (using PBDB web interface) so that
+  # do not assign range to wrong taxon. (The PBDB uses the same 'accepted_name'
+  # for synonyms, making it challenging in the raw data to distinguish homonyms
+  # from synonyms, but synonyms are assigned the same strat ranges whereas
+  # homonyms are not.)
   if (len.pbdb.G > 1L &
       (length(unique(pbdb$firstapp_max_ma[wh.pbdb.G])) > 1L |
       length(unique(pbdb$lastapp_min_ma[wh.pbdb.G])) > 1L))
@@ -187,28 +191,28 @@ for (i in 1:length(Gen)) {
   min.ma <- min(gen.pbdb$lastapp_min_ma)
   
   # Flag any discrepancies in extinct / extant tags
-  if (any(occs$late_period[wh.occs.G] == "Recent") &
+  if (any(occs$min_age[wh.occs.G] == "Recent") &
       any(gen.pbdb$is_extant == "extinct"))
     cat("+ Confirm extinct/extant status for", gen, "\n")
-  if (any(occs$late_period[wh.occs.G] != "Recent") &
+  if (any(occs$min_age[wh.occs.G] != "Recent") &
       any(gen.pbdb$is_extant == "extant"))
     cat("+ Confirm extinct/extant status for", gen, "\n")
   
   # Assign to "level-4" ages
   Early <-
-    as.character(l4s$interval_name[length(which(l4s$late_age < max.ma))])
+    as.character(l4s$interval_name[length(which(l4s$min_ma < max.ma))])
   Late <-
-    as.character(l4s$interval_name[length(which(l4s$late_age <= min.ma))])
-  occs$early_age[wh.occs.G] <- rep(max.ma, len.g)
-  occs$early_period[wh.occs.G] <- rep(Early, len.g)
+    as.character(l4s$interval_name[length(which(l4s$min_ma <= min.ma))])
+  occs$max_ma[wh.occs.G] <- rep(max.ma, len.g)
+  occs$max_age[wh.occs.G] <- rep(Early, len.g)
   # Implement pull-of-the-Recent
-  if (any(occs$late_period[wh.occs.G] == "Recent") |
+  if (any(occs$min_age[wh.occs.G] == "Recent") |
       any(gen.pbdb$is_extant == "extant")) {
     Late <- "Recent"
     min.ma <- 0
   }
-  occs$late_age[wh.occs.G] <- rep(min.ma, len.g)
-  occs$late_period[wh.occs.G] <- rep(Late, len.g)
+  occs$min_ma[wh.occs.G] <- rep(min.ma, len.g)
+  occs$min_age[wh.occs.G] <- rep(Late, len.g)
 }
 # write.csv(occs, file="PBDBDates.csv", row.names=FALSE)
 
@@ -217,9 +221,13 @@ for (i in 1:length(Gen)) {
 # Use next command if want to use a direct export from FileMakerPro. (Make
 # sure the file details are the same as above.)
 
-# occs <- read.csv("PBDBDates.csv", header = TRUE)
-# occs <- read.delim("PostSizes_withPBDB.tab", sep = "\t", header = TRUE)
+colCl <- c(rep(NA, 9), "character", NA, "character", NA)
+# occs <- read.csv("PBDBDates.csv", header = TRUE, stringsAsFactors=FALSE, colClasses=colCl)
+# occs <- read.delim("PostSizes_withPBDB.tab", sep = "\t", header = TRUE, stringsAsFactors=FALSE, colClasses=colCl)
 head(occs)
+
+
+
 
 
 
@@ -233,22 +241,22 @@ head(occs)
 ## Total D, total number of taxa in interval (X-FL + X-bL + X-Ft + X-bt)
 
 # Get midpoint age for PBDB subperiods
-mids <- apply(l4s[ ,4:5], 1, mean)
-divs <- data.frame(interval = l4s$interval_name, base = l4s$early_age,
-                   top = l4s$late_age, midpt = mids, div = NA)
+mids <- apply(l4s[ ,9:10], 1, mean)
+divs <- data.frame(interval = l4s$interval_name, base = l4s$max_ma,
+                   top = l4s$min_ma, midpt = mids, div = NA)
 
 # Genus-level diversity curve (using database occurrences above)
 for(t in 1:nrow(divs)) {
-  FL <- length(which(occs$early_age > divs$base[t] &
-                       occs$late_age < divs$top[t]))
-  bL <- length(which(occs$early_age > divs$base[t] &
-                       occs$late_age < divs$base[t] &
-                       occs$late_age >= divs$top[t]))
-  Ft <- length(which(occs$late_age < divs$top[t] &
-                       occs$early_age <= divs$base[t] &
-                       occs$early_age > divs$top[t]))
-  bt <- length(which(occs$early_age <= divs$base[t] &
-                       occs$late_age >= divs$top[t]))
+  FL <- length(which(occs$max_ma > divs$base[t] &
+                       occs$min_ma < divs$top[t]))
+  bL <- length(which(occs$max_ma > divs$base[t] &
+                       occs$min_ma < divs$base[t] &
+                       occs$min_ma >= divs$top[t]))
+  Ft <- length(which(occs$min_ma < divs$top[t] &
+                       occs$max_ma <= divs$base[t] &
+                       occs$max_ma > divs$top[t]))
+  bt <- length(which(occs$max_ma <= divs$base[t] &
+                       occs$min_ma >= divs$top[t]))
   divs$div[t] <- FL + bL + Ft + bt
 }
 head(divs)
@@ -261,6 +269,7 @@ geoscalePlot(divs$midpt, divs$div, units = c("Epoch", "Period"),
              cex.ts = 0.75, cex.pt = 1, age.lim = c(540, 0), data.lim = NULL,
              ts.col = TRUE, label = "Genus diversity", vers = "ICS2015", 
              type = "l", lwd = 3)
+
 
 
 ## Recalculate ranges for other taxonomic levels
@@ -283,17 +292,17 @@ for (r in 1:length(ranks)) {
     wh.occs.taxon <- which(occs[[wh.col]] == taxon)
     t.occs[i, 1:(wh.col - 1)] <- occs[wh.occs.taxon[1], 2:wh.col]
     # Use current ranges before updating with PBDB:
-    wh.max <- which.max(occs$early_age[wh.occs.taxon])
-    wh.min <- which.min(occs$late_age[wh.occs.taxon])
-    occs.max.ma <- occs$early_age[wh.occs.taxon][wh.max]
-    occs.min.ma <- occs$late_age[wh.occs.taxon][wh.min]
-    occs.Early <- as.character(occs$early_period[wh.occs.taxon][wh.max])
-    occs.Late <- as.character(occs$late_period[wh.occs.taxon][wh.min])
+    wh.max <- which.max(occs$max_ma[wh.occs.taxon])
+    wh.min <- which.min(occs$min_ma[wh.occs.taxon])
+    occs.max.ma <- occs$max_ma[wh.occs.taxon][wh.max]
+    occs.min.ma <- occs$min_ma[wh.occs.taxon][wh.min]
+    occs.Early <- as.character(occs$max_age[wh.occs.taxon][wh.max])
+    occs.Late <- as.character(occs$min_age[wh.occs.taxon][wh.min])
     if (length(occs.max.ma) > 0L) {
-      t.occs$early_age[i] <- occs.max.ma
-      t.occs$early_period[i] <- occs.Early
-      t.occs$late_age[i] <- occs.min.ma
-      t.occs$late_period[i] <- occs.Late
+      t.occs$max_ma[i] <- occs.max.ma
+      t.occs$max_age[i] <- occs.Early
+      t.occs$min_ma[i] <- occs.min.ma
+      t.occs$min_age[i] <- occs.Late
     }
     # Update with PBDB (if extends range):
     wh.pbdb.taxon <- which(pbdb$taxon_name == taxon)
@@ -303,15 +312,15 @@ for (r in 1:length(ranks)) {
         is.na(taxon.pbdb$lastapp_min_ma)) next
     max.ma <- max(taxon.pbdb$firstapp_max_ma, na.rm = TRUE)
     min.ma <- min(taxon.pbdb$lastapp_min_ma, na.rm = TRUE)
-    if (max.ma > occs.max.ma) t.occs$early_age[i] <- max.ma
-    if (min.ma < occs.min.ma) t.occs$late_age[i] <- min.ma
+    if (max.ma > occs.max.ma) t.occs$max_ma[i] <- max.ma
+    if (min.ma < occs.min.ma) t.occs$min_ma[i] <- min.ma
     # Assign to "level-4" ages
     Early <-
-      as.character(l4s$interval_name[length(which(l4s$late_age < t.occs$early_age[i]))])
+      as.character(l4s$interval_name[length(which(l4s$min_ma < t.occs$max_ma[i]))])
     Late <-
-      as.character(l4s$interval_name[length(which(l4s$late_age <= t.occs$late_age[i]))])
-    t.occs$late_period[i] <- Late
-    t.occs$early_period[i] <- Early
+      as.character(l4s$interval_name[length(which(l4s$min_ma <= t.occs$min_ma[i]))])
+    t.occs$min_age[i] <- Late
+    t.occs$max_age[i] <- Early
   }
   
   write.csv(t.occs, file=paste("PBDBDates_", t.rank, ".csv", sep=""), row.names=FALSE)
@@ -320,28 +329,28 @@ for (r in 1:length(ranks)) {
   # are the same as above.
   
   # t.occs <- read.csv("occs2.csv", header=TRUE)
-  # t.occs$early_period <- as.character(t.occs$early_period); # t.occs$late_period <- as.character(t.occs$late_period)
+  # t.occs$max_age <- as.character(t.occs$max_age); # t.occs$min_age <- as.character(t.occs$min_age)
   # head(t.occs)
 
   ## Construct diversity curves        (using 'Total Diversity' of Foote 2000)
   
   # Get midpoint age for PBDB subperiods
-  mids <- apply(l4s[, 4:5], 1, mean)
-  divs <- data.frame(interval = l4s$interval_name, base = l4s$early_age,
-                     top = l4s$late_age, midpt = mids, div = NA)
+  mids <- apply(l4s[, 9:10], 1, mean)
+  divs <- data.frame(interval = l4s$interval_name, base = l4s$max_ma,
+                     top = l4s$min_ma, midpt = mids, div = NA)
   
   # Higher taxa diversity curve (using database occurrences above)
   for (t in 1:nrow(divs)) {
-    FL <- length(which(t.occs$early_age > divs$base[t] &
-                         t.occs$late_age < divs$top[t]))
-    bL <- length(which(t.occs$early_age > divs$base[t] &
-                         t.occs$late_age < divs$base[t] &
-                         t.occs$late_age >= divs$top[t]))
-    Ft <- length(which(t.occs$late_age < divs$top[t] &
-                         t.occs$early_age <= divs$base[t] &
-                         t.occs$early_age > divs$top[t]))
-    bt <- length(which(t.occs$early_age <= divs$base[t] &
-                         t.occs$late_age >= divs$top[t]))
+    FL <- length(which(t.occs$max_ma > divs$base[t] &
+                         t.occs$min_ma < divs$top[t]))
+    bL <- length(which(t.occs$max_ma > divs$base[t] &
+                         t.occs$min_ma < divs$base[t] &
+                         t.occs$min_ma >= divs$top[t]))
+    Ft <- length(which(t.occs$min_ma < divs$top[t] &
+                         t.occs$max_ma <= divs$base[t] &
+                         t.occs$max_ma > divs$top[t]))
+    bt <- length(which(t.occs$max_ma <= divs$base[t] &
+                         t.occs$min_ma >= divs$top[t]))
     divs$div[t] <- FL + bL + Ft + bt
   }
   head(divs)

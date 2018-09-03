@@ -69,8 +69,7 @@
 # estimated size measurement, and it might be used to estimate a missing size
 # for species B, which was originally used to estimate the missing size for A.)
 # IF DO THIS, PERFORM THE DELETIONS ON A COPY OF THE DATABASE RATHER THAN THE
-# MASTER DATABASE ITSELF! (Once export, also go through and delete any relevent
-# History_Size notes.)
+# MASTER DATABASE ITSELF!
 
 # (1) Before exporting, sort the entries so that BodySizeScale=Species is first,
 # followed by Subgenus, Genus, etc., and second by BodyVolume (in descending
@@ -86,7 +85,7 @@
 # Taxonomy: Phylum, Subphylum, Class, Subclass, Order, Suborder, Superfamily,
 # Family, Subfamily, Genus, Subgenus, Species
 
-# Proxy fields: early_age, late_age, BodySizeScale, RefGenusSize,
+# Proxy fields: max_ma, min_ma, BodySizeScale, RefGenusSize,
 # RefSpeciesSize, Enterer, DateEntered_Size, SizeChanged, History_Size,
 # BodyMeasureReference
 
@@ -170,7 +169,7 @@ tail(input)
 table(input$BodySizeScale)
 
 # Troubleshooting
-if(any(is.na(input$early_age)) || any(is.na(input$late_age)))
+if(any(is.na(input$max_ma)) || any(is.na(input$min_ma)))
   stop("Some entries have missing age ranges, which is used in body size propogation 
 algorithm. Leaving ranges empty will mean that missing size measurements will not be propogated for these taxa. Update ages from the Paleobiology Database before proceeding.\n")
 
@@ -237,8 +236,8 @@ find.rel <- function(x, i, start = 4, end = 12, photo.cols = NULL,
   # If multiple matches, pick one with most similar geologic range. If still
   # multiple matches, use character matching to find most likely type taxon.
   if (nr > 1L & sim.time) {
-    age.dev <- (out$early_age[i] - rels$early_age) ^ 2 +
-      (out$late_age[i] - rels$late_age) ^ 2
+    age.dev <- (out$max_ma[i] - rels$max_ma) ^ 2 +
+      (out$min_ma[i] - rels$min_ma) ^ 2
     if (length(which(age.dev == min(age.dev))) > 1L) {
       higher.taxon <- rels[1, which(colnames(rels) == scales[e])]
       sim.age.rels <- rels[which(age.dev == min(age.dev)), ]
