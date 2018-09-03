@@ -65,13 +65,8 @@
 # followed by Subgenus, Genus, etc. That way those with best scales are checked
 # for completeness first.
 
-# (2) Export following data fields as 'PreLH.tab' tab-delimited format. Open and
-# add headers (easiest to do saving crap file in Excel format). DO NOT SAVE AS
-# EXCEL FORMAT, AS DOING SO IDIOSYNCRATICALLY CHANGES NAs TO 0s AND 1s!! (MUST
-# be tab-delimited, as several text fields contain commas!!!)
-
-# (3) Open in MSWord and delete all quotation marks (replacing "^t with ^t, ^t"
-# with ^t, and "" with ").
+# (2) Run relevant code in SelectCols.R for PropogateSizes.R to obtain following
+# output. Then continue with step 3.
 
 # IDNumber
 
@@ -94,6 +89,11 @@
 
 # The same characters, with in Est_X form (excluding Est_AbsStratDist, Est_AP,
 # Est_DV, and EstT).
+
+# (3) Open in MSWord and delete all quotation marks (replacing "^t with ^t, ^t"
+# with ^t, and "" with ").
+
+
 
 rm(list = ls())
 setwd("C:/Users/pnovack-gottshall/Desktop/Databases/Maintenance & update R scripts")

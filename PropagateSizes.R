@@ -76,9 +76,8 @@
 # order, with largest first). (This size sort order means taxa with all three
 # measurements are placed before those missing one or more sizes.)
 
-# (2) Export following data fields as 'PreSizes.tab' tab-delimited format. DO
-# NOT SAVE AS EXCEL FORMAT, AS DOING SO IDIOSYNCRATICALLY CHANGES NAs TO 0s AND
-# 1s!! (MUST be tab-delimited, as several text fields contain commas!!!)
+# (2) Run relevant code in SelectCols.R for PropogateSizes.R to obtain following
+# output. Then continue with step 3.
 
 # IDNumber
 
