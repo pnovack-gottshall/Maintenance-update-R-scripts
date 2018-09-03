@@ -73,12 +73,12 @@ cols <- c("IDNumber", "Phylum", "Subphylum", "Class", "Subclass", "Order",
           "History_Size", "BodyMeasureReference", "APLength", "TransverseLength", 
           "DVLength", "PhotoAP", "PhotoTransverse", "PhotoDV", "APScale", 
           "TransverseScale", "DVScale", "Est_AP", "Est_T", "Est_DV", 
-          "AbsStratDistance")
+          "AbsStratDistance", "Est_AbsStratDistance")
 wh.cols <- match(cols, colnames(all))
 selected <- all[ ,wh.cols]
 head(selected)
 if(!identical(cols, colnames(selected))) stop("column names are not as specified!")
-write.table(selected, file="PreSizes.tab", row.names = FALSE, sep = "\t")
+write.table(selected, file="PreSizes.tab", row.names = FALSE, sep = "\t", quote = FALSE)
 
 
 
@@ -114,5 +114,5 @@ wh.cols <- match(cols, colnames(all))
 selected <- all[ ,wh.cols]
 head(selected)
 if(!identical(cols, colnames(selected))) stop("column names are not as specified!")
-write.table(selected, file="PreLH.tab", row.names = FALSE, sep = "\t")
+write.table(selected, file="PreLH.tab", row.names = FALSE, sep = "\t", quote = FALSE)
 

@@ -72,8 +72,9 @@
 # MASTER DATABASE ITSELF!
 
 # (1) Before exporting, sort the entries so that BodySizeScale=Species is first,
-# followed by Subgenus, Genus, etc., and second by BodyVolume (in descending
-# order, with largest first). (This size sort order means taxa with all three
+# followed by Subgenus, Genus, etc., and second by AbsStratDistance (in
+# descending order, with largest first), and third BodyVolume (with largest
+# first). (This sort order means taxa with AbsStratDistances and all three
 # measurements are placed before those missing one or more sizes.)
 
 # (2) Run relevant code in SelectCols.R for PropogateSizes.R to obtain following
@@ -102,12 +103,10 @@
 # MARK IS CORRECTLY AT THE END OF A TEXT FIELD] "^t with ^t and replacing ^t"
 # with ^t and replacing "" with "). Re-save file in same format.
 
-# (4) In Excel, add a row for headers and confirm the column headers are correct
-# (and no cells are "hanging"). (If "hanging", it means there is a hidden tab;
-# remove the tab, re-save the file, and re-open.)
-
-# (5) Add a new column counting 'PhotoX' columns with values. TROUBLESHOOT:
-# Confirm that all 'Sp/Subg/Gen' have at least 1 measurement!
+# (5) Open in Excel. Add a new column counting 'PhotoX' columns with values.
+# (HINT: Use =MIN((3-COUNTA(PhotoAP:PhotoDV)),COUNT(Est_AP:Est_DV)) that allows
+# including the Est_X columns!) TROUBLESHOOT: Confirm that all 'Sp/Subg/Gen'
+# have at least 1 measurement! Also delete any NAs in AbsStratDistance.
 
 # (6) Sort the BodySizeScale = 'Sp/Subg/Gen' rows by (1) number of PhotoX
 # columns (largest first) so entries with complete (all 3) size measurements are
@@ -115,9 +114,12 @@
 # more-complete sizes are checked first, so that later entries can use the
 # largest available pool of relatives. (2) Second, sort item by AbsStratDist,
 # with largest values first (so those with estimated AbsStratDists are
-# considered first to propogate to those lacking them).
+# considered first to propogate to those lacking them). (3) Third, sort by Body
+# Size, with largest values first. (You can use the product of remaining values
+# as a proxy.)
 
-# (7) Delete the added 'count' column and resave.
+# (7) Delete the added 'PhotoX' column and resave.
+
 
 
 ## READ AND PROCESS DATA ---------------------------------------------------
@@ -178,6 +180,7 @@ if (any(table(input$IDNumber) > 1)) {
   print(which(table(input$IDNumber) > 1))
   stop("There are duplicate IDNumbers. Fix before proceeding! See above for list.")
 }
+
 
 
 ## FUNCTIONS ---------------------------------------
@@ -326,11 +329,11 @@ get.strat <- function(target, ref) {
 
 
 ## Examples --------------------------------------------------------------------
-# i <- which(out$Genus == "Etoctenocystis")   # ctenocystoid Etoctenocystis
+# i <- which(out$Genus == "Etoctenocystis") # ctenocystoid Etoctenocystis
 # i <- which(out$Genus == "Isogramma")      # brachiopod Isogramma
 # i <- which(out$Genus == "Rhytimya")       # bivalve Rhytimya
 # i <- which(out$Genus == "Bighornia")      # rugose coral Bighornia
-i <- which(out$Genus == "Caturus")      # fish Caturus
+i <- which(out$Genus == "Caturus")          # fish Caturus
 out[i, c(1:16, 24:32, 36)]
 any.missing(out[i, ], photo.cols, est.cols)
 rel <- find.rel(out, i, photo.cols = photo.cols, est.cols = est.cols)
@@ -377,6 +380,9 @@ AbsStratDist.text <- c("AP.", "T.", "DV.", "30 degrees (from horiz.) of AP, or h
 seq.AbsStratDist <- rep(seq.int(AbsStratDist.text), 2)
 interactive <- TRUE   # If want to watch updates in real time
 if(interactive) par("ask"=TRUE) else par("ask"=FALSE)
+record.log <- TRUE
+record.file <- "SizeLog.txt"
+if(record.log) cat("Changes made to body sizes on", today, ":\n\n", file = record.file, append = FALSE)
 (start.t <- Sys.time())
 
 for (i in 1:nrow(out)) {
@@ -390,7 +396,8 @@ for (i in 1:nrow(out)) {
   # Ignore if already coded at species, subgenus or genus level AND complete
   this.scale <- out$BodySizeScale[i]
   missing <- any.missing(out[i, ], photo.cols, est.cols)
-  missing.strat <- is.na(out$AbsStratDistance[i])
+  missing.strat <- is.na(out$AbsStratDistance[i]) |
+    out$Est_AbsStratDistance[i] == "Estimated"
   if (!missing$any & !missing.strat & (this.scale == "Species" | 
       this.scale == "Subgenus" | this.scale == "Genus")) next
   
@@ -532,8 +539,10 @@ for (i in 1:nrow(out)) {
       # Discard all if some aren't a canonical orientation (because ignored in 'get.strat')
       if (length(poss.strats) != rels.with.strats)
         poss.strats <- NA
-      if (length(unique(na.omit(poss.strats))) == 1L)
+      if (length(unique(na.omit(poss.strats))) == 1L) {
         out$AbsStratDistance[i] <- poss.strats[1]
+        out$Est_AbsStratDistance[i] <- "Estimated"
+      }
     }
   } else {
     # Or update AbsStratDist if previously existed, but some measurements were updated
@@ -569,9 +578,9 @@ for (i in 1:nrow(out)) {
             signif(input$AbsStratDistance[i], 3), ". ", out$History_Size[i])
   }
   
-  # Interactive mode (to observe how states are being propogated)
-  if (interactive &
-      ncol(better.all.equal(input[i, ], out[i, ], sig.digits = 3)) > 0L) {
+  # Interactive mode (to observe how states are being propogated in real time)
+  changes.made <- ncol(better.all.equal(input[i, ], out[i, ], sig.digits = 3)) > 0L
+  if (interactive & changes.made) {
     plot(1, 1, type = "n", bty = "n", xaxt = "n", yaxt = "n", xlab = "", ylab = "")
     text(1, 1, as.character(paste(out$Genus[i], out$Species[i])), cex = 2)
     cat(as.character(paste(out$Genus[i], out$Species[i])), "\n")
@@ -579,6 +588,19 @@ for (i in 1:nrow(out)) {
     print(better.all.equal(input[i, -c(20, ATD.cols)], out[i, -c(20, ATD.cols)],
                            nums = c(23:25, 32)))     # If want to mask date and calculated lengths
     cat("\n")
+  }
+
+  # If recording a log of changes made
+  if (record.log & changes.made) {
+    cat(as.character(paste(out$Genus[i], out$Species[i])), "\n", file = record.file,
+        append = TRUE)
+    # Note that also deprecating printing of History_Size because of false
+    # positives due to simple change in date.
+    comps <- better.all.equal(input[i, -c(20, 22, ATD.cols)], 
+                              out[i, -c(20, 22, ATD.cols)], nums = c(22:24, 31))
+    write.table(comps, file = record.file, append = TRUE, sep = "\t\t", 
+                quote = FALSE, row.names = FALSE)
+    cat("\n\n", file = record.file, append = TRUE)
   }
   
 }
