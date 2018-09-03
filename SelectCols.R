@@ -42,7 +42,7 @@ head(all)
 ## CHOOSE SELECTED COLUMN SET -----------------------------------------------------
 
 
-# IDBadHigherTaxa columns:
+# IDBadHigherTaxa columns:     ----------------------------------------------------
 cols <- c("Phylum", "Subphylum", "Class", "Subclass", "Order", "Suborder", 
           "Superfamily", "Family", "Subfamily")
 wh.cols <- match(cols, colnames(all))
@@ -53,7 +53,7 @@ write.csv(selected, file="HigherTaxa.csv", row.names = FALSE)
 
 
 
-# UpdateAges&DivCurve columns:
+# UpdateAges&DivCurve columns: ----------------------------------------------------
 cols <- c("IDNumber", "Phylum", "Class", "Order", "Superfamily", "Family", "Genus", 
           "Subgenus", "Species", "max_age", "max_ma", "min_age", "min_ma")
 wh.cols <- match(cols, colnames(all))
@@ -65,7 +65,7 @@ write.csv(selected, file="occs.csv", row.names = FALSE)
 
 
 
-# PropogateSizes columns:
+# PropogateSizes columns:     ----------------------------------------------------
 cols <- c("IDNumber", "Phylum", "Subphylum", "Class", "Subclass", "Order", 
           "Suborder", "Superfamily", "Family", "Subfamily", "Genus", "Subgenus", 
           "Species", "max_ma", "min_ma", "BodySizeScale", "RefGenusSize", 
@@ -83,7 +83,7 @@ write.table(selected, file="PreSizes.tab", row.names = FALSE, sep = "\t", quote 
 
 
 
-# PropogateLH columns:
+# PropogateLH columns:     ----------------------------------------------------
 cols <- c("IDNumber", "Phylum", "Subphylum", "Class", "Subclass", "Order", 
           "Suborder", "Superfamily", "Family", "Subfamily", "Genus", "Subgenus", 
           "Species", "EcologyScale", "RefGenusEco", "RefSpeciesEco", 
