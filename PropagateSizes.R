@@ -104,7 +104,7 @@
 # with ^t and replacing "" with "). Re-save file in same format.
 
 # (5) Open in Excel. Add a new column counting 'PhotoX' columns with values.
-# (HINT: Use =MIN((3-COUNTA(Est_AP:Est_DV)),COUNT(PhotoAP:PhotoDV)) that allows
+# (HINT: Use =MIN((3-COUNTA(Est_AP:Est_DV)),COUNT(APLength:DVLength)) that allows
 # including the Est_X columns!) TROUBLESHOOT: Confirm that all 'Sp/Subg/Gen'
 # have at least 1 measurement! Also delete any NAs in AbsStratDistance.
 
@@ -609,7 +609,7 @@ for (i in 1:nrow(out)) {
 # Note that occasionally a rounding error [caused by minor differences between
 # the better.all.equal(sig,digits=2) amd better.all.equal(sig.digits=2)] occurs
 # that triggers a false positive change. This results in a 'data frame with 0
-# columns and 2 rows' result. You can ignore these 'results.'
+# columns and 2 rows' result. You can ignore these results.
 
 
 round(table(input$BodySizeScale) * 100 / nrow(input), 1)
