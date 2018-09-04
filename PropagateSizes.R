@@ -1,22 +1,5 @@
 ## PROPOGATE BODY SIZE CODINGS ACROSS ENTRIES, USING RELATIVES AS PROXIES
 
-## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ##
-## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ##
-## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ##
-##
-## 1. Why are some seemingly fine AbsStratDists being deleted? (Ex., Homalonotus
-## and Colpocoryphe) It seems it happens when the entry being processed has
-## BodySizeScale > Genus level but EcoScale at Genus or Species. Perhaps the new
-## Est_AbsStratDist will fix? (Need to incorporate this into the code!)
-## 
-## 2. Need to add code to deal with "Est_AbsStratDist" that tags when to
-## override the AbsStratDist versus keep it.
-##
-## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ##
-## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ##
-## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ##
-
-
 ## BASIC LOGIC -------------------------------------------------------------
 
 # "Relative' means the smallest inclusive taxonomic group the entry is related
@@ -104,9 +87,10 @@
 # with ^t and replacing "" with "). Re-save file in same format.
 
 # (5) Open in Excel. Add a new column counting 'PhotoX' columns with values.
-# (HINT: Use =MIN((3-COUNTA(Est_AP:Est_DV)),COUNT(APLength:DVLength)) that allows
-# including the Est_X columns!) TROUBLESHOOT: Confirm that all 'Sp/Subg/Gen'
-# have at least 1 measurement! Also delete any NAs in AbsStratDistance.
+# (HINT: Use =MIN((3-COUNTA(Est_AP:Est_DV)),COUNT(APLength:DVLength)) that
+# allows including the Est_X columns!) TROUBLESHOOT: Confirm that all
+# 'Sp/Subg/Gen' have at least 1 measurement! Also delete any NAs in
+# AbsStratDistance and size measures, and delete size measures that are 0.
 
 # (6) Sort the BodySizeScale = 'Sp/Subg/Gen' rows by (1) number of PhotoX
 # columns (largest first) so entries with complete (all 3) size measurements are
@@ -194,10 +178,15 @@ if (any(table(input$IDNumber) > 1)) {
 #     including unknowns).
 #  photo.cols and est.cols = which columns to use when calling 'any.missing' to
 #     extract relatives with complete measurements.
+#  all.3 = logical. If TRUE (default), the relatives ONLY contain values for all
+#     three measurements. Recommend setting FALSE when propogating body sizes for
+#     higher taxa (greater than genus level), where it is acceptable that there is
+#     at least one available measurement, with other measurements are estimated
+#     using complete relatives, and when propagating AbsStratDistance.
 #  sim.time = logical. If TRUE (default), uses similarity of geological range to
 #     choose among multiple relatives. (If FALSE, returns all complete relatives)
 find.rel <- function(x, i, start = 4, end = 12, photo.cols = NULL, 
-                     est.cols = NULL, sim.time = TRUE) {
+                     est.cols = NULL, all.3 = TRUE, sim.time = TRUE) {
   if (any(is.null(photo.cols), is.null(est.cols)))
     stop("photo.cols and est.cols need to be specified\n")
   scales <- c("Species", "Subgenus", "Genus", "Subfamily", "Family", "Superfamily",
@@ -219,13 +208,13 @@ find.rel <- function(x, i, start = 4, end = 12, photo.cols = NULL,
     nr <- nrow(rels)
     if (nr == 0L) next
     poss.rels <- rels
-    # Test if any relatives with all 3 measurements complete
+    # Test if there are any relatives with all 3 complete measurements
     sq <- seq.int(nr)
     complete <- !sapply(sq, function(sq) any.missing(rels[sq, ], photo.cols,
       est.cols)$any)
     rels <- rels[complete, ]
     nr <- nrow(rels)
-    if (nr == 0L) {
+    if (nr == 0L & all.3 == FALSE) {
       # If not, do any relatives have at least 1 measured measurement?
       part.complete <- !sapply(sq, function(sq) any(is.na(poss.rels[sq,photo.cols])) ||
           any(poss.rels[sq,photo.cols] == ""))
@@ -336,12 +325,12 @@ get.strat <- function(target, ref) {
 i <- which(out$Genus == "Caturus")          # fish Caturus
 out[i, c(1:16, 24:32, 36)]
 any.missing(out[i, ], photo.cols, est.cols)
-rel <- find.rel(out, i, photo.cols = photo.cols, est.cols = est.cols)
+rel <- find.rel(out, i, photo.cols = photo.cols, est.cols = est.cols, all.3 = TRUE)
 rel$size.sc
 rel$rel[c(1:16, 24:32, 36)]
 get.strat(target = out[i, ], ref = rel$rel) # Only works if all 3 measures are in target
 rels <- find.rel(out, i, photo.cols = photo.cols, est.cols = est.cols, 
-                 sim.time = FALSE)$rel
+                 sim.time = FALSE, all.3 = TRUE)$rel
 nr <- 1:nrow(rels)
 sapply(nr, function(nr) get.strat(out[i,], rels[nr, ]))
 
@@ -396,8 +385,10 @@ for (i in 1:nrow(out)) {
   # Ignore if already coded at species, subgenus or genus level AND complete
   this.scale <- out$BodySizeScale[i]
   missing <- any.missing(out[i, ], photo.cols, est.cols)
-  missing.strat <- is.na(out$AbsStratDistance[i]) |
-    out$Est_AbsStratDistance[i] == "Estimated"
+  number.missing <- length(missing$which)
+  missing.strat <- is.na(out$AbsStratDistance[i])
+  # Note prior line should NOT check Est_AbsStratDistance here. Checks below instead.
+  
   if (!missing$any & !missing.strat & (this.scale == "Species" | 
       this.scale == "Subgenus" | this.scale == "Genus")) next
   
@@ -408,10 +399,11 @@ for (i in 1:nrow(out)) {
   # are missing, proceed to estimating missing measurements:
   if (this.scale <= "Genus" & missing$any) {
     
-    if(length(missing$any) == 3L) stop(paste("Entry", i, "(", out$Genus[i], ")",
+    if(number.missing == 3L) stop(paste("Entry", i, "(", out$Genus[i], ")",
       "is listed as species/subgenus/genus level, but is missing all measurements.\n"))
 
-    rel <- find.rel(x = out, i = i, photo.cols = photo.cols, est.cols = est.cols)
+    rel <- find.rel(x = out, i = i, photo.cols = photo.cols, 
+                    est.cols = est.cols, all.3 = TRUE)
     if(nrow(rel$rel) == 0L) next
 
     AP.DV <- rel$rel$APLength / rel$rel$DVLength
@@ -420,7 +412,7 @@ for (i in 1:nrow(out)) {
     
     # If 2 measurements are missing, use shape of relative (with all 3
     # measurements) to estimating missing ones
-    if (length(missing$which) == 2L) {
+    if (number.missing == 2L) {
       
       # If A/P is only available measurement:
       if (!"AP" %in% missing$which) {
@@ -449,7 +441,7 @@ for (i in 1:nrow(out)) {
 
     # If 1 measurement is missing, use shape of relative (with all 3
     # measurements) to estimating missing one
-    if (length(missing$which) == 1L) {
+    if (number.missing == 1L) {
       est1 <- est2 <- NA
       
       # If A/P is only missing measurement:
@@ -493,10 +485,11 @@ for (i in 1:nrow(out)) {
   # find closest-aged relative and drop in all 3 measurements, maintain original
   # date entered, and update metadata (and erasing history, in case previously
   # entered incorrectly). NOTE THIS REFERS TO PREVIOUSLY UPDATED DATA IN CASE
-  # THERE IS A MORE SUITABLE RELATIVE.
+  # THERE IS A MORE SUITABLE RELATIVE, USING all.3 = FALSE.
   if (this.scale > "Genus" |
-      (this.scale <= "Genus" & length(missing$which) == 3L)) {
-    rel <- find.rel(x = out, i = i, photo.cols = photo.cols, est.cols = est.cols)
+      (this.scale <= "Genus" & number.missing == 3L)) {
+    rel <- find.rel(x = out, i = i, photo.cols = photo.cols, est.cols = est.cols, 
+                    sim.time = TRUE, all.3 = FALSE)
     if (nrow(rel$rel) == 0L) next
     out$RefGenusSize[i] <- rel$rel$RefGenusSize
     out$RefSpeciesSize[i] <- rel$rel$RefSpeciesSize
@@ -523,12 +516,13 @@ for (i in 1:nrow(out)) {
   out$TransverseLength[i] <- out$PhotoTransverse[i] / out$TransverseScale[i]
   out$DVLength[i] <- out$PhotoDV[i] / out$DVScale[i]
 
-  # Propogate AbsStratDist 
+  # Propogate AbsStratDist (using closest relatives, regardless of whether
+  # geologically contemporaneous or with missing some size measures)
   if (missing.strat) {
     # ... if missing AbsStratDist but available via ALL best relatives (that are
     # within same suborder [end=7] or lower resolution)
     rels <- find.rel(x = out, i = i, end = 7, photo.cols = photo.cols, 
-                     est.cols = est.cols, sim.time = FALSE)$rel
+                     est.cols = est.cols, sim.time = FALSE, all.3 = FALSE)$rel
     rels.with.strats <- 0L
     if (!is.null(rels))
       rels.with.strats <- length(na.omit(rels$AbsStratDistance))
@@ -561,9 +555,9 @@ for (i in 1:nrow(out)) {
     out$SizeChanged[i] <- "Check"
     }
   
-  # Update history if AbsStratDist changed (using updated measurements)
-  if (!identical(signif(input$AbsStratDistance[i], 2),
-                 signif(out$AbsStratDistance[i], 2))) {
+  # Update history if AbsStratDist added or re-calculated (using updated
+  # measurements, if changed)
+  if (out$Est_AbsStratDistance[i] == "Estimated") {
     orig.ms <- unlist(out[i, ATD.cols])
     poss.dists <- c(1, -1) %x% c(orig.ms, angle.30 * orig.ms, angle.45 * orig.ms, 
       angle.60 * orig.ms, proportions %x% orig.ms)
@@ -578,8 +572,11 @@ for (i in 1:nrow(out)) {
             signif(input$AbsStratDistance[i], 3), ". ", out$History_Size[i])
   }
   
-  # Interactive mode (to observe how states are being propogated in real time)
-  changes.made <- ncol(better.all.equal(input[i, ], out[i, ], sig.digits = 3)) > 0L
+  # Interactive mode (to observe how states are being propogated in real time).
+  # Deprecating printing of History_Size because of false positives due to
+  # simple change in date, and recalculations to ATD lengths.
+  changes.made <- ncol(better.all.equal(input[i, -c(22, ATD.cols)], out[i, -c(22, ATD.cols)],
+                                        sig.digits = 3, nums = c(23:28, 32))) > 0L
   if (interactive & changes.made) {
     plot(1, 1, type = "n", bty = "n", xaxt = "n", yaxt = "n", xlab = "", ylab = "")
     text(1, 1, as.character(paste(out$Genus[i], out$Species[i])), cex = 2)
@@ -594,8 +591,8 @@ for (i in 1:nrow(out)) {
   if (record.log & changes.made) {
     cat(as.character(paste(out$Genus[i], out$Species[i])), "\n", file = record.file,
         append = TRUE)
-    # Note that also deprecating printing of History_Size because of false
-    # positives due to simple change in date.
+    # Deprecating printing of History_Size because of false positives due to
+    # simple change in date.
     comps <- better.all.equal(input[i, -c(20, 22, ATD.cols)], 
                               out[i, -c(20, 22, ATD.cols)], nums = c(22:24, 31))
     write.table(comps, file = record.file, append = TRUE, sep = "\t\t", 
@@ -607,10 +604,9 @@ for (i in 1:nrow(out)) {
 (Sys.time() - start.t)
 
 # Note that occasionally a rounding error [caused by minor differences between
-# the better.all.equal(sig,digits=2) amd better.all.equal(sig.digits=2)] occurs
+# the better.all.equal(sig.digits=3) amd better.all.equal(sig.digits=2)] occurs
 # that triggers a false positive change. This results in a 'data frame with 0
 # columns and 2 rows' result. You can ignore these results.
-
 
 round(table(input$BodySizeScale) * 100 / nrow(input), 1)
 round(table(out$BodySizeScale) * 100 / nrow(out), 1)
