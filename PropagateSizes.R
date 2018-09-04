@@ -104,7 +104,7 @@
 # with ^t and replacing "" with "). Re-save file in same format.
 
 # (5) Open in Excel. Add a new column counting 'PhotoX' columns with values.
-# (HINT: Use =MIN((3-COUNTA(PhotoAP:PhotoDV)),COUNT(Est_AP:Est_DV)) that allows
+# (HINT: Use =MIN((3-COUNTA(Est_AP:Est_DV)),COUNT(PhotoAP:PhotoDV)) that allows
 # including the Est_X columns!) TROUBLESHOOT: Confirm that all 'Sp/Subg/Gen'
 # have at least 1 measurement! Also delete any NAs in AbsStratDistance.
 
