@@ -184,7 +184,8 @@ if (any(table(input$IDNumber) > 1)) {
 #     at least one available measurement, with other measurements are estimated
 #     using complete relatives, and when propagating AbsStratDistance.
 #  sim.time = logical. If TRUE (default), uses similarity of geological range to
-#     choose among multiple relatives. (If FALSE, returns all complete relatives)
+#     choose among multiple relatives. If no range available, uses all relatives.
+#     (If FALSE, returns all complete relatives.)
 find.rel <- function(x, i, start = 4, end = 12, photo.cols = NULL, 
                      est.cols = NULL, all.3 = TRUE, sim.time = TRUE) {
   if (any(is.null(photo.cols), is.null(est.cols)))
@@ -225,16 +226,19 @@ find.rel <- function(x, i, start = 4, end = 12, photo.cols = NULL,
   }
   size.sc <- as.character(scales[e])
   # If multiple matches, pick one with most similar geologic range. If still
-  # multiple matches, use character matching to find most likely type taxon.
+  # multiple matches (or the reference genus lacks a temporal range), use
+  # character matching to find most likely type taxon.
   if (nr > 1L & sim.time) {
     age.dev <- (out$max_ma[i] - rels$max_ma) ^ 2 +
       (out$min_ma[i] - rels$min_ma) ^ 2
-    if (length(which(age.dev == min(age.dev))) > 1L) {
+    if (length(which(age.dev == min(age.dev))) > 1L | all(is.na(age.dev))) {
       higher.taxon <- rels[1, which(colnames(rels) == scales[e])]
-      sim.age.rels <- rels[which(age.dev == min(age.dev)), ]
+      if (all(is.na(age.dev)))
+        sim.age.rels <- rels else
+        sim.age.rels <- rels[which(age.dev == min(age.dev)), ]
       type <- which.min(adist(sim.age.rels$Genus, higher.taxon,
         cost = list(ins = 2, del = 1, sub = 10)))
-      rel <- sim.age.rels[type,]
+      rel <- sim.age.rels[type, ]
     } else rel <- rels[which.min(age.dev), ]
   } else rel <- rels
   return(list(rel = rel, size.sc = size.sc))
@@ -565,8 +569,7 @@ for (i in 1:nrow(out)) {
     if (out$History_Size[i] == "")
       out$History_Size[i] <- paste0("AbsStratDist estimated ", today, " from ", 
             AbsStratDist.text[seq.AbsStratDist[wh.m]], " Prior AbsStratDist was ", 
-            signif(input$AbsStratDistance[i], 3), ".")
-    else
+            signif(input$AbsStratDistance[i], 3), ".") else
       out$History_Size[i] <- paste0("AbsStratDist updated ", today, " from ",
             AbsStratDist.text[seq.AbsStratDist[wh.m]], " Prior AbsStratDist was ", 
             signif(input$AbsStratDistance[i], 3), ". ", out$History_Size[i])
@@ -602,6 +605,8 @@ for (i in 1:nrow(out)) {
   
 }
 (Sys.time() - start.t)
+library(beepr)
+beep(3)
 
 # Note that occasionally a rounding error [caused by minor differences between
 # the better.all.equal(sig.digits=3) amd better.all.equal(sig.digits=2)] occurs

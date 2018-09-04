@@ -605,7 +605,9 @@ for(i in 1:nrow(out)) {
   }
   
 }
-(Sys.time() - start.t)    
+(Sys.time() - start.t)
+library(beepr)
+beep(3)
 
 # Note that if the only change is "SizeChanged", that means the size codings
 # (AbsStrat, RelStrat, etc.) were reverted from the consensus state "back" to
