@@ -656,13 +656,13 @@ write.table(out, file="PostSizes.tab", quote = FALSE, sep = "\t", row.names = FA
 ## incorrect. It would be more efficient if the following rules could be checked
 ## algorithmically, but that may be challenging because of the interpretative
 ## nuances involved. One possibility (for the size-related feeding and mobility
-## rules, at least) is to add a code that uses some form of binned size
-## regression analysis (within classes) to extrapolate the size-rules. Another
-## option might be to use machine-learning (i.e., classification trees). Either
-## way, would need to add an "exception" field when a coding defies the standard
-## coding rules (for example, when crinoid sizes lack column lengths but a
-## AbsStrat coding is still possible, or when the functional gill size in
-## vermiculariids is best approximated by transverse width and A/P length).
+## rules, at least) is to add code that uses some form of binned size regression
+## analysis (within classes) to extrapolate the size-rules. Another option might
+## be to use machine-learning (i.e., classification trees). Either way, would
+## need to add an "exception" field when a coding defies the standard coding
+## rules (for example, when crinoid sizes lack column lengths but a AbsStrat
+## coding is still possible, or when the functional gill size in vermiculariids
+## is best approximated by transverse width instead of A/P length).
 
 # Once imported (BEFORE THE LIFE HABITS are propogated, but then again
 # afterwards, too), run the following manual corrections. (Note the RelStrat
@@ -673,7 +673,7 @@ write.table(out, file="PostSizes.tab", quote = FALSE, sep = "\t", row.names = FA
 # life-habit algorithm maintains the four body-size-scale-related states
 # [AbsStrat, RelStrat, etc.] when EcoScale=Species/Genus, and uses the consensus
 # across relatives when missing or not EcoScale=Species/Genus, but reverts back
-# to the originaly codings when BodySizeScale-Species/Genus.)
+# to the original codings when BodySizeScale=Species/Genus.)
 
 # On the pre-life-habit propogation, focus on the scales above, and also the
 # SizeChanged=Check tagged entries. On the post-life-habit propogation, focus on
@@ -681,6 +681,9 @@ write.table(out, file="PostSizes.tab", quote = FALSE, sep = "\t", row.names = FA
 # following criteria. (Can omit those coded at EcoScale=Species/Genus.) MAKE
 # SURE THAT IF ADD/CHANGE A STATE FOR A EcoScale=SPECIES/GENUS, to tag as
 # "Estimated."
+
+# Consider saving these quality checks as "Check #1", etc. in saved finds" in
+# FileMakerPro.
 
 # (1) Pelagic taxa given benthic AbsStratDists: Find Fluidic=1 & Insubstantial=1
 # & AbsStratDist=">-10000" [ANY] & SizeChanged=CHECK and delete AbsStratDist (if
@@ -711,10 +714,10 @@ write.table(out, file="PostSizes.tab", quote = FALSE, sep = "\t", row.names = FA
 
 # (4) Epibiotic (but barely raised, so should be coded as "self-supported") taxa
 # given incorrect benthic (as if not epibiotic) AbsStratDists: Find Biotic=1 &
-# SupportedByOthers=0 & AbsStratDist=">-10000" [ANY] & SizeChanged=CHECK and
-# delete AbsStratDist (if needs correcting). (AbsStrat should be same as
-# RelStrat.) (The valid exceptions will typically have AbsStratDist values that
-# do NOT correspond to the organism's major axes.)
+# SupportedByOthers=0 & AbsStratDist=">-10000" [ANY] & SizeChanged=CHECK &
+# EstAbsStratDistance=Estimated and delete AbsStratDist (if needs correcting).
+# (AbsStrat should be same as RelStrat.) (The valid exceptions will typically
+# have AbsStratDist values that do NOT correspond to the organism's major axes.)
 
 # (5) Confirm all exclusively infaunal taxa have negative AbsStratDists and
 # exclusively epifaunal taxa have positive values. (But don't be surprised by
@@ -776,7 +779,8 @@ write.table(out, file="PostSizes.tab", quote = FALSE, sep = "\t", row.names = FA
 # seafloor, and some strophomenids/productids/chonetoideans where FoodStrat is
 # closer to sediment.
 
-# (11) Make sure that all "above primary" organisms that have RelStrat = 1 also
+# (11) Make sure that all "above primary" [large epifauna and demersal/nektonic]
+# organisms (AbovePrimary = 1, WithinPrimary = 0) that have RelStrat = 1 also
 # have AbsStrat = 1.
 
 # (12) Need to write out rules for hunters, scavengers, and mass feeders,
