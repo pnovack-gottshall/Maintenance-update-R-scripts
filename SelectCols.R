@@ -9,7 +9,7 @@
 ## WORKFLOW ------------------------------------------------------------------
 
 # (1) From Body size layout, export ALL data fields (EXCEPT EcologyNotes),
-# selecting "Current Table ("Biota")" in dropdown), as 'AllCols.tab'
+# selecting "Current Table ("Biota")" in dropdown, as 'AllCols.tab'
 # tab-delimited format. DO NOT SAVE AS EXCEL FORMAT, AS DOING SO
 # IDIOSYNCRATICALLY CHANGES NAs TO 0s AND 1s!! (MUST be tab-delimited, as
 # several text fields contain commas!!!). Save a duplicate in Excel Workbooks
@@ -115,4 +115,3 @@ selected <- all[ ,wh.cols]
 head(selected)
 if(!identical(cols, colnames(selected))) stop("column names are not as specified!")
 write.table(selected, file="PreLH.tab", row.names = FALSE, sep = "\t", quote = FALSE)
-
