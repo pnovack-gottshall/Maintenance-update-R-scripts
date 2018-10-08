@@ -783,11 +783,14 @@ write.table(out, file="PostSizes.tab", quote = FALSE, sep = "\t", row.names = FA
 # organisms (AbovePrimary = 1, WithinPrimary = 0) that have RelStrat = 1 also
 # have AbsStrat = 1.
 
-# (12) Need to write out rules for hunters, scavengers, and mass feeders,
+# (12) For filter-feeding echinoderms, clear the FilterDensity field is the
+# entry is NOT a filter-feeder.
+
+# (13) Need to write out rules for hunters, scavengers, and mass feeders,
 # especially regarding food tier (half D/V for predators to account for smaller
 # size of prey?) and sensory distances when scouting. (Speed can also be a proxy
 # for this.) This might be best to sort by Phylum > Class > A/P / D/V because
 # different taxa often have distinct foraging strategies.
 
-# (13) Once these checks are run, re-run them and clear the SizeChanged=Check
+# (14) Once these checks are run, re-run them and clear the SizeChanged=Check
 # tags.
