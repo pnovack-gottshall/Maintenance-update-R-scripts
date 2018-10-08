@@ -2,7 +2,8 @@
 ## using a parallel computing environment
 
 # The serial version takes ~4.5 hours to process PBDB into a formatted taxonomic
-# dataframe structure. This code rewrites the algorithm as a function that can be implemented "in parallel."
+# dataframe structure. This code rewrites the algorithm as a function that can
+# be implemented "in parallel."
 
 ## Download data directly from PaleobioDB and save to working directory (will be
 ## > 40 MB) (DO NOT RESTRICT TO PHANEROZOIC! Restricting only includes taxa with
@@ -20,9 +21,9 @@ head(pbdb)
 
 ## Function to add higher taxonomic names (phylum, class, order, etc.) for PBDB
 ## genus (and subgenus) names
-# gen.seq <- Vector (sequence) of number of genus names to process
-# gen.names <- Vector of PBDB genus (and subgenus) names
-# pbdb <- data frame of all PBDB occurrences
+# gen.seq = Vector (sequence) of number of genus names to process
+# gen.names = Vector of PBDB genus (and subgenus) names
+# pbdb = data frame of all PBDB occurrences
 #
 # output is a list, with each item the taxonomy for a single genus
 prep.PBDB <- function(g = 1, gen.names, pbdb) {
@@ -56,7 +57,7 @@ prep.PBDB <- function(g = 1, gen.names, pbdb) {
 }
 
 ## Function to unpack the list into a compact data frame
-# Note that with the large PBDB object that this still takes some time to
+# Note that with a large PBDB object that this still takes some time to
 # complete. Consider tweaking to speed up.
 unpack.PBDB <- function(prep) {
   Seq <- seq(length(prep))
@@ -215,9 +216,12 @@ duplicate.G <- duplicated(pre$Genus)
 post <- pre[!duplicate.G, ]
 write.table(post, file="PreSizes_withPBDB.tab", quote=FALSE, sep="\t", row.names=FALSE)
 
-# (3) Run code as usual in "PropogateSizes.R" or "PropogateLifeHabits.R", but resaving as postX_withPBDB" file name. Make sure to add new IDNumbers to the new PBDB entries!
+# (3) Run code as usual in "PropogateSizes.R" or "PropogateLifeHabits.R", but
+# resaving as postX_withPBDB" file name. Make sure to add new IDNumbers to the
+# new PBDB entries!
 
-# (4) Import into copy of FileMakerPro life habit database, adding the new entries. Use this one for running next analyses.
+# (4) Import into copy of FileMakerPro life habit database, adding the new
+# entries. Use this one for running next analyses.
 
-# (4) Before running disparity and tiering analyses, open here and remove the non-terrestrials (and non-fossils with Recent-only occurrences?)
-
+# (5) Before running disparity and tiering analyses, open here and remove the
+# non-terrestrials (and non-fossils with Recent-only occurrences?)

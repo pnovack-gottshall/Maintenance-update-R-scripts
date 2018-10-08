@@ -112,7 +112,7 @@ setwd("C:/Users/pnovack-gottshall/Desktop/Databases/Maintenance & update R scrip
 # setwd("C:/Users/pnovack-gottshall/Documents/GSA (& NSF & NAPC)/2016GSA/GSA2016 analyses")
 
 pre.input <- read.delim(file = "preSizes.tab", stringsAsFactors = FALSE)
-# pre.input <- read.delim(file="PreSizes_withPBDB.tab", stringsAsFactors=FALSE)
+# pre.input <- read.delim(file="EchinoPreSizes_withPBDB.tab", stringsAsFactors=FALSE)
 est.cols <- which(colnames(pre.input) == "SizeChanged" | 
                     colnames(pre.input) == "Est_AP" |
                     colnames(pre.input) == "Est_T" |
