@@ -4,6 +4,8 @@
 ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ##
 ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ##
 ##
+## !!!NONE!!!
+##
 ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ##
 ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ##
 ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ##
@@ -33,7 +35,7 @@
 # the same logic as step 1.
 
 # The four body-size-related states (ABsStrat, RelStrat, etc.) are only
-# over-written when missing or EcoScale > Species/Genus. If any of these fouor
+# over-written when missing or EcoScale > Species/Genus. If any of these four
 # states are changed AND the BodySizeScale was Species/Genus (implying they were
 # originally checked after the Propogatesizes.R algorithm), add a "check" tag to
 # force a manual check. If any life habit codings are changed, add (or override)
@@ -49,8 +51,8 @@
 # is still a strict consensus). If a higher taxon has lots of inherent
 # variability, the NAs get up-voted based on actual variability across the
 # higher taxon. So it's OK to "downgrade" the data (add more NAs) as we get more
-# data, because that reflects reality! (Recall that entries coded at genus and
-# species-level will not be overriden.)
+# data, because that reflects the reality of natural variability. (Recall that
+# entries coded at genus and species-level will not be overriden.)
 
 
 
@@ -167,7 +169,7 @@ find.rels <- function(x, i, min.rels = 1, start = 4, end = 12, ref.g.col = 15,
 # behavior of mean() and median(). The standard 'mode' solution in case of ties
 # (an intermediate value) is nonsensical when dealing with discrete states.
 # Here, ties are won based on which state is listed first in the input data,
-# which is a pseudorandom way to 'flip a coin'.
+# which is a pseudorandom way to 'flip a coin' to break a tie.
 Mode <- function(x, na.rm = FALSE) {
   if (na.rm)
     ux <- unique(x[!is.na(x) & x != ""])
@@ -313,9 +315,11 @@ out[i, cols]
 combined.any.missing(missings, estimateds)
 (r <- find.rels(input, i))
 rels <- r$rels
-(cs <- consensus(rels = rels, cols = cols, method = "constant"))
+(cs.c <- consensus(rels = rels, cols = cols, method = "constant"))
+(cs.m <- consensus(rels = rels, cols = cols, method = "mode"))
 best <- best.ref(rels=rels, cols=cols, scale=r$eco.sc)
 input[best, ] # Notice the proper type taxon chosen that is in same higher taxon
+rbind(out[i, cols], cs.c, cs.m, input[best, cols])
 r$eco.sc
 
 # Compare proxy methods:
@@ -334,9 +338,9 @@ rel.10$rels[ ,5:14]; rel.10$eco.sc; nrow(rel.10$rels)
 rel.20$rels[ ,5:14]; rel.20$eco.sc; nrow(rel.20$rels)
 rel.50$rels[ ,5:14]; rel.50$eco.sc; nrow(rel.50$rels)
 
-rm(list = c("i", "r", "cols", "est.cols", "missings", "estimateds", "cs", 
-            "best", "proxy1", "proxy2", "rels", "rel.1", "rel.5", "rel.10", 
-            "rel.20", "rel.50"))
+rm(list = c("i", "r", "cols", "est.cols", "missings", "estimateds", "cs.c", 
+            "cs.m", "best", "proxy1", "proxy2", "rels", "rel.1", "rel.5", 
+            "rel.10", "rel.20", "rel.50"))
 
 
 
@@ -574,10 +578,13 @@ for(i in 1:nrow(out)) {
       is.na(out[i, eco.col[changed.col]]) | out[i, eco.col[changed.col]] == ""
     if (any(dropped))
       out[i, est.col[changed.col[which(dropped)]]] <- ""
-    # Note: Those entered today will only be > genus, where History_Ecology
-    # previously recorded (if changed) for the proxy relative. Rest are updating
-    # empty cells, either for a genus/species entry or for higher taxon proxy.
-    if (out$DateEntered_Ecology[i] == today) {
+    # Note: Those entered today will be propogated at a level > genus, and so
+    # there is no need to continue documenting previous history of life-habit
+    # proxies. Remainder of changes (not tagged with updated date) are updating
+    # empty cells using appropriate higher taxa, either for a genus/species
+    # entry or for higher taxon proxy. In these cases, it is valuable to record
+    # the history of estimatations.
+    if (out$DateEntered_Ecology[i] != today) {
       out$History_Ecology[i] <- paste0(length(which(wh.changed)), 
                           " additional states updated ", today,
                           " based on consensus of ", higher.rels$eco.sc, " ", 
@@ -649,9 +656,6 @@ write.table(out, file="PostLH_constant.tab", quote=FALSE, sep="\t", row.names=FA
 
 # (4) Refer to PropogateSizes.R for common troubleshooting corrections to run
 # through in case of manual overrides.
-
-# On the post-life-habit propogation, focus on the SizeChanged=Check tagged
-# entries, but also check ALL entries using the following criteria.
 
 # On the post-life-habit propogation, focus on the SizeChanged=Check tagged
 # entries, but also check ALL entries using the following criteria. (Can omit
