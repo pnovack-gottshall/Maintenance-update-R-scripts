@@ -100,7 +100,8 @@
 rm(list = ls())
 setwd("C:/Users/pnovack-gottshall/Desktop/Databases/Maintenance & update R scripts")
 # setwd("C:/Users/pnovack-gottshall/Documents/GSA (& NSF & NAPC)/2016GSA/GSA2016 analyses")
-input <- read.delim(file = "preLH.tab", colClasses = "character")
+input <- read.delim(file = "preLH_constant.tab", colClasses = "character")
+# input <- read.delim(file = "preLH_mode.tab", colClasses = "character")
 # input <- read.delim(file = "preLH_withPBDB.tab", colClasses = "character")
 scales <- c("Species", "Subgenus", "Genus", "Subfamily", "Family", "Superfamily", 
   "Suborder", "Order", "Subclass", "Class", "Subphylum", "Phylum", "", NA)

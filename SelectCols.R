@@ -114,4 +114,6 @@ wh.cols <- match(cols, colnames(all))
 selected <- all[ ,wh.cols]
 head(selected)
 if(!identical(cols, colnames(selected))) stop("column names are not as specified!")
-write.table(selected, file="PreLH.tab", row.names = FALSE, sep = "\t", quote = FALSE)
+# write.table(selected, file="PreLH_constant.tab", row.names = FALSE, sep = "\t", quote = FALSE)
+write.table(selected, file="PreLH_mode.tab", row.names = FALSE, sep = "\t", quote = FALSE)
+
