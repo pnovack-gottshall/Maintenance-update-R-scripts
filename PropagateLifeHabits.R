@@ -613,6 +613,8 @@ for(i in 1:nrow(out)) {
   
 }
 (Sys.time() - start.t)
+
+# Following causes RStudio to crash if run with lines after this
 library(beepr)
 beep(3)
 
