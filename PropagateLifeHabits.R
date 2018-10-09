@@ -661,6 +661,7 @@ write.table(out, file="PostLH_constant.tab", quote=FALSE, sep="\t", row.names=FA
 # On the post-life-habit propogation, focus on the SizeChanged=Check tagged
 # entries, but also check ALL entries using the following criteria. (Can omit
 # those coded at EcoScale=Species/Genus.) MAKE SURE THAT IF ADD/CHANGE A STATE
-# FOR A EcoScale=SPECIES/GENUS, to tag as "Estimated."
+# FOR A EcoScale=SPECIES/GENUS, to tag as "Estimated" and to update the History
+# accordingly.
 
 
