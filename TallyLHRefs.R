@@ -26,8 +26,9 @@
 # (6). In Excel, remove the "IDNumber" and "EcologyNotes" columns.
 
 # (7). Open in Word, and find-and-replace ;_ with hard returns "^p", "^p with
-# ^p, and ^p" with ^p. Text should be a column of references, one entry per
-# line/row. Review and edit, if needed. Resave and open here.
+# ^p, ^p" with ^p, and "Application of " with "". Text should be a column of
+# references, one entry per line/row. Review and edit, if needed. Resave and
+# open here.
 
 rm(list = ls())
 setwd("C:/Users/pnovack-gottshall/Desktop/Databases/Maintenance & update R scripts")
