@@ -736,7 +736,9 @@ write.table(out, file="PostSizes.tab", quote = FALSE, sep = "\t", row.names = FA
 # rhombiferans, pedunculately raised (Cambrian) lingulids, and other stemmed
 # animals where the measured body part may not correspond to the intact animal,
 # and animals close to a size-boundary that are diagonally oriented (such as
-# pedunculate brachiopods and some rugose corals).
+# pedunculate brachiopods and some rugose corals) and subtaxa with distinct
+# orientations (such as agnostids scaled to 2/3 A/P and terrestrial birds and
+# pterosaurs scaled to diagonally oriented A/P).
 
 # (7) Confirm that taxa with AbsStratDist=">-100000" values [ANY] match the
 # correct AbsStrat coding. (Sort by AbsStratDist when checking manually.) When
