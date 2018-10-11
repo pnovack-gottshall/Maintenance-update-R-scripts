@@ -728,17 +728,20 @@ write.table(out, file="PostSizes.tab", quote = FALSE, sep = "\t", row.names = FA
 # AboveAbsStrat=1.
 
 # (6) Confirm that RelStrat corresponds to appropriate body axis. Best to sort
-# by Phylum > Class (and for some groups subclass/order) > D/V / A/P because
-# different taxa have different living orientations. If list is too long to run
-# through, can limit to Sizechanged="checked". (Alternatively, can find all taxa
-# with all major axes in the same size range [e.g., 0.1-1], which should all
-# have the same RelStrat.) Exceptions: Watch out for crinoids, blastoids,
-# rhombiferans, pedunculately raised (Cambrian) lingulids, and other stemmed
-# animals where the measured body part may not correspond to the intact animal,
-# and animals close to a size-boundary that are diagonally oriented (such as
-# pedunculate brachiopods and some rugose corals) and subtaxa with distinct
-# orientations (such as agnostids scaled to 2/3 A/P and terrestrial birds and
-# pterosaurs scaled to diagonally oriented A/P).
+# by Phylum > Class (and for some groups, like brachiopods, subclass/order) >
+# D/V / A/P because different taxa have different living orientations. If list
+# is too long to run through, can limit to Sizechanged="checked".
+# (Alternatively, can find all taxa with all major axes in the same size range
+# [e.g., 0.1-1], which should all have the same RelStrat.) Exceptions: Watch out
+# for crinoids, blastoids, rhombiferans, pedunculately raised (Cambrian)
+# lingulids, and other stemmed animals where the measured body part may not
+# correspond to the intact animal, and animals close to a size-boundary that are
+# diagonally oriented (such as pedunculate brachiopods and some rugose corals)
+# and subtaxa with distinct orientations (such as agnostids scaled to 2/3 A/P
+# and terrestrial birds and pterosaurs scaled to diagonally oriented A/P) and
+# rhynchonellatan brachiopods and bivalves and other animals whose orientation
+# is sometimes based on a diagonal orientation based on A/P length and corals
+# and encrusting bryozoans where RelStrat is based on A/P.
 
 # (7) Confirm that taxa with AbsStratDist=">-100000" values [ANY] match the
 # correct AbsStrat coding. (Sort by AbsStratDist when checking manually.) When
@@ -778,14 +781,15 @@ write.table(out, file="PostSizes.tab", quote = FALSE, sep = "\t", row.names = FA
 # also "Above" the seafloor). Easiest to sort by AbsStrat > AbsFoodStrat >
 # AbsStratDist, Exceptions include the relatively deeply buried semi-infaunals,
 # where a large portion of body may be buried but only a small portion atop
-# seafloor, and some strophomenids/productids/chonetoideans where FoodStrat is
-# closer to sediment.
+# seafloor, some strophomenids/productids/chonetoideans where FoodStrat is
+# closer to sediment, and some echinoderms (such as ophiuroids and stylophorans)
+# that raise their filter-feeding arms into the water column when feeding.
 
 # (11) Make sure that all "above primary" [large epifauna and demersal/nektonic]
 # organisms (AbovePrimary = 1, WithinPrimary = 0) that have RelStrat = 1 also
 # have AbsStrat = 1.
 
-# (12) For filter-feeding echinoderms, clear the FilterDensity field is the
+# (12) For filter-feeding echinoderms, clear the FilterDensity field if the
 # entry is NOT a filter-feeder.
 
 # (13) Go through each character and confirm no "all-zeros" (all diets have 0,
