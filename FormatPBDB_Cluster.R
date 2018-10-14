@@ -140,9 +140,8 @@ sfStop()
 output2 <- unpack.PBDB(prep)
 (Sys.time() - t.start0)
 (Sys.time() - t.start1)
-alarm()
+head(output2)
 write.csv(output2, file="PBDBformatted.csv", row.names=FALSE)
-
 
 # Parallel lapply version takes 60.2 secs for 1000 (21 s for the sfLapply) (or 27.8 min for all)
 # Parallel lapply version (w/o export time) takes 19.7 secs for 1000 (or 23.7 mins for all)
@@ -158,9 +157,11 @@ rbind(x[1000, ], output[1000, ], output2[1000, ])
 # x <- read.csv(file="PBDBformatted.csv", header=TRUE, stringsAsFactors=FALSE)
 head(x)
 
-# Remove terrestrial and non-marine taxa, but include marine tetrapods (list
+# Remove terrestrial and non-marine taxa, but include marine tetrapods. List
 # courtesy of Bush and Bambach, 2015, but modified to explicitly list three
-# cetacean suborders because Cetacea listed within Order Artiodactyla in PBDB)
+# cetacean suborders because Cetacea now listed within Order Artiodactyla in
+# PBDB and to exclude Myriapoda, Kannemeyeriiformes, Pelycosauria, Theriodontia,
+# Therocephalia)
 non.marine <- c("Arachnida", "Insecta", "Collembola", "Palaeophreatoicidae", 
                 "Limnocytheridae", "Darwinuloidea", "Cypridoidea", "Cytherideidae", 
                 "Assimineidae", "Stenothyridae", "Hydrobiidae", "Ampullariidae", "Cyclophoridae", 
@@ -173,7 +174,8 @@ non.marine <- c("Arachnida", "Insecta", "Collembola", "Palaeophreatoicidae",
                 "Sphaeriidae", "Dreissenidae", "Amiinae", "Sinamiidae", "Cypriniformes", 
                 "Lepisosteiformes", "Osmeriformes", "Osteoglossiformes", "Percidae", "Esocidae", 
                 "Siluriformes", "Lepidosirenidae", "Polypteridae", "Cichlidae", "Gonorynchiformes",
-                "Characiformes", "Gymnotiformes")
+                "Characiformes", "Gymnotiformes", "Myriapoda", "Kannemeyeriiformes", "Pelycosauria", 
+                "Theriodontia", "Therocephalia")
 tetrapods <- c("Mammalia", "Reptilia")
 marine.exceptions <- c("Chelonioidea", "Ophidiomorpha", "Mosasauroidea", "Thalattosauria", 
                        "Sauropterygia", "Ichthyopterygia", "Mesoeucrocodylia", "Pterosauria", 
@@ -198,30 +200,44 @@ write.csv(marine.taxa, file="PBDBformatted_NoTerr.csv", row.names=FALSE)
 
 ## Run following to manually combine my database and the PBDB databases
 
-# (1) In Excel, open the "postSizes.tab" or "postLH.tab" file and re-save as 
-# "PreSizes_withPBDB.tab" or "PreLH_withPBDB.tab" (MANUALLY ADDING THE ".TAB" TO
-# FILE NAME TO FORCE AS TAB-DELIMITED INSTEAD OF TEXT FILE FORMAT. Open 
-# "PBDBformatted_NoTerr.csv" and copy this data into the combined database. Add 
-# new IDNumbers (that pick up after those in the existing database), and
-# re-save. Manually delete any "NA"s in early and late ages.
+# (1) In Excel, open the "postSizes.tab" or "postLH.tab" file (may need to
+# re-export from FMP and use SelectCols.R to align proper columns) and re-save
+# as "PreSizes_withPBDB.tab" or "PreLH_withPBDB.tab" (MANUALLY ADD THE ".TAB" TO
+# FILE NAME TO FORCE AS TAB-DELIMITED INSTEAD OF TEXT FILE FORMAT. Open
+# "PBDBformatted_NoTerr.csv" and copy this data into the combined database.
+# Manually delete any "NA"s in early and late ages. If using both a "mode" and
+# "constant" LH data treatment, only need to propogate sizes using one of these
+# data sets, as the size propogations are the same for both.
 
 # (2) Open here and run following code to remove duplicated genus entries.
 
 rm(list=ls())
 setwd("C:/Users/pnovack-gottshall/Desktop/Databases/Maintenance & update R scripts")
-pre <- read.delim(file="PreSizes_withPBDB.tab", stringsAsFactors=FALSE)
+# pre <- read.delim(file="PreSizes_Constant_withPBDB.tab", stringsAsFactors=FALSE)
 head(pre)
 tail(pre)
 duplicate.G <- duplicated(pre$Genus)
 post <- pre[!duplicate.G, ]
-write.table(post, file="PreSizes_withPBDB.tab", quote=FALSE, sep="\t", row.names=FALSE)
+write.table(post, file="PreSizes_Constant_withPBDB.tab", quote=FALSE, sep="\t", row.names=FALSE)
 
-# (3) Run code as usual in "PropogateSizes.R" or "PropogateLifeHabits.R", but
+# (3) Copy new entries by Phylum > Subphylum > Class > Subclass > Order. Alter
+# the following taxonomic names whose rank or name is listed differently in the
+# PBDB than in my database. MOVE the following as a class (not subclass):
+# arthropod Malacostraca, echinoderms Blastoidea and Parablastoidea, and
+# vertebrates Placodermi, Thelodonti, and Holocephali. ADD Class Hyolitha for Orders
+# Hyolithida and Orthothecida and Class Dipnomorpha for orders Dipnoi and
+# Dipnotetrapodomorpha. CHANGE the cephalochordate order Amphioxi to
+# Amphioxiformes, vertebrate class Actinopteri to Actinopterygii,
+
+# (4) Add new IDNumbers (that pick up after those in the existing database), and
+# re-save.
+
+# (5) Run code as usual in "PropogateSizes.R" or "PropogateLifeHabits.R", but
 # resaving as postX_withPBDB" file name. Make sure to add new IDNumbers to the
 # new PBDB entries!
 
-# (4) Import into copy of FileMakerPro life habit database, adding the new
+# (6) Import into copy of FileMakerPro life habit database, adding the new
 # entries. Use this one for running next analyses.
 
-# (5) Before running disparity and tiering analyses, open here and remove the
+# (7) Before running disparity and tiering analyses, open here and remove the
 # non-terrestrials (and non-fossils with Recent-only occurrences?)
