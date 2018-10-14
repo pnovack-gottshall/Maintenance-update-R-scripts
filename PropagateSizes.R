@@ -637,10 +637,10 @@ if (any(table(input$IDNumber) > 1)) {
 
 
 ## EXPORT DATA -------------------------------------------------------------
-write.table(out, file="PostSizes.tab", quote = FALSE, sep = "\t", row.names = FALSE)
+write.table(out, file = "PostSizes.tab", quote = FALSE, sep = "\t", row.names = FALSE)
 # write.table(out, file = "PostSizes_withPBDB.tab", quote = FALSE, sep = "\t", row.names = FALSE)
 
-# (1) Open in Excel to confirm looks acceptable. Replace (with Options=Match
+# (1) Open in Excel to confirm looks acceptable. Replace (with Options = Match
 # entire cell contents) "NA"s in taxonomic names, body size data, strat ranges,
 # and AbsStratDist with blank cells. (Essentially the entire output.)
 
@@ -669,29 +669,26 @@ write.table(out, file="PostSizes.tab", quote = FALSE, sep = "\t", row.names = FA
 # should not be deleted, but updated as needed, with other stratifications.)
 
 # For the first run-through (BEFORE propogating life habits), only need to check
-# entries where ECOSCALE OR BODYSIZESCALE="SPECIES" OR "GENUS". (The
+# entries where ECOSCALE OR BODYSIZESCALE = "SPECIES" OR "GENUS". (The
 # life-habit algorithm maintains the four body-size-scale-related states
-# [AbsStrat, RelStrat, etc.] when EcoScale=Species/Genus, and uses the consensus
-# across relatives when missing or not EcoScale=Species/Genus, but reverts back
-# to the original codings when BodySizeScale=Species/Genus.)
+# [AbsStrat, RelStrat, etc.] when EcoScale = Species/Genus, and uses the
+# consensus across relatives when missing or not EcoScale = Species/Genus, but
+# reverts back to the original codings when BodySizeScale = Species/Genus.)
 
 # On the pre-life-habit propogation, focus on the scales above, and also the
-# SizeChanged=Check tagged entries. On the post-life-habit propogation, focus on
-# the SizeChanged=Check tagged entries, but also check ALL entries using the
-# following criteria. (Can omit those coded at EcoScale=Species/Genus.) MAKE
-# SURE THAT IF ADD/CHANGE A STATE FOR A EcoScale=SPECIES/GENUS, to tag as
+# SizeChanged = Check tagged entries. On the post-life-habit propogation, focus
+# on the SizeChanged = Check tagged entries, but also check ALL entries using
+# the following criteria. (Can omit those coded at EcoScale = Species/Genus.)
+# MAKE SURE THAT IF ADD/CHANGE A STATE FOR A EcoScale = SPECIES/GENUS, to tag as
 # "Estimated."
 
-# Consider saving these quality checks as "Check #1", etc. in saved finds" in
-# FileMakerPro.
-
-# (1) Pelagic taxa given benthic AbsStratDists: Find Fluidic=1 & Insubstantial=1
-# & AbsStratDist=">-10000" [ANY] & SizeChanged=CHECK and delete AbsStratDist (if
-# needs correcting).
+# (1) Pelagic taxa given benthic AbsStratDists: Find Fluidic = 1 & Insubstantial
+# = 1 & AbsStratDist = ">-10000" [ANY] & SizeChanged = CHECK and delete
+# AbsStratDist (if needs correcting).
 
 # (2) "Supported" taxa given self-supported (i.e., benthic) AbsStratDists: Find
-# SupportedByOthers=1 & AbsStratDist=">-10000" [ANY] & SizeChanged=CHECK and
-# delete AbsStratDist (if needs correcting). (The valid exceptions will
+# SupportedByOthers = 1 & AbsStratDist = ">-10000" [ANY] & SizeChanged = CHECK
+# and delete AbsStratDist (if needs correcting). (The valid exceptions will
 # typically have AbsStratDist values that do NOT correspond to the organism's
 # major axes.)
 
@@ -699,9 +696,9 @@ write.table(out, file="PostSizes.tab", quote = FALSE, sep = "\t", row.names = FA
 # AbsStrat and RelStrat. (And that "supported" taxa have different values.)
 # (Note this only applies to epifaunal taxa because pelagic and infaunal
 # organisms can be self-supported despite having different absolute and
-# immediate stratifications.) Set fluidic=0, above primary = 1, within primary =
-# 0, and supported/self-supported as either 0/1 or 1/0. Then sort by AbsStrat >
-# RelStrat. In many cases, the AbsStrat and AbsFoodStrat should also match. Be
+# immediate stratifications.) Set fluidic = 0, above primary = 1, within primary
+# = 0, and supported/self-supported as either 0/1 or 1/0. Then sort by AbsStrat
+# > RelStrat. In many cases, the AbsStrat and AbsFoodStrat should also match. Be
 # aware that there will be a few exceptions (e.g., very long crinoid
 # Traumatocrinus that is attached to floating logs, crinoid Paracatillocrinus
 # that has an unusual means of "wrapped" attachment that warrants being
@@ -713,24 +710,24 @@ write.table(out, file="PostSizes.tab", quote = FALSE, sep = "\t", row.names = FA
 # lack AbsStrat and AbsFoodStrat because of unknown stem lengths.
 
 # (4) Epibiotic (but barely raised, so should be coded as "self-supported") taxa
-# given incorrect benthic (as if not epibiotic) AbsStratDists: Find Biotic=1 &
-# SupportedByOthers=0 & AbsStratDist=">-10000" [ANY] & SizeChanged=CHECK &
-# EstAbsStratDistance=Estimated and delete AbsStratDist (if needs correcting).
+# given incorrect benthic (as if not epibiotic) AbsStratDists: Find Biotic = 1 &
+# SupportedByOthers = 0 & AbsStratDist = ">-10000" [ANY] & SizeChanged = CHECK &
+# EstAbsStratDistance = Estimated and delete AbsStratDist (if needs correcting).
 # (AbsStrat should be same as RelStrat.) (The valid exceptions will typically
 # have AbsStratDist values that do NOT correspond to the organism's major axes.)
 
 # (5) Confirm all exclusively infaunal taxa have negative AbsStratDists and
 # exclusively epifaunal taxa have positive values. (But don't be surprised by
 # semi-infaunal taxa that are simultaneously epifaunal and infaunal.) Test that
-# all above=1/in=0 have positive AbsStratDists and all above=0/in=1 have
+# all above = 1/in = 0 have positive AbsStratDists and all above = 0/in = 1 have
 # negative ones. Converse, confirm that all with negative AbsStratDists have
-# WithinAbsStrat=1 and that all with positive AbsStratDists have
-# AboveAbsStrat=1.
+# WithinAbsStrat = 1 and that all with positive AbsStratDists have AboveAbsStrat
+# = 1.
 
 # (6) Confirm that RelStrat corresponds to appropriate body axis. Best to sort
 # by Phylum > Class (and for some groups, like brachiopods, subclass/order) >
 # D/V / A/P because different taxa have different living orientations. If list
-# is too long to run through, can limit to Sizechanged="checked".
+# is too long to run through, can limit to Sizechanged = "checked".
 # (Alternatively, can find all taxa with all major axes in the same size range
 # [e.g., 0.1-1], which should all have the same RelStrat.) Exceptions: Watch out
 # for crinoids, blastoids, rhombiferans, pedunculately raised (Cambrian)
@@ -743,7 +740,7 @@ write.table(out, file="PostSizes.tab", quote = FALSE, sep = "\t", row.names = FA
 # is sometimes based on a diagonal orientation based on A/P length and corals
 # and encrusting bryozoans where RelStrat is based on A/P.
 
-# (7) Confirm that taxa with AbsStratDist=">-100000" values [ANY] match the
+# (7) Confirm that taxa with AbsStratDist = ">-100000" values [ANY] match the
 # correct AbsStrat coding. (Sort by AbsStratDist when checking manually.) When
 # checking this, also worth checking the RelStrat and AbsFoodStrat codings. In
 # general, if animal is epibenthic, self-supported, and filter-feeder, the
@@ -768,16 +765,17 @@ write.table(out, file="PostSizes.tab", quote = FALSE, sep = "\t", row.names = FA
 # twice the A/P length. POLYCHAETES and TENTACULITIDS should be twice the
 # transverse length.
 
-# (9) Confirm that wholly infaunal filter-feeders (AboveAbsStrat=0, WithinAbs=1,
-# Filter=1 [rest 0]) have AbsFoodStrat at 0.25 (typically) and that AbsFood is 
-# "Above" the seafloor (with exceptions, like callianassoids that also ingest 
-# sediment from burrow wall, or Cenozoic cave-dwelling brachiopods, or thin 
-# productids that rested within the sediment with gape at seafloor, or echinoids
-# like Encope that emerge at surface to filter feed, or interstitial meifaunal).
+# (9) Confirm that wholly infaunal filter-feeders (AboveAbsStrat = 0, WithinAbs
+# = 1, Filter = 1 [rest 0]) have AbsFoodStrat at 0.25 (typically) and that
+# AbsFood is "Above" the seafloor (with exceptions, like callianassoids that
+# also ingest sediment from burrow wall, or Cenozoic cave-dwelling brachiopods,
+# or thin productids that rested within the sediment with gape at seafloor, or
+# echinoids like Encope that emerge at surface to filter feed, or interstitial
+# meifaunal).
 
 # (10) Confirm that filter feeders (whether infaunal or epifaunal) that extend
-# body above sea floor (AboveAbsStrat=1 & FeedAbovePrimary=1 & Filter=1
-# [rest=0]) have AbsFoodStrat at level to which body extends (and that food is
+# body above sea floor (AboveAbsStrat = 1 & FeedAbovePrimary = 1 & Filter = 1
+# [rest = 0]) have AbsFoodStrat at level to which body extends (and that food is
 # also "Above" the seafloor). Easiest to sort by AbsStrat > AbsFoodStrat >
 # AbsStratDist, Exceptions include the relatively deeply buried semi-infaunals,
 # where a large portion of body may be buried but only a small portion atop
@@ -790,10 +788,15 @@ write.table(out, file="PostSizes.tab", quote = FALSE, sep = "\t", row.names = FA
 # have AbsStrat = 1.
 
 # (12) For filter-feeding echinoderms, clear the FilterDensity field if the
-# entry is NOT a filter-feeder.
+# entry is NOT a filter-feeder. Check FilterDensity = High/Medium/Low and
+# FilterFeeder != 1. (If FilterFeeder is blank in the Constant data set, check
+# the Mode propogation; if a FilterDensity coding was propogated in the Constant
+# data set and the Mode data set has FilterFeeder = 1, then keep the
+# FilterDensity and propogate its dependent FilterFeeder = 1 and check the
+# Estimated box.)
 
 # (13) Go through each character and confirm no "all-zeros" (all diets have 0,
-# etc.). All 1s are acceptable.
+# etc.), removing some estimates as needed. All 1s are acceptable.
 
 # (14) Need to write out rules for hunters, scavengers, and mass feeders,
 # especially regarding food tier (half D/V for predators to account for smaller
@@ -801,5 +804,5 @@ write.table(out, file="PostSizes.tab", quote = FALSE, sep = "\t", row.names = FA
 # for this.) This might be best to sort by Phylum > Class > A/P / D/V because
 # different taxa often have distinct foraging strategies.
 
-# (15) Once these checks are run, re-run them and clear the SizeChanged=Check
+# (15) Once these checks are run, re-run them and clear the SizeChanged = Check
 # tags.
