@@ -19,31 +19,35 @@
 # "Relative' means the smallest inclusive taxonomic group the entry is related
 # to whose life habit has been coded.
 
-# 1. If an entry is already coded at species-, subgenus-, or genus-level, skip;
+# 1. If an entry is already coded at species-, subgenus-, or genus-level, skip,
 # unless life habits are partly blank (uncoded), in which case use closest
-# relatives to populate remaining codings. (In these cases, tag the states as
+# relatives to estimate remaining states. (In these cases, tag the states as
 # "Estimated" and record the changes in the History_Ecology field.)
 
 # 2. If an entry is above genus-level, use closest relatives to update
 # (override) the pre-existing codings. If unchanged (identical to relative),
 # abort and go to the next entry, leaving the 'DateEntered_Ecology' and
-# 'EcoScale' fields unchanged. If multiple relatives exist, enter the value (if
-# constant) or 'NA' (if varies). (Record the relative as "Higher taxon indet."
-# NO LONGER USED (July 2018): Use 'grep''s 'adist' to approximate type taxon for
+# 'EcoScale' fields unchanged. If multiple relatives exist, enter the value,
+# using the specified propogation method. In the 'constant' method, propogate
+# any state that is shared among all relatives, and 'NA' if the state varies. In
+# the 'mode' method, propogate states that are most frequently occuring for each
+# state. In both cases, record the relative as "Higher taxon indet." (NO LONGER
+# USED, as of July 2018): Use 'grep''s 'adist()' to approximate type taxon for
 # reference species when multiple relatives exist.) If any states remain
-# uncoded, go to higher taxa in case they have codings for these states, using
-# the same logic as step 1.
+# uncoded, go to the next inclusive higher taxa in case they have codings for
+# these states, using the same logic as step 1.
 
-# The four body-size-related states (ABsStrat, RelStrat, etc.) are only
-# over-written when missing or EcoScale > Species/Genus. If any of these four
-# states are changed AND the BodySizeScale was Species/Genus (implying they were
-# originally checked after the Propogatesizes.R algorithm), add a "check" tag to
-# force a manual check. If any life habit codings are changed, add (or override)
-# record-keeping text to History_Ecology field. This documents a history of life
-# habit changes that can be restored using earlier back-up database copies. If
-# there is no date in the 'DateEntered_Ecology' date field (i.e., this is the
-# first update), just update the date (without an update to the history text).
-# But if piecemeal states are changed (that are different than the consensus),
+# The four body-size-related states (AbsStrat, RelStrat, AbsFoodStrat, and
+# RelFoodStrat) are only over-written when the states are missing or when
+# EcoScale > Species/Genus. If any of these four states are changed AND the
+# BodySizeScale was Species/Genus (implying they were originally checked after
+# the Propogatesizes.R algorithm), add a "check" tag to force a manual check. If
+# any life habit codings are changed, add (or override) the record-keeping text
+# to History_Ecology field. This documents a history of life-habit changes that
+# can be restored using earlier back-up database copies. If there is no date in
+# the 'DateEntered_Ecology' date field (i.e., this is the first update), just
+# update the date (without an update to the history text). If secondarily
+# filled-in states are changed (that are different than the chosen relative),
 # record those changes to the History field.
 
 # A benefit of this update-higher-taxon approach is that as we get more data, we
@@ -629,6 +633,7 @@ warnings()
 
 round(table(input$EcologyScale) * 100 / nrow(input), 1)
 round(table(out$EcologyScale) * 100 / nrow(out), 1)
+round(cumsum(table(out$BodySizeScale) * 100 / nrow(out)), 1)
 table(input$EcologyScale)
 table(out$EcologyScale)
 
