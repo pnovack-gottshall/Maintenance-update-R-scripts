@@ -622,8 +622,10 @@ beep(3)
 
 round(table(input$BodySizeScale) * 100 / nrow(input), 1)
 round(table(out$BodySizeScale) * 100 / nrow(out), 1)
+round(cumsum(table(out$BodySizeScale) * 100 / nrow(out)), 1)
 table(input$BodySizeScale)
 table(out$BodySizeScale)
+
 
 rng <- range(na.omit(c(input$AbsStratDistance, out$AbsStratDistance)))
 hist(out$AbsStratDistance, xlim = rng, col = "white", border = "white", n = 50)
