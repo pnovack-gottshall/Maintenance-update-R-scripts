@@ -618,10 +618,6 @@ for(i in 1:nrow(out)) {
 }
 (Sys.time() - start.t)
 
-# Following causes RStudio to crash if run with lines after this
-library(beepr)
-beep(3)
-
 # Note that if the only change is "SizeChanged", that means the size codings
 # (AbsStrat, RelStrat, etc.) were reverted from the consensus state "back" to
 # the state input into the database based on PropogateSizes.R updates for
