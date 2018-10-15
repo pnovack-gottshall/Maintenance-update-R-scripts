@@ -112,6 +112,7 @@ setwd("C:/Users/pnovack-gottshall/Desktop/Databases/Maintenance & update R scrip
 # setwd("C:/Users/pnovack-gottshall/Documents/GSA (& NSF & NAPC)/2016GSA/GSA2016 analyses")
 
 pre.input <- read.delim(file = "preSizes.tab", stringsAsFactors = FALSE)
+# pre.input <- read.delim(file="PreSizes_Constant_withPBDB.tab", stringsAsFactors=FALSE)
 # pre.input <- read.delim(file="EchinoPreSizes_withPBDB.tab", stringsAsFactors=FALSE)
 est.cols <- which(colnames(pre.input) == "SizeChanged" | 
                     colnames(pre.input) == "Est_AP" |
@@ -121,7 +122,8 @@ colCl <- c(rep(NA, ncol(pre.input)))
 colCl[est.cols] <- "character"
 rm(pre.input)
 input <- read.delim(file="preSizes.tab", stringsAsFactors=FALSE, colClasses=colCl)
-# input <- read.delim(file="PreSizes_withPBDB.tab", stringsAsFactors=FALSE)
+# input <- read.delim(file="PreSizes_Constant_withPBDB.tab", stringsAsFactors=FALSE)
+# input <- read.delim(file="EchinoPreSizes_withPBDB.tab", stringsAsFactors=FALSE)
 scales <- c("Species", "Subgenus", "Genus", "Subfamily", "Family", "Superfamily",
   "Suborder", "Order", "Subclass", "Class", "Subphylum", "Phylum", "", NA)
 scales <- factor(scales, levels = scales, ordered = TRUE)
@@ -148,7 +150,12 @@ colnames(out[DV.cols])          # "DVLength", "PhotoDV", "DVScale"
 str(input)
 # TROUBLESHOOT: Make sure the 4 "SizeChanged" and "Est_X" columns are input as
 # characters. If a column is blank, it is classed by default as a logical (which
-# causes errors below)
+# causes errors below). If needed (such as when there are no "check"ed entries,
+# use next lines to force to proper class.)
+
+# input$SizeChanged <-
+  replace(input$SizeChanged, which(is.na(input$SizeChanged)), "")
+
 head(input)
 tail(input)
 table(input$BodySizeScale)
@@ -638,7 +645,7 @@ if (any(table(input$IDNumber) > 1)) {
 
 ## EXPORT DATA -------------------------------------------------------------
 write.table(out, file = "PostSizes.tab", quote = FALSE, sep = "\t", row.names = FALSE)
-# write.table(out, file = "PostSizes_withPBDB.tab", quote = FALSE, sep = "\t", row.names = FALSE)
+# write.table(out, file = "PostSizes_Constant_withPBDB.tab", quote = FALSE, sep = "\t", row.names = FALSE)
 
 # (1) Open in Excel to confirm looks acceptable. Replace (with Options = Match
 # entire cell contents) "NA"s in taxonomic names, body size data, strat ranges,
