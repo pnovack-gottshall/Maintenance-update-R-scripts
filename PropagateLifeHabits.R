@@ -630,7 +630,7 @@ warnings()
 
 round(table(input$EcologyScale) * 100 / nrow(input), 1)
 round(table(out$EcologyScale) * 100 / nrow(out), 1)
-round(cumsum(table(out$BodySizeScale) * 100 / nrow(out)), 1)
+round(cumsum(table(out$EcologyScale) * 100 / nrow(out)), 1)
 table(input$EcologyScale)
 table(out$EcologyScale)
 
@@ -644,8 +644,8 @@ if (any(table(input$IDNumber) > 1)) {
 ## EXPORT DATA -------------------------------------------------------------
 # write.table(out, file="PostLH_constant.tab", quote=FALSE, sep="\t", row.names=FALSE)
 # write.table(out, file="PostLH_mode.tab", quote=FALSE, sep="\t", row.names=FALSE)
-write.table(out, file="PostLH_withPBDB_mode.tab", quote=FALSE, sep="\t", row.names=FALSE)
-# write.table(out, file="PostLH_withPBDB_constant.tab", quote=FALSE, sep="\t", row.names=FALSE)
+# write.table(out, file="PostLH_withPBDB_mode.tab", quote=FALSE, sep="\t", row.names=FALSE)
+write.table(out, file="PostLH_withPBDB_constant.tab", quote=FALSE, sep="\t", row.names=FALSE)
 
 # (1) Open in Excel to confirm looks acceptable. Replace (matching entire cell
 # contents) "NA"s in life habit data.
