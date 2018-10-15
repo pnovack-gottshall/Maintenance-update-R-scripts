@@ -106,7 +106,8 @@ setwd("C:/Users/pnovack-gottshall/Desktop/Databases/Maintenance & update R scrip
 # setwd("C:/Users/pnovack-gottshall/Documents/GSA (& NSF & NAPC)/2016GSA/GSA2016 analyses")
 input <- read.delim(file = "preLH_constant.tab", colClasses = "character")
 # input <- read.delim(file = "preLH_mode.tab", colClasses = "character")
-# input <- read.delim(file = "preLH_withPBDB.tab", colClasses = "character")
+# input <- read.delim(file = "preLH_mode_PBDB.tab", colClasses = "character")
+# input <- read.delim(file = "preLH_constant_PBDB.tab", colClasses = "character")
 scales <- c("Species", "Subgenus", "Genus", "Subfamily", "Family", "Superfamily", 
   "Suborder", "Order", "Subclass", "Class", "Subphylum", "Phylum", "", NA)
 scales <- factor(scales, levels = scales, ordered = TRUE)
@@ -645,9 +646,9 @@ if (any(table(input$IDNumber) > 1)) {
 }
 
 ## EXPORT DATA -------------------------------------------------------------
-write.table(out, file="PostLH_constant.tab", quote=FALSE, sep="\t", row.names=FALSE)
+# write.table(out, file="PostLH_constant.tab", quote=FALSE, sep="\t", row.names=FALSE)
 # write.table(out, file="PostLH_mode.tab", quote=FALSE, sep="\t", row.names=FALSE)
-# write.table(out, file="PostLH_withPBDB_mode.tab", quote=FALSE, sep="\t", row.names=FALSE)
+write.table(out, file="PostLH_withPBDB_mode.tab", quote=FALSE, sep="\t", row.names=FALSE)
 # write.table(out, file="PostLH_withPBDB_constant.tab", quote=FALSE, sep="\t", row.names=FALSE)
 
 # (1) Open in Excel to confirm looks acceptable. Replace (matching entire cell
