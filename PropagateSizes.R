@@ -691,6 +691,15 @@ write.table(out, file = "PostSizes.tab", quote = FALSE, sep = "\t", row.names = 
 # MAKE SURE THAT IF ADD/CHANGE A STATE FOR A EcoScale = SPECIES/GENUS, to tag as
 # "Estimated."
 
+# NOTE: When error-checking for a PBDB propogation, preferable to start with no.
+# 6 (RelStrat) because it could un-do other error-check changes. Similarly,
+# because the combination of different life habit and body size can create novel
+# body orientations, a useful convention is to only change RelStrat if it is not
+# sensible with some orientation of the specified taxon's body size. (In other
+# words, the propogated life habit may suggest a body orientation that the
+# reference size taxon does not have in its life habit. This is an acceptable
+# outcome of the propogation's "exploration" of ecospace.)
+
 # (1) Pelagic taxa given benthic AbsStratDists: Find Fluidic = 1 & Insubstantial
 # = 1 & AbsStratDist = ">-10000" [ANY] & SizeChanged = CHECK and delete
 # AbsStratDist (if needs correcting).
@@ -747,7 +756,11 @@ write.table(out, file = "PostSizes.tab", quote = FALSE, sep = "\t", row.names = 
 # and terrestrial birds and pterosaurs scaled to diagonally oriented A/P) and
 # rhynchonellatan brachiopods and bivalves and other animals whose orientation
 # is sometimes based on a diagonal orientation based on A/P length and corals
-# and encrusting bryozoans where RelStrat is based on A/P.
+# and encrusting bryozoans where RelStrat is based on A/P. Also be aware that
+# some colonial animals (sponges, stromatoporoids, corals, and to a lesser
+# extent bryozoans) are given larger AbsStrat & RelStrat values than the
+# measured specimens provide, on the basis that the specimen is only one part of
+# a substantially larger colony.
 
 # (7) Confirm that taxa with AbsStratDist = ">-100000" values [ANY] match the
 # correct AbsStrat coding. (Sort by AbsStratDist when checking manually.) When
