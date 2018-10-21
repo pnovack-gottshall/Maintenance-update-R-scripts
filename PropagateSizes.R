@@ -698,7 +698,10 @@ write.table(out, file = "PostSizes.tab", quote = FALSE, sep = "\t", row.names = 
 # sensible with some orientation of the specified taxon's body size. (In other
 # words, the propogated life habit may suggest a body orientation that the
 # reference size taxon does not have in its life habit. This is an acceptable
-# outcome of the propogation's "exploration" of ecospace.)
+# outcome of the propogation's "exploration" of ecospace.) An example is for
+# colonial animals (bryozoans and tabulate corals) where a "self-supported"
+# colony would be raised into water column whereas a "supported" colony would be
+# oriented as encrusting some host.
 
 # (1) Pelagic taxa given benthic AbsStratDists: Find Fluidic = 1 & Insubstantial
 # = 1 & AbsStratDist = ">-10000" [ANY] & SizeChanged = CHECK and delete
