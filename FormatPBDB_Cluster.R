@@ -224,10 +224,13 @@ write.table(post, file="PreSizes_Constant_withPBDB.tab", quote=FALSE, sep="\t", 
 # the following taxonomic names whose rank or name is listed differently in the
 # PBDB than in my database. MOVE the following as a class (not subclass):
 # arthropod Malacostraca, echinoderms Blastoidea and Parablastoidea, and
-# vertebrates Placodermi, Thelodonti, and Holocephali. ADD Class Hyolitha for Orders
-# Hyolithida and Orthothecida and Class Dipnomorpha for orders Dipnoi and
+# vertebrates Placodermi, Thelodonti, and Holocephali. ADD Class Hyolitha for
+# Orders Hyolithida and Orthothecida and Class Dipnomorpha for orders Dipnoi and
 # Dipnotetrapodomorpha. CHANGE the cephalochordate order Amphioxi to
-# Amphioxiformes, vertebrate class Actinopteri to Actinopterygii,
+# Amphioxiformes, vertebrate class Actinopteri to Actinopterygii, and Order
+# Rhombiera (Subphylum Pelmatozoa, Class Cystoidea, Subclass Hydrophoridea) to
+# Class Rhombifera (Subphylum Blastozoa, Order UNCERTAIN), and Subphylum
+# Pelmatozoa to Blastozoa.
 
 # (4) Add new IDNumbers (that pick up after those in the existing database), and
 # re-save.
