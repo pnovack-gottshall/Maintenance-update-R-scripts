@@ -692,16 +692,21 @@ write.table(out, file = "PostSizes.tab", quote = FALSE, sep = "\t", row.names = 
 # "Estimated."
 
 # NOTE: When error-checking for a PBDB propogation, preferable to start with no.
-# 6 (RelStrat) because it could un-do other error-check changes. Similarly,
-# because the combination of different life habit and body size can create novel
-# body orientations, a useful convention is to only change RelStrat if it is not
-# sensible with some orientation of the specified taxon's body size. (In other
-# words, the propogated life habit may suggest a body orientation that the
-# reference size taxon does not have in its life habit. This is an acceptable
-# outcome of the propogation's "exploration" of ecospace.) An example is for
-# colonial animals (bryozoans and tabulate corals) where a "self-supported"
-# colony would be raised into water column whereas a "supported" colony would be
-# oriented as encrusting some host.
+# 7 (run through AbsStratDist to make sure AbsStrat, and sometimes RelStrat, is
+# correct) and then no. 6 (RelStrat based on major body axes) because they could
+# un-do other error-check changes. Similarly, because the combination of
+# different life habit and body size can create novel body orientations, a
+# useful convention is to only change RelStrat if it is not sensible with some
+# orientation of the specified taxon's body size. (In other words, the
+# propogated life habit may suggest a body orientation that the reference size
+# taxon does not have in its life habit. This is an acceptable outcome of the
+# propogation's "exploration" of ecospace.) An example is for colonial animals
+# (bryozoans and tabulate corals) where a "self-supported" colony would be
+# raised into water column whereas a "supported" colony would be oriented as
+# encrusting some host. If the orientation could be multiple ones (e.g., the
+# 'mode' treatments suggests one orientation but the 'constant' is not
+# committed), best to leave the state uncoded. This is also common with bivalves
+# and some brachiopods where the orientation depends on many factors.
 
 # (1) Pelagic taxa given benthic AbsStratDists: Find Fluidic = 1 & Insubstantial
 # = 1 & AbsStratDist = ">-10000" [ANY] & SizeChanged = CHECK and delete
@@ -750,20 +755,24 @@ write.table(out, file = "PostSizes.tab", quote = FALSE, sep = "\t", row.names = 
 # D/V / A/P because different taxa have different living orientations. If list
 # is too long to run through, can limit to Sizechanged = "checked".
 # (Alternatively, can find all taxa with all major axes in the same size range
-# [e.g., 0.1-1], which should all have the same RelStrat.) Exceptions: Watch out
-# for crinoids, blastoids, rhombiferans, pedunculately raised (Cambrian)
-# lingulids, and other stemmed animals where the measured body part may not
-# correspond to the intact animal, and animals close to a size-boundary that are
-# diagonally oriented (such as pedunculate brachiopods and some rugose corals)
-# and subtaxa with distinct orientations (such as agnostids scaled to 2/3 A/P
-# and terrestrial birds and pterosaurs scaled to diagonally oriented A/P) and
-# rhynchonellatan brachiopods and bivalves and other animals whose orientation
-# is sometimes based on a diagonal orientation based on A/P length and corals
-# and encrusting bryozoans where RelStrat is based on A/P. Also be aware that
-# some colonial animals (sponges, stromatoporoids, corals, and to a lesser
-# extent bryozoans) are given larger AbsStrat & RelStrat values than the
-# measured specimens provide, on the basis that the specimen is only one part of
-# a substantially larger colony.
+# [e.g., 0.1-1], which should all have the same RelStrat.) Watch out for
+# following exceptions: (1) Crinoids, blastoids, rhombiferans, pedunculately
+# raised (Cambrian) lingulids, and other stemmed animals where the measured body
+# part may not correspond to the intact animal. (2) Animals close to a
+# size-boundary that are diagonally oriented (such as pedunculate brachiopods,
+# and some bivalves and rugose corals). (3) Distinctive subtaxa with distinct
+# orientations (such as agnostids scaled to 2/3 A/P and terrestrial birds and
+# pterosaurs scaled to diagonally oriented A/P). (4) Rhynchonellatan brachiopods
+# and bivalves and other animals whose orientation is sometimes based on a
+# diagonal orientation based on A/P length. (5) Corals and encrusting bryozoans
+# where RelStrat is based on A/P. (6) Some bactritid and turrilitoid
+# ancyloceratine cephalopods and sessile filter-feeding snails (Superfamilies
+# Euomphaloidea and Macluritoidea and Cerithioidea [only families Siliquariidae
+# and Turritellidae > only subfamily Vermiculariinae]) are vertically oriented,
+# based on A/P length. (7) Some colonial animals (sponges, stromatoporoids,
+# corals, and to a lesser extent bryozoans) are given larger AbsStrat & RelStrat
+# values than the measured specimens provide, on the basis that the specimen is
+# only one part of a substantially larger colony.
 
 # (7) Confirm that taxa with AbsStratDist = ">-100000" values [ANY] match the
 # correct AbsStrat coding. (Sort by AbsStratDist when checking manually.) When
