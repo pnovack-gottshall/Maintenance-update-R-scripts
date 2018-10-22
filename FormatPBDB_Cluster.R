@@ -227,11 +227,12 @@ write.table(post, file="PreSizes_Constant_withPBDB.tab", quote=FALSE, sep="\t", 
 # vertebrates Placodermi, Thelodonti, and Holocephali. ADD Class Hyolitha for
 # Orders Hyolithida and Orthothecida and Class Dipnomorpha for orders Dipnoi and
 # Dipnotetrapodomorpha and Class Tentaculitita / Phylum Mollusca for Order
-# Tentaculitida and Phylum Annelida for Class Palaeoscolecida. CHANGE the
-# cephalochordate order Amphioxi to Amphioxiformes, vertebrate class Actinopteri
-# to Actinopterygii, and Order Rhombiera (Subphylum Pelmatozoa, Class Cystoidea,
-# Subclass Hydrophoridea) to Class Rhombifera (Subphylum Blastozoa, Order
-# UNCERTAIN), and Subphylum Pelmatozoa to Blastozoa.
+# Tentaculitida and Phylum Annelida for Class Palaeoscolecida and Phylum Agmata
+# for Order Volborthellida. CHANGE the cephalochordate order Amphioxi to
+# Amphioxiformes, vertebrate class Actinopteri to Actinopterygii, and Order
+# Rhombiera (Subphylum Pelmatozoa, Class Cystoidea, Subclass Hydrophoridea) to
+# Class Rhombifera (Subphylum Blastozoa, Order UNCERTAIN), and Subphylum
+# Pelmatozoa to Blastozoa.
 
 # (4) Add new IDNumbers (that pick up after those in the existing database), and
 # re-save.
