@@ -226,11 +226,11 @@ write.table(post, file="PreSizes_Constant_withPBDB.tab", quote=FALSE, sep="\t", 
 # arthropod Malacostraca, echinoderms Blastoidea and Parablastoidea, and
 # vertebrates Placodermi, Thelodonti, and Holocephali. ADD Class Hyolitha for
 # Orders Hyolithida and Orthothecida and Class Dipnomorpha for orders Dipnoi and
-# Dipnotetrapodomorpha. CHANGE the cephalochordate order Amphioxi to
-# Amphioxiformes, vertebrate class Actinopteri to Actinopterygii, and Order
-# Rhombiera (Subphylum Pelmatozoa, Class Cystoidea, Subclass Hydrophoridea) to
-# Class Rhombifera (Subphylum Blastozoa, Order UNCERTAIN), and Subphylum
-# Pelmatozoa to Blastozoa.
+# Dipnotetrapodomorpha and Class Tentaculitita / Phylum Mollusca for Order
+# Tentaculitida. CHANGE the cephalochordate order Amphioxi to Amphioxiformes,
+# vertebrate class Actinopteri to Actinopterygii, and Order Rhombiera (Subphylum
+# Pelmatozoa, Class Cystoidea, Subclass Hydrophoridea) to Class Rhombifera
+# (Subphylum Blastozoa, Order UNCERTAIN), and Subphylum Pelmatozoa to Blastozoa.
 
 # (4) Add new IDNumbers (that pick up after those in the existing database), and
 # re-save.
