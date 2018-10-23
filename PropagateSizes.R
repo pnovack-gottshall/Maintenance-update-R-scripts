@@ -782,7 +782,7 @@ write.table(out, file = "PostSizes.tab", quote = FALSE, sep = "\t", row.names = 
 # will be 0; and if raptorial, AbsFoodStrat will be where food is located (often
 # 0.25 coding if epibenthic prey). For RelStrat, useful to sort by
 # Phylum>Class>DV or AP length. For RelStrat, recall that for semi-infaunals
-# this will correspond to the animal's major axis and not the distance from sea
+# RelStrat will correspond to the animal's major axis and not the distance from sea
 # floor.
 
 # (8) Confirm RelFoodStrat for filter feeders, sorting by phyla and then either
