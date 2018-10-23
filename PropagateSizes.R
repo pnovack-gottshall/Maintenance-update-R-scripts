@@ -205,8 +205,8 @@ find.rel <- function(x, i, start = 4, end = 12, photo.cols = NULL,
     # Identify correct column for taxonomic scale being considered
     sc.col <- which(colnames(others) == scales[e])
     # Ignore if unassigned taxa
-    if (x[i, sc.col] == "") next
-    if (x[i, sc.col] == "UNCERTAIN") next
+    if (x[i, sc.col] == "" | x[i, sc.col] == "UNCERTAIN" |
+        is.na(x[i, sc.col])) next
     # Identify relatives coded at species-, subgenus-, or genus-level AND with
     # all three measures
     rels <- others[which(others[, sc.col] == x[i, sc.col]), ]
@@ -646,7 +646,7 @@ if (any(table(input$IDNumber) > 1)) {
 
 
 ## EXPORT DATA -------------------------------------------------------------
-write.table(out, file = "PostSizes.tab", quote = FALSE, sep = "\t", row.names = FALSE)
+write.table(out, file = "PostSizes_Barnacles.tab", quote = FALSE, sep = "\t", row.names = FALSE)
 # write.table(out, file = "PostSizes_Constant_withPBDB.tab", quote = FALSE, sep = "\t", row.names = FALSE)
 
 # (1) Open in Excel to confirm looks acceptable. Replace (with Options = Match
@@ -794,8 +794,8 @@ write.table(out, file = "PostSizes.tab", quote = FALSE, sep = "\t", row.names = 
 # GRAPTOLITES, and PTEROBRANCHS should be 0.25. Filter-feeding MICROCRUSTACEANS
 # (amphipods, mysids, etc.) and burrowing filter-feeding SHRIMP generally should
 # be 0.25. ASCIDIANS should generally be 0.5. Filter-feeding fishes and whales
-# should generally be 1.0. BRACHIOPODS should be half the A/P length. (Enormous)
-# filter-feeding mollusks (BIVALVES, ROSTROCONCHS, and GASTROPODS) should be
+# should generally be 1.0. BRACHIOPODS should be half the A/P length.
+# Filter-feeding mollusks (BIVALVES, ROSTROCONCHS, and GASTROPODS) should be
 # twice the A/P length. POLYCHAETES and TENTACULITIDS should be twice the
 # transverse length.
 
