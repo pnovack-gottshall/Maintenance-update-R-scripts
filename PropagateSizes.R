@@ -646,7 +646,7 @@ if (any(table(input$IDNumber) > 1)) {
 
 
 ## EXPORT DATA -------------------------------------------------------------
-write.table(out, file = "PostSizes_Barnacles.tab", quote = FALSE, sep = "\t", row.names = FALSE)
+write.table(out, file = "PostSizes.tab", quote = FALSE, sep = "\t", row.names = FALSE)
 # write.table(out, file = "PostSizes_Constant_withPBDB.tab", quote = FALSE, sep = "\t", row.names = FALSE)
 
 # (1) Open in Excel to confirm looks acceptable. Replace (with Options = Match
