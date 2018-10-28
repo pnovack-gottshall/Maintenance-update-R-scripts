@@ -791,13 +791,15 @@ write.table(out, file = "PostSizes.tab", quote = FALSE, sep = "\t", row.names = 
 # depends on distance from sea floor, confirm those ~15-200 mm tall are 0.5;
 # refer to LifeHabitNotes.docs for additional categorizations. For active filter
 # feeders, the coding depends on the size of the pumping organ. All BRYOZOANS,
-# GRAPTOLITES, and PTEROBRANCHS should be 0.25. Filter-feeding MICROCRUSTACEANS
-# (amphipods, mysids, etc.) and burrowing filter-feeding SHRIMP generally should
-# be 0.25. ASCIDIANS should generally be 0.5. Filter-feeding fishes and whales
-# should generally be 1.0. BRACHIOPODS should be half the A/P length.
-# Filter-feeding mollusks (BIVALVES, ROSTROCONCHS, and GASTROPODS) should be
-# twice the A/P length. POLYCHAETES and TENTACULITIDS should be twice the
-# transverse length.
+# GRAPTOLITES, PTEROBRANCHS, and CEPHALOCHORDATA should be 0.25. Filter-feeding
+# MICROCRUSTACEANS (amphipods, mysids, etc.) and burrowing filter-feeding SHRIMP
+# generally should be 0.25. ASCIDIANS should generally be 0.5. Filter-feeding
+# fishes and whales should generally be 1.0. BRACHIOPODS should be half the A/P
+# length. Filter-feeding mollusks (BIVALVES, ROSTROCONCHS, and GASTROPODS)
+# should be twice the A/P length. POLYCHAETES, TENTACULITIDS, and other tubular
+# taxa (ammonoids in Superfamily Turrilitoidea and snails in Cerithioidea [only
+# families Siliquariidae and Turritellidae > only subfamily Vermiculariinae])
+# should (generally) be twice the transverse length, instead.
 
 # (9) Confirm that wholly infaunal filter-feeders (AboveAbsStrat = 0, WithinAbs
 # = 1, Filter = 1 [rest 0]) have AbsFoodStrat at 0.25 (typically) and that
