@@ -797,9 +797,11 @@ write.table(out, file = "PostSizes.tab", quote = FALSE, sep = "\t", row.names = 
 # fishes and whales should generally be 1.0. BRACHIOPODS should be half the A/P
 # length. Filter-feeding mollusks (BIVALVES, ROSTROCONCHS, and GASTROPODS)
 # should be twice the A/P length. POLYCHAETES, TENTACULITIDS, and other tubular
-# taxa (ammonoids in Superfamily Turrilitoidea and snails in Cerithioidea [only
-# families Siliquariidae and Turritellidae > only subfamily Vermiculariinae])
-# should (generally) be twice the transverse length, instead.
+# taxa (snails in Cerithioidea [only families Siliquariidae and Turritellidae >
+# only subfamily Vermiculariinae]) should (generally) be twice the transverse
+# length, instead. Tentaculate web-feeding (filter-feeding) ammonoids (such as
+# those in Superfamily Turrilitoidea and Order Ceratitida) have many exceptions
+# but are typically approximated by the A/P conch length.
 
 # (9) Confirm that wholly infaunal filter-feeders (AboveAbsStrat = 0, WithinAbs
 # = 1, Filter = 1 [rest 0]) have AbsFoodStrat at 0.25 (typically) and that
