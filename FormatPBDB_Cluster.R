@@ -225,7 +225,9 @@ write.table(post, file="PreSizes_Constant_withPBDB.tab", quote=FALSE, sep="\t", 
 # PBDB than in my database. MOVE the following as a class (not subclass):
 # arthropods Malacostraca and Cirripedia (and set in Subphylum Crustacea),
 # echinoderms Blastoidea and Parablastoidea, and vertebrates Placodermi,
-# Thelodonti, and Holocephali. ADD Class Hyolitha for Orders Hyolithida and
+# Thelodonti, and Holocephali. MOVE Class Opisthobranchs down a rank (adding
+# them in Class Heterobranchia) such that Opisthobranchia is a Subclass and
+# their orders are suborders. ADD Class Hyolitha for Orders Hyolithida and
 # Orthothecida and Class Dipnomorpha for orders Dipnoi and Dipnotetrapodomorpha
 # and Class Tentaculitita / Phylum Mollusca for Order Tentaculitida and Phylum
 # Annelida for Class Palaeoscolecida and Phylum Agmata for Order Volborthellida.
