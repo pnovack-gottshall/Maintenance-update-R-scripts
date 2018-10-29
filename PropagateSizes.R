@@ -762,17 +762,18 @@ write.table(out, file = "PostSizes.tab", quote = FALSE, sep = "\t", row.names = 
 # size-boundary that are diagonally oriented (such as pedunculate brachiopods,
 # and some bivalves and rugose corals). (3) Distinctive subtaxa with distinct
 # orientations (such as agnostids scaled to 2/3 A/P and terrestrial birds and
-# pterosaurs scaled to diagonally oriented A/P). (4) Rhynchonellatan brachiopods
-# and bivalves and other animals whose orientation is sometimes based on a
-# diagonal orientation based on A/P length. (5) Corals and encrusting bryozoans
-# where RelStrat is based on A/P. (6) Some bactritid and turrilitoid
-# ancyloceratine cephalopods and sessile filter-feeding snails (Superfamilies
-# Euomphaloidea and Macluritoidea and Cerithioidea [only families Siliquariidae
-# and Turritellidae > only subfamily Vermiculariinae]) are vertically oriented,
-# based on A/P length. (7) Some colonial animals (sponges, stromatoporoids,
-# corals, and to a lesser extent bryozoans) are given larger AbsStrat & RelStrat
-# values than the measured specimens provide, on the basis that the specimen is
-# only one part of a substantially larger colony.
+# pterosaurs scaled to diagonally oriented A/P and flatfishes [Family Soleidae]
+# scaled to transverse.). (4) Rhynchonellatan brachiopods and bivalves and other
+# animals whose orientation is sometimes based on a diagonal orientation based
+# on A/P length. (5) Corals and encrusting bryozoans where RelStrat is based on
+# A/P. (6) Some bactritid and turrilitoid ancyloceratine cephalopods and sessile
+# filter-feeding snails (Superfamilies Euomphaloidea and Macluritoidea and
+# Cerithioidea [only families Siliquariidae and Turritellidae > only subfamily
+# Vermiculariinae]) are vertically oriented, based on A/P length. (7) Some
+# colonial animals (sponges, stromatoporoids, corals, and to a lesser extent
+# bryozoans) are given larger AbsStrat & RelStrat values than the measured
+# specimens provide, on the basis that the specimen is only one part of a
+# substantially larger colony.
 
 # (7) Confirm that taxa with AbsStratDist = ">-100000" values [ANY] match the
 # correct AbsStrat coding. (Sort by AbsStratDist when checking manually.) When
@@ -810,8 +811,8 @@ write.table(out, file = "PostSizes.tab", quote = FALSE, sep = "\t", row.names = 
 # AbsFood is "Above" the seafloor (with exceptions, like callianassoids that
 # also ingest sediment from burrow wall, or Cenozoic cave-dwelling brachiopods,
 # or thin productids that rested within the sediment with gape at seafloor, or
-# echinoids like Encope that emerge at surface to filter feed, or interstitial
-# meifaunal).
+# echinoids like clypeasteroid mellitid Encope that emerge at surface to filter
+# feed, or interstitial meiofauna).
 
 # (10) Confirm that filter feeders (whether infaunal or epifaunal) that extend
 # body above sea floor (AboveAbsStrat = 1 & FeedAbovePrimary = 1 & Filter = 1
@@ -835,8 +836,10 @@ write.table(out, file = "PostSizes.tab", quote = FALSE, sep = "\t", row.names = 
 # FilterDensity and propogate its dependent FilterFeeder = 1 and check the
 # Estimated box.)
 
-# (13) Go through each character and confirm no "all-zeros" (all diets have 0,
-# etc.), removing some estimates as needed. All 1s are acceptable.
+# (13) Go through each character and confirm no "all-zeros" (i.e., if all
+# dietary states are 0, etc.), removing some estimates as needed. All 1s are
+# acceptable. If not sure which to delete, consult the alternative propagation
+# method data set for a reference.
 
 # (14) Need to write out rules for hunters, scavengers, and mass feeders,
 # especially regarding food tier (half D/V for predators to account for smaller
