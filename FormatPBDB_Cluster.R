@@ -222,29 +222,44 @@ write.table(post, file="PreSizes_Constant_withPBDB.tab", quote=FALSE, sep="\t", 
 
 # (3) Copy new entries by Phylum > Subphylum > Class > Subclass > Order. Alter
 # the following taxonomic names whose rank or name is listed differently in the
-# PBDB than in my database. MOVE the following as a class (not subclass):
-# arthropods Malacostraca and Cirripedia (and set in Subphylum Crustacea),
-# echinoderms Blastoidea and Parablastoidea, and vertebrates Placodermi,
-# Thelodonti, and Holocephali. MOVE Class Opisthobranchs down a rank (adding
-# them in Class Heterobranchia) such that Opisthobranchia is a Subclass and
-# their orders are suborders. ADD Class Hyolitha for Orders Hyolithida and
-# Orthothecida and Class Dipnomorpha for orders Dipnoi and Dipnotetrapodomorpha
-# and Class Tentaculitita / Phylum Mollusca for Order Tentaculitida and Phylum
-# Annelida for Class Palaeoscolecida and Phylum Agmata for Order Volborthellida.
-# CHANGE the cephalochordate order Amphioxi to Amphioxiformes, vertebrate class
-# Actinopteri to Actinopterygii, and Order Rhombiera (Subphylum Pelmatozoa,
-# Class Cystoidea, Subclass Hydrophoridea) to Class Rhombifera (Subphylum
-# Blastozoa, Order UNCERTAIN), and Subphylum Pelmatozoa to Blastozoa.
+# PBDB than in my core database.
+
+#  a. CHANGE the following subclass ranks to rank class:
+#       (i) arthropods Malacostraca and Cirripedia (and set in Subphylum Crustacea), 
+#       (ii) echinoderms Blastoidea and Parablastoidea
+#       (iii) vertebrates Placodermi, Thelodonti, and Holocephali.
+
+#  b. CHANGE Class Opisthobranchs down a rank to subclass (and placing them in
+#     Class Heterobranchia) such that Opisthobranchia is a Subclass and their 
+#     orders are suborders.
+
+#  c. CHANGE rank names for Order Rhombifera (Subphylum Pelmatozoa, Class
+#     Cystoidea, Subclass Hydrophoridea) to Class Rhombifera (Subphylum Blastozoa,
+#     Order UNCERTAIN), and CHANGE Subphylum Pelmatozoa to Blastozoa.
+
+#  d. ADD new taxonomic names for following:
+#       (i) Class Hyolitha for Orders Hyolithida and Orthothecida
+#       (ii) Class Dipnomorpha for orders Dipnoi and Dipnotetrapodomorpha
+#       (iii) Class Tentaculitita / Phylum Mollusca for Order Tentaculitida
+#       (iv) Phylum Annelida for Class Palaeoscolecida
+#       (v) Phylum Agmata for Order Volborthellida
+
+#  e. CHANGE the following names:
+#       (i) cephalochordate order Amphioxi to Amphioxiformes
+#       (ii) vertebrate class Actinopteri to Actinopterygii
 
 # (4) Add new IDNumbers (that pick up after those in the existing database), and
 # re-save.
 
-# (5) Run code as usual in "PropogateSizes.R" or "PropogateLifeHabits.R", but
+# (5) Run entire PBDB-propogated data set (including core) using
+# IDBadHigherTaxa.R to identify any other possible taxonomic mis-alignments.
+
+# (6) Run code as usual in "PropogateSizes.R" or "PropogateLifeHabits.R", but
 # resaving as postX_withPBDB" file name. Make sure to add new IDNumbers to the
 # new PBDB entries!
 
-# (6) Import into copy of FileMakerPro life habit database, adding the new
+# (7) Import into copy of FileMakerPro life habit database, adding the new
 # entries. Use this one for running next analyses.
 
-# (7) Before running disparity and tiering analyses, open here and remove the
+# (8) Before running disparity and tiering analyses, open here and remove the
 # non-terrestrials (and non-fossils with Recent-only occurrences?)
