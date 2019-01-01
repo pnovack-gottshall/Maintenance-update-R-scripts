@@ -40,8 +40,9 @@ str(input)
 # How many unique references?
 length(unique(input$EcologyReference))
 
-sort(table(input$EcologyReference))
-plot(sort(table(input$EcologyReference)))
+sort(table(input$EcologyReference), increasing = TRUE)
+plot(sort(table(input$EcologyReference), decreasing = TRUE), xlab = "References", 
+     ylab = "No. of entries per reference", main = "Distribution of references used")
 summary(as.vector(table(input$EcologyReference)))
 
 
