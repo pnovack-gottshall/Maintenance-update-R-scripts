@@ -60,24 +60,16 @@ for(i in 1:length(tax)) {
   cat(as.character(tax[i]), "\n")
 }
 
-# Suborders
-tax <- levels(Suborder)
-for(i in 1:length(tax)) {
-  if(i==1) cat("Suborders:\n")
-  wh <- which(Suborder==tax[i])
-  if(length(wh)==1L) next
-  higher <- unique(x[wh, 1:5])
-  if(nrow(higher)==1) next
-  cat(as.character(tax[i]), "\n")
-}
+# Below orders, more efficient to work upwards from subfamily up ranks (because
+# can correct multiple ranks at same time).
 
-# Superfamilies
-tax <- levels(Superfamily)
+# Subfamilies
+tax <- levels(Subfamily)
 for(i in 1:length(tax)) {
-  if(i==1) cat("Superfamilies:\n")
-  wh <- which(Superfamily==tax[i])
+  if(i==1) cat("Subfamilies:\n")
+  wh <- which(Subfamily==tax[i])
   if(length(wh)==1L) next
-  higher <- unique(x[wh, 1:6])
+  higher <- unique(x[wh, 1:8])
   if(nrow(higher)==1) next
   cat(as.character(tax[i]), "\n")
 }
@@ -93,13 +85,24 @@ for(i in 1:length(tax)) {
   cat(as.character(tax[i]), "\n")
 }
 
-# Subfamilies
-tax <- levels(Subfamily)
+# Superfamilies
+tax <- levels(Superfamily)
 for(i in 1:length(tax)) {
-  if(i==1) cat("Subfamilies:\n")
-  wh <- which(Subfamily==tax[i])
+  if(i==1) cat("Superfamilies:\n")
+  wh <- which(Superfamily==tax[i])
   if(length(wh)==1L) next
-  higher <- unique(x[wh, 1:8])
+  higher <- unique(x[wh, 1:6])
+  if(nrow(higher)==1) next
+  cat(as.character(tax[i]), "\n")
+}
+
+# Suborders
+tax <- levels(Suborder)
+for(i in 1:length(tax)) {
+  if(i==1) cat("Suborders:\n")
+  wh <- which(Suborder==tax[i])
+  if(length(wh)==1L) next
+  higher <- unique(x[wh, 1:5])
   if(nrow(higher)==1) next
   cat(as.character(tax[i]), "\n")
 }
