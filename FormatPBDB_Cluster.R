@@ -236,16 +236,28 @@ duplicate.G <- duplicated(pre$Genus)
 post <- pre[!duplicate.G, ]
 write.table(post, file="PreSizes_Constant_withPBDB.tab", quote=FALSE, sep="\t", row.names=FALSE)
 
-# (3) Copy new entries by Phylum > Subphylum > Class > Subclass > Order. Alter
-# the following taxonomic names whose rank or name is listed differently in the
-# PBDB than in my core database.
+# (3) Copy new entries by Phylum > Subphylum > Class > Subclass > Order.
 
-#  a. CHANGE the following subclass ranks to rank class:
+# (4) Add new IDNumbers (that pick up after those in the existing database), and
+# re-save.
+
+# (5) Run entire PBDB-propogated data set (including core) using
+# IDBadHigherTaxa.R to identify any other possible taxonomic mis-alignments or
+# inconsistencies in my taxonomy and that of the PBDB. Common changes include
+# the following:
+
+#  a. Changing suffixes (e.g., -acea to -oidea), adding superfamily and suborder
+#  names when left empty in PBDB. See code in IDBadHigherTaxa.R for a function
+#  to automate.
+
+#  b. Some names have different ranks in my database and the PBDB. See code in IDBadHigherTaxa.R for a function
+#  to automate. Known instances include:
+#   - CHANGE the following subclass ranks to rank class:
 #       (i) arthropods Malacostraca and Cirripedia (and set in Subphylum Crustacea), 
 #       (ii) echinoderms Blastoidea and Parablastoidea
 #       (iii) vertebrates Placodermi and Thelodonti.
 
-#  b. CHANGE Class Opisthobranchs down a rank to subclass (and placing them in
+#   - CHANGE Class Opisthobranchs down a rank to subclass (and placing them in
 #     Class Heterobranchia) such that Opisthobranchia is a Subclass and their 
 #     orders are suborders.
 
@@ -379,16 +391,6 @@ write.table(post, file="PreSizes_Constant_withPBDB.tab", quote=FALSE, sep="\t", 
 
 # u. Do not override the following higher taxonomic homonyms! There are two
 #    families Ctenodontidae, one a bivalve and the other a dipnoi fish.
-
-# (4) Add new IDNumbers (that pick up after those in the existing database), and
-# re-save.
-
-# (5) Run entire PBDB-propogated data set (including core) using
-# IDBadHigherTaxa.R to identify any other possible taxonomic mis-alignments.
-# Common changes include:
-
-#  a. Changing suffixes (e.g., -acea to -oidea), adding superfamily and suborder 
-#     names when left empty in PBDB.
 
 # (6) Run code as usual in "PropogateSizes.R" or "PropogateLifeHabits.R", but
 # resaving as postX_withPBDB" file name. Make sure to add new IDNumbers to the
