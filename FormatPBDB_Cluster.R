@@ -158,32 +158,48 @@ rbind(x[1000, ], output[1000, ], output2[1000, ])
 head(x)
 
 # Remove terrestrial and non-marine taxa, but include marine tetrapods. List
-# courtesy of Bush and Bambach, 2015, but modified to explicitly list three
+# courtesy of Bush and Bambach, 2015, but modified to explicitly include three
 # cetacean suborders because Cetacea now listed within Order Artiodactyla in
-# PBDB and to exclude Myriapoda, Kannemeyeriiformes, Pelycosauria, Theriodontia,
-# Therocephalia)
-non.marine <- c("Arachnida", "Insecta", "Collembola", "Palaeophreatoicidae", 
-                "Limnocytheridae", "Darwinuloidea", "Cypridoidea", "Cytherideidae", 
-                "Assimineidae", "Stenothyridae", "Hydrobiidae", "Ampullariidae", "Cyclophoridae", 
-                "Diplommatinidae", "Maizaniidae", "Viviparidae", "Melanopsidae", "Pachychilidae", 
-                "Thiaridae", "Amnicolidae", "Bithyniidae", "Lithoglyphidae", "Pomatiopsidae", 
-                "Valvatidae", "Physidae", "Ancylidae", "Lymnaeidae", "Endodontidae", "Melampidae",
-                "Oreohelicidae", "Pleurodontidae", "Pupillidae", "Sagdidae", "Limacidae", "Vitrinidae",
-                "Milacidae", "Strobilopsidae", "Valloniidae", "Subulinidae", "Succineidae", "Zonitidae",
-                "Planorbidae", "Plicatusidae", "Pragoserpulinidae", "Unionida", "Corbiculidae", 
-                "Sphaeriidae", "Dreissenidae", "Amiinae", "Sinamiidae", "Cypriniformes", 
-                "Lepisosteiformes", "Osmeriformes", "Osteoglossiformes", "Percidae", "Esocidae", 
-                "Siluriformes", "Lepidosirenidae", "Polypteridae", "Cichlidae", "Gonorynchiformes",
-                "Characiformes", "Gymnotiformes", "Myriapoda", "Kannemeyeriiformes", "Pelycosauria", 
-                "Theriodontia", "Therocephalia", "Notostraca")
+# PBDB and known marine xiphosurans, and to exclude Myriapoda,
+# Kannemeyeriiformes, Pelycosauria, Theriodontia, Therocephalia, freshwater
+# conchostrans, and all known arachnid taxa [because many arachnids are getting
+# listed in the xiphosuran download])
+non.marine <- c("Arachnida", "Insecta", "Collembola", "Palaeophreatoicidae",
+    "Limnocytheridae", "Darwinuloidea", "Cypridoidea", "Cytherideidae", "Assimineidae",
+    "Stenothyridae", "Hydrobiidae", "Ampullariidae", "Cyclophoridae", "Diplommatinidae",
+    "Maizaniidae", "Viviparidae", "Melanopsidae", "Pachychilidae", "Thiaridae",
+    "Amnicolidae", "Bithyniidae", "Lithoglyphidae", "Pomatiopsidae", "Valvatidae", 
+    "Physidae", "Ancylidae", "Lymnaeidae", "Endodontidae", "Melampidae", 
+    "Oreohelicidae", "Pleurodontidae", "Pupillidae", "Sagdidae", "Limacidae", 
+    "Vitrinidae", "Milacidae", "Strobilopsidae", "Valloniidae", "Subulinidae", 
+    "Succineidae", "Zonitidae", "Planorbidae", "Plicatusidae", "Pragoserpulinidae",
+    "Unionida", "Corbiculidae", "Sphaeriidae", "Dreissenidae", "Amiinae", "Sinamiidae",
+    "Cypriniformes", "Lepisosteiformes", "Osmeriformes", "Osteoglossiformes",
+    "Percidae", "Esocidae", "Siluriformes", "Lepidosirenidae", "Polypteridae",
+    "Cichlidae", "Gonorynchiformes", "Characiformes", "Gymnotiformes", "Myriapoda",
+    "Kannemeyeriiformes", "Pelycosauria", "Theriodontia", "Therocephalia",
+    "Notostraca", "Ammotrechidae", "Anthracomartidae", "Anthracosironidae",
+    "Anthracotarbidae", "Aphantomartidae", "Archaeomartidae", "Archaeometidae",
+    "Architarbidae", "Ceromidae", "Chaerilobuthidae", "Daesiidae", "Devonotarbidae",
+    "Dracochelidae", "Eophrynidae", "Eukoeneniidae", "Garypidae", "Heterotarbidae",
+    "Kreischeriidae", "Lissomartidae", "Opiliotarbidae", "Palaeocharinidae", 
+    "Palaeotrilineatidae", "Proscorpiidae", "Trigonotarbidae", "Cheiridioidea",
+    "Cheliferoidea", "Chthonioidea", "Feaelloidea", "Garypoidea", "Neobisioidea",
+    "Sternophoroidea", "Bilobosternina", "Cyphophthalmi", "Dyspnoi", "Eupnoi",
+    "Holosternina", "Ixodida", "Laniatores", "Lobosternina", "Meristosternina",
+    "Mesostigmata", "Opilioacarida", "Orthosternina", "Posteriorricinulei",
+    "Primoricinulei", "Sarcoptiformes", "Tetrophthalmi", "Trombidiformes",
+    "Tetrapulmonata")
 tetrapods <- c("Mammalia", "Reptilia")
-marine.exceptions <- c("Chelonioidea", "Ophidiomorpha", "Mosasauroidea", "Thalattosauria", 
-                       "Sauropterygia", "Ichthyopterygia", "Mesoeucrocodylia", "Pterosauria", 
-                       "Hesperornithiformes", "Ichthyornithiformes", "Sphenisciformes", "Procellariiformes", 
-                       "Pelecaniformes", "Pelagornithidae", "Plotopteridae", "Charadriiformes", "Cetacea",
-                       "Sirenia", "Pinnipedia", "Desmostylia", "Ariidae", "Plotosidae", "Archaeoceti", 
-                       "Mysticeti", "Odontoceti")
-
+marine.exceptions <- c("Chelonioidea", "Ophidiomorpha", "Mosasauroidea",
+    "Thalattosauria", "Sauropterygia", "Ichthyopterygia", "Mesoeucrocodylia",
+    "Pterosauria", "Hesperornithiformes", "Ichthyornithiformes", "Sphenisciformes",
+    "Procellariiformes", "Pelecaniformes", "Pelagornithidae", "Plotopteridae",
+    "Charadriiformes", "Cetacea", "Sirenia", "Pinnipedia", "Desmostylia", "Ariidae", 
+    "Plotosidae", "Archaeoceti", "Mysticeti", "Odontoceti", "Diploaspididae",
+    "Mycteropidae", "Pterygotidae", "Woodwardopteridae", "Waeringopteroidea",
+    "Bellinurina", "Eurypterina", "Limulina", "Stylonurina")
+    
 sq <- 1:nrow(x)
 marine.vert.exceptions <- x[sapply(sq, function(sq) any(marine.exceptions %in% x[sq, ])), ]
 # Remove the exceptions here, and add back in (in case of non-tetrapod duplicates)
@@ -382,4 +398,6 @@ write.table(post, file="PreSizes_Constant_withPBDB.tab", quote=FALSE, sep="\t", 
 # entries. Use this one for running next analyses.
 
 # (8) Before running disparity and tiering analyses, open here and remove the
-# non-terrestrials (and non-fossils with Recent-only occurrences?)
+# non-terrestrials (and non-fossils with Recent-only occurrences?) once again,
+# in case any got included during the taxonomy standardization.
+
