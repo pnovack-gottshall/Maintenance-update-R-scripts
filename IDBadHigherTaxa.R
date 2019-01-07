@@ -14,6 +14,19 @@ x <- read.csv(file = "HigherTaxa_PBDB.csv", header = TRUE)
 head(x)
 attach(x)
 
+# Identify superfamilies with same root that differ only in suffix (-acea vs.
+# -oidea)
+tax <- levels(Superfamily)
+t.acea <- grep("acea$", tax, value = TRUE)
+root.acea <- sub("acea$", "", t.acea)
+t.oidea <- grep("oidea$", tax, value = TRUE)
+root.oidea <- sub("oidea$", "", t.oidea)
+same.root <- if (length(root.acea) > length(root.oidea))
+  root.acea[root.acea %in% root.oidea] else
+  root.oidea[root.oidea %in% root.acea]
+same.root
+
+
 # Ignore "UNCERTAIN," which is inherently allowed to be polyphyletic
 
 # Subphylum
