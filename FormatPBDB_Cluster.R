@@ -175,7 +175,7 @@ non.marine <- c("Arachnida", "Insecta", "Collembola", "Palaeophreatoicidae",
                 "Lepisosteiformes", "Osmeriformes", "Osteoglossiformes", "Percidae", "Esocidae", 
                 "Siluriformes", "Lepidosirenidae", "Polypteridae", "Cichlidae", "Gonorynchiformes",
                 "Characiformes", "Gymnotiformes", "Myriapoda", "Kannemeyeriiformes", "Pelycosauria", 
-                "Theriodontia", "Therocephalia")
+                "Theriodontia", "Therocephalia", "Notostraca")
 tetrapods <- c("Mammalia", "Reptilia")
 marine.exceptions <- c("Chelonioidea", "Ophidiomorpha", "Mosasauroidea", "Thalattosauria", 
                        "Sauropterygia", "Ichthyopterygia", "Mesoeucrocodylia", "Pterosauria", 
@@ -227,32 +227,152 @@ write.table(post, file="PreSizes_Constant_withPBDB.tab", quote=FALSE, sep="\t", 
 #  a. CHANGE the following subclass ranks to rank class:
 #       (i) arthropods Malacostraca and Cirripedia (and set in Subphylum Crustacea), 
 #       (ii) echinoderms Blastoidea and Parablastoidea
-#       (iii) vertebrates Placodermi, Thelodonti, and Holocephali.
+#       (iii) vertebrates Placodermi and Thelodonti.
 
 #  b. CHANGE Class Opisthobranchs down a rank to subclass (and placing them in
 #     Class Heterobranchia) such that Opisthobranchia is a Subclass and their 
 #     orders are suborders.
 
 #  c. CHANGE rank names for Order Rhombifera (Subphylum Pelmatozoa, Class
-#     Cystoidea, Subclass Hydrophoridea) to Class Rhombifera (Subphylum Blastozoa,
-#     Order UNCERTAIN), and CHANGE Subphylum Pelmatozoa to Blastozoa.
+#     Cystoidea, Subclass Hydrophoridea) to Class Rhombifera (Subphylum 
+#     Blastozoa, Order UNCERTAIN), and CHANGE Subphylum Pelmatozoa to Blastozoa.
 
 #  d. ADD new taxonomic names for following:
-#       (i) Class Hyolitha for Orders Hyolithida and Orthothecida
-#       (ii) Class Dipnomorpha for orders Dipnoi and Dipnotetrapodomorpha
-#       (iii) Class Tentaculitita / Phylum Mollusca for Order Tentaculitida
-#       (iv) Phylum Annelida for Class Palaeoscolecida
-#       (v) Phylum Agmata for Order Volborthellida
+#       (i)   Class Hyolitha for Orders Hyolithida and Orthothecida.
+#       (ii)  Class Dipnomorpha for orders Dipnoi and Dipnotetrapodomorpha.
+#       (iii) Class Tentaculitita / Phylum Mollusca for Order Tentaculitida.
+#       (iv)  Phylum Annelida for Class Palaeoscolecida.
+#       (v)   Phylum Agmata for Order Volborthellida.
+#       (vi)  Add name UNCERTAIN for any phylum, class, order, or family that is 
+#               blank.
+#       (vii) Change phylum Problematica to UNCERTAIN.
 
-#  e. CHANGE the following names:
-#       (i) cephalochordate order Amphioxi to Amphioxiformes
-#       (ii) vertebrate class Actinopteri to Actinopterygii
+#  e. CHANGE the following names (typically alternative spellings or 
+#     archaic synonyms):
+#       (i)    cephalochordate order Amphioxi to Amphioxiformes
+#       (ii)   vertebrate class Actinopteri to Actinopterygii
+#       (iii)  sponge class Demospongea to Demospongiae 
+#       (iv)   sponge class Archeocyatha to Archaeocyatha
+#       (v)    fish order Birkeniida to Birkeniiformes
+#       (vi)   annelid subclass Aciculata to Errantia
+#       (vii)  starfish subclass Neoasteroidea to Ambuloasteroidea
+#       (viii) bryozoan order Trepostomida to Trepostomata 
+#       (vix)  bryozoan order Cystoporida to Cystoporata 
+#       (x)    barnacle order Thoracica to Sessilia
+
+#  f. Because the most recent bivalve classification (Carter, et al. 2011, to be
+#     used in the forthcoming Treatise) contains only two subclasses for all
+#     bivalves, elevate their Infraclass names to subclass rank for their 
+#     Subclass Autobranchia (which is similar to how WoRMS names the bivalves).
+#     For outdated names (i.e., bivalves listed in PBDB without a family assignment 
+#     and placed in outdated orders used by Sepkoski but not mentioned in 
+#     Carter, et al., 2011), use the following rules: orders Anomalodesmacea, Myoida, 
+#     Thraciida, and Trigoniida are in Subclass Heteroconchia. Members of 
+#     Superfamily Grammysioidea (Families Grammysiidae and Sanguinolitidae) and 
+#     Superfamily Lyrodesmatoidea (Family Lyrodesmatidae) are in Order UNCERTAIN 
+#     and Subclass Heteroconchia. Order Pterioida is in Subclass Pteromorphia. 
+
+#  g. For opisthobranch and pulmonate gastropods, use a modified version of 
+#     Bouchet and Rocroi (2005), that is also consistent with how WoRMS treats 
+#     their clade names. Treat Heterobranchia as the subclass that includes the 
+#     orders Allogastropoda (=lower Heterobranchia, including Architectibranchia 
+#     as a suborder), Opisthobranchia, and Pulmonata, and treat their major 
+#     subgroups as suborders. Treat Sepkoski's Order Heterostrophia as 
+#     Opisthobranchia incertae sedis and his Order Cephalaspida as opisthobranch 
+#     Suborder Cephalaspidea. Treat Suborder Bellerophontina as Order Bellerophontida
+
+#  h. For certain vertebrate groups whose taxonomy is cladistically based on often 
+#     unranked, use the following ranks. Treat Order Ichthyosauria as suborder in 
+#     Order Ichthyopterygia, and large inclusive clades (e.g., Merriamosauria) 
+#     as superfamilies. Treat traditional orders Nothosauroidea, Placodontia, 
+#     and Plesiosauria as suborders within Order Sauropterygia.
+
+#  i. Use (only) the following subphylum names for (primarily marine)
+#     arthropods: Arachnomorpha, Chelicerata, Crustacea, and Trilobitomorpha. 
+#     Use (only) the following subphylum names for echinoderms: Asterozoa 
+#     (including classes Asteroidea, Ophiuroidea, Somasteroidea, and Stenuroidea), 
+#     Blastozoa  (including classes Blastoidea, Coronoidea, Ctenocystoidea, 
+#     Diploporita, Eocrinoidea, Homoiostelea [including sole Order Soluta], 
+#     Homostelea [and treating Cincta as a near synonym, as sole homostelean 
+#     order], Parablastoidea, Paracrinoidea [thus not recognizing Subphylum 
+#     Paracrinozoa], and Rhombifera, Crinozoa (including classes Crinoidea, 
+#     Edrioasteroidea,  Stylophora), and Echinozoa (including classes 
+#     Ctenoimbricata, Cyclocystoidea, Echinoidea, Helicoplacoidea, Holothuroidea, 
+#     and Ophiocistioidea).
+
+#  j. For tetrapods, do not use the larger fish-inclusive Dipnotetrapodomorpha
+#     as subclass (and Dipnomorpha for class). Instead, use Subclass Eutheria
+#     (etc.) for mammals (whales, sirenians, etc.); and place whales in Order 
+#     Artiodactyla instead of Cetacea. Use Subclass Eureptilia for reptiles 
+#     (plesiosaurs, ichthyosaurs, squamate mosasaurs, thalattosaurs, etc.). 
+#     Use Subclass Testudinata for turtles. Use Subclass Aequorlitornithes 
+#     for most birds (within Class Aves).
+
+#  k. Treat Xiphosura as a subclass within Class Merostomata, similar to how 
+#     WoRMS ranks them. (And be aware that many PBDB xiphosurans are terrestrial 
+#     arachnids and not marine horseshoe crabs and the like.)
+
+#  l. Given ongoing difficulty in classification of chaetetids (most are 
+#     demosponge form taxa with a few putative tabulates, c.f., Webby, et al. 
+#     2015 Treatise for discussion: ), assign all chaetetid families (e.g., 
+#     Chaetetidae, Cryptolichenariidae) to subfamily rank (e.g., Chaetetinae, 
+#     Cryptolichenariinae, and maintaining subfamily names if provided) within 
+#     Family Suberitidae (the assignment for genus Chaetetes), Order Hadromerida 
+#     (instead of Chaetetida), Subclass UNCERTAIN, Class Demospongiae.
+
+#  m. Treat the Elasmobranchii and Holocephali as subclasses within Class 
+#     Chondrichthyes. (And following Coates, et al. 2017 treat Symmoriiformes 
+#     as holocephalans.) And treat the Batoidea as a superorder (and thus 
+#     unranked here) of elasmobranch.
+
+#  n. Follow Maletz (2014, basis of forthcoming Treatse revision) in treating
+#     Graptolithina as a subclass in Class Pterobranchia (with Cephalodiscida 
+#     as other subclass).
+
+#  o. For converting Sepkoski's archaic polychaete orders, use Amphinomida for
+#     Amphinomorpha, Eunicida for Eunicemorpha, Phyllodocida for Phyllodocemorpha,
+#     Spionida for Spiomorpha, Scolecida (Family Arenicolidae) for Drilomorpha,
+#     Terebellida for Terebellomorpha, Terebellida (Family Flabelligeridae) for
+#     Flabelligerimorpha, and Sabellida (Family Serpulidae) for Serpulimorpha.
+
+#  p. Based on recent work by Skovsted, et al. (2009), treating
+#     Hyolithelminthida and other Tommotiida as stem brachiopods (Phylum
+#     Brachiopoda). And based on discoveries in Moysiuk, et al. (2017), treating
+#     hyolithids in Class Hyolitha and as stem brachiopods (Phylum Brachiopoda).
+
+#  q. For the branchiopods, primarily use WoRMS instead of PBDB, with Class
+#    Branchiopoda, subclasses Calmanostraca (extant all freshwater with order
+#    Notostraca), Sarsostraca (extant all freshwater with order Anostraca), and
+#    Diplostraca (=Conchostraca, with orders Laevicaudata and Spinicaudata and all
+#    cladoceran orders). Like PBDB (and unlike WoRMS which subsumes the cladoceran
+#    taxa as individual orders), treating Cladocera as a valid order and using
+#    WoRMS cladoceran orders (Anomopoda, Ctenopoda, Haplopoda, and Onychopoda) as
+#    suborders. Genera in outdated Subclass Phyllopopda with UNCERTAIN orders are
+#    placed in Subclass UNCERTAIN because unclear whether diplostracans or notostracans.
+
+#  r. Use PBDB to change suffix for superfamilies to -oidea or -acea based on 
+#     consensus.
+
+#  s. Despite PBDB (and some primary literature articles) claiming the order
+#     Metacopida is valid, most consider them in suborder Metacopina and order
+#     Podocopida, the taxonomy used herein.
+
+# t. Following WoRMS (and modified from Bouchet and Rocroi, 2005), treat
+#    Neogastropoda as a suborder in order Hypsogastropoda / subclass 
+#    Caenogastropoda.
+
+# u. Do not override the following higher taxonomic homonyms! There are two
+#    families Ctenodontidae, one a bivalve and the other a dipnoi fish.
 
 # (4) Add new IDNumbers (that pick up after those in the existing database), and
 # re-save.
 
 # (5) Run entire PBDB-propogated data set (including core) using
 # IDBadHigherTaxa.R to identify any other possible taxonomic mis-alignments.
+# Common changes include:
+
+#  a. Changing suffixes (e.g., -acea to -oidea), adding superfamily and suborder 
+#     names when left empty in PBDB.
 
 # (6) Run code as usual in "PropogateSizes.R" or "PropogateLifeHabits.R", but
 # resaving as postX_withPBDB" file name. Make sure to add new IDNumbers to the
