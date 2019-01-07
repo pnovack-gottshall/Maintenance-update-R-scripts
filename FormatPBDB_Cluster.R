@@ -250,8 +250,9 @@ write.table(post, file="PreSizes_Constant_withPBDB.tab", quote=FALSE, sep="\t", 
 #  names when left empty in PBDB. See code in IDBadHigherTaxa.R for a function
 #  to automate.
 
-#  b. Some names have different ranks in my database and the PBDB. See code in IDBadHigherTaxa.R for a function
-#  to automate. Known instances include:
+#  b. Some names have different ranks in my database and the PBDB. See code in 
+#     IDBadHigherTaxa.R for a function to automate. Known instances include:
+
 #   - CHANGE the following subclass ranks to rank class:
 #       (i) arthropods Malacostraca and Cirripedia (and set in Subphylum Crustacea), 
 #       (ii) echinoderms Blastoidea and Parablastoidea
@@ -260,6 +261,26 @@ write.table(post, file="PreSizes_Constant_withPBDB.tab", quote=FALSE, sep="\t", 
 #   - CHANGE Class Opisthobranchs down a rank to subclass (and placing them in
 #     Class Heterobranchia) such that Opisthobranchia is a Subclass and their 
 #     orders are suborders.
+
+#   - Change order Cephalodiscida to Cephalodiscoidea (in class Cephalodiscida), 
+#     per WoRMS.
+
+#   - Place fish taxon Gasterosteiformes as a suborder within order 
+#     Perciformes (not order Gasterosteiformes), per modification of 
+#     Betancur-R, et al., 2013.
+
+#   - Place fish taxon Scorpaeniformes as a suborder within order 
+#     Perciformes (not order Scorpaeniformes), per modification of 
+#     Betancur-R, et al., 2013.
+
+#   - Treat Notomyotida as an asteroid order (not also as a suborder), leaving 
+#     the suborder unnamed.
+
+#   - Treat Orchocladina as a sponge order (not also as a suborder), leaving 
+#     the suborder unnamed, per Rigby, et al., 2004.
+
+#   - Treat Phymosomatoida as an echinoid suborder (not also as an order), 
+#     leaving the order UNCERTAIN.
 
 #  c. CHANGE rank names for Order Rhombifera (Subphylum Pelmatozoa, Class
 #     Cystoidea, Subclass Hydrophoridea) to Class Rhombifera (Subphylum 
@@ -287,6 +308,8 @@ write.table(post, file="PreSizes_Constant_withPBDB.tab", quote=FALSE, sep="\t", 
 #       (viii) bryozoan order Trepostomida to Trepostomata 
 #       (vix)  bryozoan order Cystoporida to Cystoporata 
 #       (x)    barnacle order Thoracica to Sessilia
+#       (xi)   diploporitan superfamily Glyptosphaeritida to 
+#              Glyptosphaeritidacea to (in order UNCERTAIN)
 
 #  f. Because the most recent bivalve classification (Carter, et al. 2011, to be
 #     used in the forthcoming Treatise) contains only two subclasses for all
@@ -313,7 +336,11 @@ write.table(post, file="PreSizes_Constant_withPBDB.tab", quote=FALSE, sep="\t", 
 #     unranked, use the following ranks. Treat Order Ichthyosauria as suborder in 
 #     Order Ichthyopterygia, and large inclusive clades (e.g., Merriamosauria) 
 #     as superfamilies. Treat traditional orders Nothosauroidea, Placodontia, 
-#     and Plesiosauria as suborders within Order Sauropterygia.
+#     and Plesiosauria as suborders within Order Sauropterygia. (For placodonts, 
+#     also place suborders Cyamodontoidea and Placodontoidea as superfamilies. 
+#     For nothosaurs, treat orders Nothosauria and Pachypleurosauroidea the 
+#     major nothosaur subgroups used in PBDB as superfamilies.) But maintain 
+#     superfamily Pistosauroidea as a valid superfamily in unnamed suborder.
 
 #  i. Use (only) the following subphylum names for (primarily marine)
 #     arthropods: Arachnomorpha, Chelicerata, Crustacea, and Trilobitomorpha. 
@@ -348,27 +375,34 @@ write.table(post, file="PreSizes_Constant_withPBDB.tab", quote=FALSE, sep="\t", 
 #     Family Suberitidae (the assignment for genus Chaetetes), Order Hadromerida 
 #     (instead of Chaetetida), Subclass UNCERTAIN, Class Demospongiae.
 
-#  m. Treat the Elasmobranchii and Holocephali as subclasses within Class 
+#  m. Move sponges placed by PBDB in order Calcaronea into subclass Calcaronea 
+#     (sensu Rigby, et al. 2004) and place in order UNCERTAIN (unless the family 
+#     indicates a known order).
+
+#  n. Treat the Elasmobranchii and Holocephali as subclasses within Class 
 #     Chondrichthyes. (And following Coates, et al. 2017 treat Symmoriiformes 
 #     as holocephalans.) And treat the Batoidea as a superorder (and thus 
 #     unranked here) of elasmobranch.
 
-#  n. Follow Maletz (2014, basis of forthcoming Treatse revision) in treating
+#  o. Follow Maletz (2014, basis of forthcoming Treatse revision) in treating
 #     Graptolithina as a subclass in Class Pterobranchia (with Cephalodiscida 
 #     as other subclass).
 
-#  o. For converting Sepkoski's archaic polychaete orders, use Amphinomida for
+#  p. For converting Sepkoski's archaic polychaete orders, use Amphinomida for
 #     Amphinomorpha, Eunicida for Eunicemorpha, Phyllodocida for Phyllodocemorpha,
 #     Spionida for Spiomorpha, Scolecida (Family Arenicolidae) for Drilomorpha,
 #     Terebellida for Terebellomorpha, Terebellida (Family Flabelligeridae) for
 #     Flabelligerimorpha, and Sabellida (Family Serpulidae) for Serpulimorpha.
 
-#  p. Based on recent work by Skovsted, et al. (2009), treating
+#  q. Based on recent work by Skovsted, et al. (2009), treating
 #     Hyolithelminthida and other Tommotiida as stem brachiopods (Phylum
-#     Brachiopoda). And based on discoveries in Moysiuk, et al. (2017), treating
-#     hyolithids in Class Hyolitha and as stem brachiopods (Phylum Brachiopoda).
+#     Brachiopoda). Based on discoveries in Moysiuk, et al. (2017), retaining
+#     hyolithids in their own phylum Hyolitha, as lophophorates that are possibly 
+#     stem brachiopods like tommotiids. Allow Tommotiida to serve as both a 
+#     class and an order and Hyolitha as both a phylum and class, given their 
+#     taxonomic ambiguities.
 
-#  q. For the branchiopods, primarily use WoRMS instead of PBDB, with Class
+#  r. For the branchiopods, primarily use WoRMS instead of PBDB, with Class
 #    Branchiopoda, subclasses Calmanostraca (extant all freshwater with order
 #    Notostraca), Sarsostraca (extant all freshwater with order Anostraca), and
 #    Diplostraca (=Conchostraca, with orders Laevicaudata and Spinicaudata and all
@@ -378,19 +412,20 @@ write.table(post, file="PreSizes_Constant_withPBDB.tab", quote=FALSE, sep="\t", 
 #    suborders. Genera in outdated Subclass Phyllopopda with UNCERTAIN orders are
 #    placed in Subclass UNCERTAIN because unclear whether diplostracans or notostracans.
 
-#  r. Use PBDB to change suffix for superfamilies to -oidea or -acea based on 
+#  s. Use PBDB to change suffix for superfamilies to -oidea or -acea based on 
 #     consensus.
 
-#  s. Despite PBDB (and some primary literature articles) claiming the order
+#  t. Despite PBDB (and some primary literature articles) claiming the order
 #     Metacopida is valid, most consider them in suborder Metacopina and order
 #     Podocopida, the taxonomy used herein.
 
-# t. Following WoRMS (and modified from Bouchet and Rocroi, 2005), treat
-#    Neogastropoda as a suborder in order Hypsogastropoda / subclass 
-#    Caenogastropoda.
+#  u. Following WoRMS (and modified from Bouchet and Rocroi, 2005), treat
+#     Neogastropoda as a suborder in order Hypsogastropoda / subclass 
+#     Caenogastropoda.
 
-# u. Do not override the following higher taxonomic homonyms! There are two
-#    families Ctenodontidae, one a bivalve and the other a dipnoi fish.
+#  v. Do not override the following higher taxonomic homonyms! There are two
+#     families Ctenodontidae, one a bivalve and the other a dipnoi fish. The
+#     Bdelloidea are both a rotifer class and a xiphosuran superfamily.
 
 # (6) Run code as usual in "PropogateSizes.R" or "PropogateLifeHabits.R", but
 # resaving as postX_withPBDB" file name. Make sure to add new IDNumbers to the
