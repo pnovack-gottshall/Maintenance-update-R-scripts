@@ -1,8 +1,8 @@
-## Identify taxa placed inconsistently within higher taxa.
+## Code to identify differences in taxonomy used by my database and that in the
+## PBDB.
 
 rm(list = ls())
 setwd("C:/Users/pnovack-gottshall/Desktop/Databases/Maintenance & update R scripts")
-
 
 ## Run relevant code in SelectCols.R for IDBadHigherTaxa.R to obtain following
 ## output.
@@ -14,8 +14,9 @@ x <- read.csv(file = "HigherTaxa_PBDB.csv", header = TRUE)
 head(x)
 attach(x)
 
-# Identify superfamilies with same root that differ only in suffix (-acea vs.
-# -oidea)
+
+## (1) Identify superfamilies with same root that differ only in suffix (-acea
+##     vs. -oidea)
 tax <- levels(Superfamily)
 t.acea <- grep("acea$", tax, value = TRUE)
 root.acea <- sub("acea$", "", t.acea)
@@ -27,6 +28,33 @@ same.root <- if (length(root.acea) > length(root.oidea))
 same.root
 
 
+## (2) Identify taxa given different ranks in my taxonomy and in the PBDB.
+# Known exceptions (see FormatPBDB_Cluster.R for additional details):
+#    a. Ignore UNCERTAINS.
+#    b. Accept Tommotiida as both class and order given taxonomic
+#       ambiguity.
+#    c. Change order Cephalodiscida to Cephalodiscoidea (in class 
+#       Cephalodiscida), per WoRMS.
+#    d. Bdelloidea is valid as both a rotifer class and a xiphosuran 
+#       superfamily.
+#    d. Articulata is valid as both a crinoid subclass and a bryozoan suborder.
+#    e. Nautiloidea and Orthoceratoidea are both valid as both a cephalopod 
+#       subclass and superfamily.
+#    f. Stolonifera is valid as both a bryozoan suborder and a cnidarian order.
+
+for (rank in 1:8) {
+  for (subrank in (rank + 1):9) {
+    same <- which(levels(x[[subrank]]) %in% levels(x[[rank]]))
+    if(length(same) > 0L) {
+      cat("match in", colnames(x)[rank], "and", colnames(x)[subrank], ":\n")
+      cat(levels(x[[subrank]])[same], "\n")
+      cat("\n")
+    }
+  }
+}
+
+
+## (3) Identify taxa placed inconsistently within higher taxa.
 # Ignore "UNCERTAIN," which is inherently allowed to be polyphyletic
 
 # Subphylum
