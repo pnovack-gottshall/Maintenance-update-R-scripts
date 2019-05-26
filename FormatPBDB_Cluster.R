@@ -394,13 +394,14 @@ write.table(post, file="PreSizes_Constant_withPBDB.tab", quote=FALSE, sep="\t", 
 #     Terebellida for Terebellomorpha, Terebellida (Family Flabelligeridae) for
 #     Flabelligerimorpha, and Sabellida (Family Serpulidae) for Serpulimorpha.
 
-#  q. Based on recent work by Skovsted, et al. (2009), treating
-#     Hyolithelminthida and other Tommotiida as stem brachiopods (Phylum
-#     Brachiopoda). Based on discoveries in Moysiuk, et al. (2017), retaining
-#     hyolithids in their own phylum Hyolitha, as lophophorates that are possibly 
-#     stem brachiopods like tommotiids. Allow Tommotiida to serve as both a 
-#     class and an order and Hyolitha as both a phylum and class, given their 
-#     taxonomic ambiguities.
+#  q. Based on recent work by Skovsted and Holmer and their group (mostly in
+#     2008-2009), treating Hyolithelminthida (including Hyolithellidae and
+#     Torellellidae) and other Tommotiida (including Lapworthellidae,
+#     Tannuolinidae, and Tommotiidae) as stem brachiopods (Phylum Brachiopoda).
+#     Based on discoveries in Moysiuk, et al. (2017), retaining hyolithids in their
+#     own phylum Hyolitha, as lophophorates that are possibly stem brachiopods like
+#     tommotiids. Allow Tommotiida to serve as both a class and an order and
+#     Hyolitha as both a phylum and class, given their taxonomic ambiguities.
 
 #  r. For the branchiopods, primarily use WoRMS instead of PBDB, with Class
 #    Branchiopoda, subclasses Calmanostraca (extant all freshwater with order
