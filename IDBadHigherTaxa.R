@@ -56,7 +56,8 @@ for (rank in 1:8) {
 
 ## (3) Identify taxa placed inconsistently within higher taxa.
 # Ignore "UNCERTAIN," which is inherently allowed to be polyphyletic.
-# Ignore Tommotiida, which is known to be either paraphyletic or polyphyletic.
+# Ignore Class Tommotiida, which is known to be either paraphyletic or
+#      polyphyletic.
 
 # Subphylum
 tax <- levels(Subphylum)
