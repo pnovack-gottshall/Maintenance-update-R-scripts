@@ -321,7 +321,9 @@ write.table(post, file="PreSizes_Constant_withPBDB.tab", quote=FALSE, sep="\t", 
 #     Thraciida, and Trigoniida are in Subclass Heteroconchia. Members of 
 #     Superfamily Grammysioidea (Families Grammysiidae and Sanguinolitidae) and 
 #     Superfamily Lyrodesmatoidea (Family Lyrodesmatidae) are in Order UNCERTAIN 
-#     and Subclass Heteroconchia. Order Pterioida is in Subclass Pteromorphia. 
+#     and Subclass Heteroconchia. Order Pterioida is in Subclass Pteromorphia.
+#     (This has the effect of making my propogation algorithm more conservative
+#     because smaller ranks are treated as larger, more inclusive ones.)
 
 #  g. For opisthobranch and pulmonate gastropods, use a modified version of 
 #     Bouchet and Rocroi (2005), that is also consistent with how WoRMS treats 
@@ -427,6 +429,17 @@ write.table(post, file="PreSizes_Constant_withPBDB.tab", quote=FALSE, sep="\t", 
 #  v. Do not override the following higher taxonomic homonyms! There are two
 #     families Ctenodontidae, one a bivalve and the other a dipnoi fish. The
 #     Bdelloidea are both a rotifer class and a xiphosuran superfamily.
+
+#  w. Because the most recent crinoid classification (Wright, et al. 2017)
+#     contains only two subclasses (camerates and pentacrinoids) for all
+#     crinoids, elevate the parvclass or superorder names to subclass rank for
+#     Subclass Pentacrinoidea, but maintaining the order names. Allowed
+#     pentacrinoid subclasses include the stem inadunates, Disparida,
+#     Porocrinoidea, Flexibilia, Cyathoformes, Ampelocrinida (possibly
+#     paraphyletic), and Articulata. Subclass Eucamerata orders include the
+#     Diplobathrida, Monobathrida, and "stem eucamarates". (This has the effect
+#     of making my propogation algorithm more conservative because smaller ranks
+#     are treated as larger, more inclusive ones.)
 
 # (6) Run code as usual in "PropogateSizes.R" or "PropogateLifeHabits.R", but
 # resaving as postX_withPBDB" file name. Make sure to add new IDNumbers to the
