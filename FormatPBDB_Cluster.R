@@ -3,7 +3,7 @@
 
 # The serial version takes ~4.5 hours to process PBDB into a formatted taxonomic
 # dataframe structure. This code rewrites the algorithm as a function that can
-# be implemented "in parallel."
+# be implemented in parallel and is much faster.
 
 ## Download data directly from PaleobioDB and save to working directory (will be
 ## > 40 MB) (DO NOT RESTRICT TO PHANEROZOIC! Restricting only includes taxa with
@@ -158,12 +158,12 @@ rbind(x[1000, ], output[1000, ], output2[1000, ])
 head(x)
 
 # Remove terrestrial and non-marine taxa, but include marine tetrapods. List
-# courtesy of Bush and Bambach, 2015, but modified to explicitly include three
-# cetacean suborders because Cetacea now listed within Order Artiodactyla in
-# PBDB and known marine xiphosurans, and to exclude Myriapoda,
-# Kannemeyeriiformes, Pelycosauria, Theriodontia, Therocephalia, freshwater
-# conchostrans, and all known arachnid taxa [because many arachnids are getting
-# listed in the xiphosuran download])
+# modified from Bush and Bambach (2015) to explicitly include three cetacean
+# suborders (because Cetacea now listed within Order Artiodactyla in PBDB) and
+# known marine xiphosurans, and to exclude Myriapoda, Kannemeyeriiformes,
+# Pelycosauria, Theriodontia, Therocephalia, freshwater conchostrans, and all
+# known arachnid taxa (because many arachnids are getting listed in the
+# xiphosuran download).
 non.marine <- c("Arachnida", "Insecta", "Collembola", "Palaeophreatoicidae",
     "Limnocytheridae", "Darwinuloidea", "Cypridoidea", "Cytherideidae", "Assimineidae",
     "Stenothyridae", "Hydrobiidae", "Ampullariidae", "Cyclophoridae", "Diplommatinidae",
@@ -190,7 +190,10 @@ non.marine <- c("Arachnida", "Insecta", "Collembola", "Palaeophreatoicidae",
     "Mesostigmata", "Opilioacarida", "Orthosternina", "Posteriorricinulei",
     "Primoricinulei", "Sarcoptiformes", "Tetrophthalmi", "Trombidiformes",
     "Tetrapulmonata")
+# Most tetrapods are terrestrial, so remove by default:
 tetrapods <- c("Mammalia", "Reptilia")
+# Then add back in the known marine tetrapods (and some known marine arachnids,
+# etc.):
 marine.exceptions <- c("Chelonioidea", "Ophidiomorpha", "Mosasauroidea",
     "Thalattosauria", "Sauropterygia", "Ichthyopterygia", "Mesoeucrocodylia",
     "Pterosauria", "Hesperornithiformes", "Ichthyornithiformes", "Sphenisciformes",
@@ -201,10 +204,13 @@ marine.exceptions <- c("Chelonioidea", "Ophidiomorpha", "Mosasauroidea",
     "Bellinurina", "Eurypterina", "Limulina", "Stylonurina")
     
 sq <- 1:nrow(x)
+# Extract the known marine taxa (in lineages that are typically non-marine):
 marine.vert.exceptions <- x[sapply(sq, function(sq) any(marine.exceptions %in% x[sq, ])), ]
-# Remove the exceptions here, and add back in (in case of non-tetrapod duplicates)
+# Remove the non-marine taxa, and all tetrapopds, including marine tetrapods (in
+# case of tetrapods that were not coded as members of Tetrapoda in the PBDB):
 marine.typical <- x[!sapply(sq, function(sq) any(c(non.marine, tetrapods, 
                                                    marine.exceptions) %in% x[sq, ])), ]
+# Combine the typical marine taxa plus the known marine tetrapods, etc.:
 marine.taxa <- rbind(marine.typical, marine.vert.exceptions)
 table(marine.taxa$Class)
 nrow(x)
