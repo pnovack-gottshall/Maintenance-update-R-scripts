@@ -33,14 +33,16 @@ same.root
 #    a. Ignore UNCERTAINS.
 #    b. Accept Tommotiida as both class and order given taxonomic
 #       ambiguity.
-#    c. Change order Cephalodiscida to Cephalodiscoidea (in class 
+#    c. Accept Hyolitha as both phylum and class given taxonomic
+#       ambiguity.
+#    d. Change order Cephalodiscida to Cephalodiscoidea (in class 
 #       Cephalodiscida), per WoRMS.
-#    d. Bdelloidea is valid as both a rotifer class and a xiphosuran 
+#    e. Bdelloidea is valid as both a rotifer class and a xiphosuran 
 #       superfamily.
-#    d. Articulata is valid as both a crinoid subclass and a bryozoan suborder.
-#    e. Nautiloidea and Orthoceratoidea are both valid as both a cephalopod 
+#    f. Articulata is valid as both a crinoid subclass and a bryozoan suborder.
+#    g. Nautiloidea and Orthoceratoidea are both valid as both a cephalopod 
 #       subclass and superfamily.
-#    f. Stolonifera is valid as both a bryozoan suborder and a cnidarian order.
+#    h. Stolonifera is valid as both a bryozoan suborder and a cnidarian order.
 
 for (rank in 1:8) {
   for (subrank in (rank + 1):9) {
