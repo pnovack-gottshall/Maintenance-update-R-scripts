@@ -12,7 +12,7 @@
 # selecting "Current Table ("Biota")" in dropdown, as 'AllCols.tab'
 # tab-delimited format. DO NOT SAVE AS EXCEL FORMAT, AS DOING SO
 # IDIOSYNCRATICALLY CHANGES NAs TO 0s AND 1s!! (MUST be tab-delimited, as
-# several text fields contain commas!!!). Save a duplicate in Excel Workbooks
+# several text fields contain commas!!!). Save a duplicate as an Excel Workbook
 # (AllColsHeadings.xlsx) to automatically obtain column headings. (Need to
 # create this colnames file EVERY TIME in case the order of columns has
 # changed.)
