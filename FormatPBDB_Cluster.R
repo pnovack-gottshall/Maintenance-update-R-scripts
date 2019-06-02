@@ -293,7 +293,9 @@ write.table(post, file="PreSizes_Constant_withPBDB.tab", quote=FALSE, sep="\t", 
 #     Blastozoa, Order UNCERTAIN), and CHANGE Subphylum Pelmatozoa to Blastozoa.
 
 #  d. ADD new taxonomic names for following:
-#       (i)   Class Hyolitha for Orders Hyolithida and Orthothecida.
+
+#       (i)   Class Hyolitha (in Phylum Hyolitha) for Orders Hyolithida and
+#               Orthothecida.
 #       (ii)  Class Dipnomorpha for orders Dipnoi and Dipnotetrapodomorpha.
 #       (iii) Class Tentaculitita / Phylum Mollusca for Order Tentaculitida.
 #       (iv)  Phylum Annelida for Class Palaeoscolecida.
@@ -315,7 +317,8 @@ write.table(post, file="PreSizes_Constant_withPBDB.tab", quote=FALSE, sep="\t", 
 #       (vix)  bryozoan order Cystoporida to Cystoporata 
 #       (x)    barnacle order Thoracica to Sessilia
 #       (xi)   diploporitan superfamily Glyptosphaeritida to 
-#              Glyptosphaeritidacea to (in order UNCERTAIN)
+#              Glyptosphaeritidacea to (in order UNCERTAIN). 
+#              (See below for details on other diploporitans.)
 
 #  f. Because the most recent bivalve classification (Carter, et al. 2011, to be
 #     used in the forthcoming Treatise) contains only two subclasses for all
@@ -351,17 +354,16 @@ write.table(post, file="PreSizes_Constant_withPBDB.tab", quote=FALSE, sep="\t", 
 #     superfamily Pistosauroidea as a valid superfamily in unnamed suborder.
 
 #  i. Use (only) the following subphylum names for (primarily marine)
-#     arthropods: Arachnomorpha, Chelicerata, Crustacea, and Trilobitomorpha. 
-#     Use (only) the following subphylum names for echinoderms: Asterozoa 
-#     (including classes Asteroidea, Ophiuroidea, Somasteroidea, and Stenuroidea), 
-#     Blastozoa  (including classes Blastoidea, Coronoidea, Ctenocystoidea, 
-#     Diploporita, Eocrinoidea, Homoiostelea [including sole Order Soluta], 
-#     Homostelea [and treating Cincta as a near synonym, as sole homostelean 
-#     order], Parablastoidea, Paracrinoidea [thus not recognizing Subphylum 
-#     Paracrinozoa], and Rhombifera, Crinozoa (including classes Crinoidea, 
-#     Edrioasteroidea,  Stylophora), and Echinozoa (including classes 
-#     Ctenoimbricata, Cyclocystoidea, Echinoidea, Helicoplacoidea, Holothuroidea, 
-#     and Ophiocistioidea).
+#     arthropods: Arachnomorpha, Chelicerata, Crustacea, and Trilobitomorpha. Use
+#     (only) the following subphylum names for echinoderms: Asterozoa (including
+#     classes Asteroidea, Ophiuroidea, Somasteroidea, and Stenuroidea), Blastozoa
+#     (including classes Blastoidea, Coronoidea, Ctenocystoidea, Diploporita,
+#     polyphyletic 'diploporitans', Eocrinoidea, Soluta, Homostelea [and treating
+#     Cincta as a near synonym, as sole homostelean order], Parablastoidea,
+#     Paracrinoidea [thus not recognizing Subphylum Paracrinozoa], and Rhombifera),
+#     Crinozoa (including classes Crinoidea, Edrioasteroidea,  Stylophora), and
+#     Echinozoa (including classes Ctenoimbricata, Cyclocystoidea, Echinoidea,
+#     Helicoplacoidea, Holothuroidea, and Ophiocistioidea).
 
 #  j. For tetrapods, do not use the larger fish-inclusive Dipnotetrapodomorpha
 #     as subclass (and Dipnomorpha for class). Instead, use Subclass Eutheria
@@ -446,6 +448,16 @@ write.table(post, file="PreSizes_Constant_withPBDB.tab", quote=FALSE, sep="\t", 
 #     Diplobathrida, Monobathrida, and "stem eucamarates". (This has the effect
 #     of making my propogation algorithm more conservative because smaller ranks
 #     are treated as larger, more inclusive ones.)
+
+#  x. Following Sheffield and Sumrall (2019), place the diploporitans in
+#     Glyptosphaeritidacea and Asteroblastida in Class 'diploporitans' because they
+#     are now polyphyletic. Use Order Diplporita only for members of Sphaeronitida
+#     and any traditional diploporitan NOT explicitly noted in their paper as not
+#     monophyletic members of the Sphaeronitida clade. (In other words, the
+#     default, for now, is to assume all diploporitans are within Diploporita
+#     unless explicitly known not to be.)
+
+
 
 # (6) Run code as usual in "PropogateSizes.R" or "PropogateLifeHabits.R", but
 # resaving as postX_withPBDB" file name. Make sure to add new IDNumbers to the
