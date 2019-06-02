@@ -23,15 +23,13 @@ pbdb <- pbdb.all[which(pbdb.all$taxon_rank == "genus" |
                          pbdb.all$taxon_rank == "subgenus"), ]
 nrow(pbdb)
 
+
 ## Run relevant code in SelectCols.R for UpdateAges&DivCurve.R to obtain
 ## following output.
 
-## Export occurrences as .csv file named "occs.csv" from "LifeHabits.fmp12" (in
-## any sort order) with following columns: IDNumber, Phylum, Class, Order,
-## Superfamily, Family, Genus, Subgenus, Species, early_period, early_age,
-## late_period, late_age). Make sure to manually enter the header names!
-## (easiest is to save as Excel to retain column names and then re-save as
-## .csv.)
+## Use the following columns: IDNumber, Phylum, Class, Order, Superfamily,
+## Family, Genus, Subgenus, Species, early_period, early_age, late_period,
+## late_age
 occs <- read.csv("occs.csv", header = TRUE)
 table(occs$Phylum)
 cl.tbl <- table(occs$Class)
@@ -82,8 +80,8 @@ edia <- strat_names[which(strat_names$interval_name == "Ediacaran"),]
 l4s <- rbind(l4s, edia)
 l4s[, 1:5]
 
-## Any disallowed intervals? (Allow blank ("") and Recent, although not official
-## subperiods)
+## Are there any disallowed intervals in your database? (Allow blank ("") and
+## Recent, although not official subperiods)
 ints <- unique(c(levels(occs$max_age), levels(occs$min_age)))
 ints[which(!ints %in% l4s$interval_name)]
 
@@ -97,6 +95,12 @@ ints[which(!ints %in% l4s$interval_name)]
 ## With this one: 
 
 # l4s[c(length(which(l4s$min_ma <= wh.bad$min_ma)), length(which(l4s$min_ma < wh.bad$max_ma))), 3:5]
+
+
+
+
+## Identify potential homonym genera (used only if trouble-shooting for below)
+which(table(pbdb$taxon_name) > 1L)
 
 
 
@@ -214,17 +218,23 @@ for (i in 1:length(Gen)) {
   occs$min_ma[wh.occs.G] <- rep(min.ma, len.g)
   occs$min_age[wh.occs.G] <- rep(Late, len.g)
 }
-# write.csv(occs, file="PBDBDates.csv", row.names=FALSE)
+# write.csv(occs, file = "PBDBDates.csv", row.names = FALSE)
 
-# Before importing ranges, manually delete 'NA's in strat ranges
+# It is worthwhile to compare the original and updated ranges to troubleshoot
+# for errors. If there is a significant change (e.g., > 100 Myr), it is possible
+# the genus has a newly entered homonym or an incorrectly classified homonym, or
+# a previously unrecognized homonym. In these cases, manually compare the PBDB
+# entries and re-classify (or enter appropriate opinions) if incorrect. (If you
+# get a "check extinct status" warning and the genus is correctly tagged, it
+# usually means one of the species in the genus was improperly flagged. It's
+# easiest to confirm on the "pbdb_data.csv" file rather than PBDB web
+# interface.)
 
-# Use next command if want to use a direct export from FileMakerPro. (Make
-# sure the file details are the same as above.)
+# Before importing ranges, manually delete 'NA's in strat ranges.
 
-colCl <- c(rep(NA, 9), "character", NA, "character", NA)
-# occs <- read.csv("PBDBDates.csv", header = TRUE, stringsAsFactors=FALSE, colClasses=colCl)
-# occs <- read.delim("PostSizes_withPBDB.tab", sep = "\t", header = TRUE, stringsAsFactors=FALSE, colClasses=colCl)
-head(occs)
+# Import "PBDBDates.csv", "updating matching records" using IDNumber as match
+# and ONLY importing the age and interval fields.
+
 
 
 
@@ -239,6 +249,15 @@ head(occs)
 ## X-bt, number of taxa crossing both bottom and top interval boundaries,
 ##
 ## Total D, total number of taxa in interval (X-FL + X-bL + X-Ft + X-bt)
+
+# Use next command if want to use a direct export from FileMakerPro instead of
+# using the object above. (Make sure the file details are the same as above.)
+
+colCl <- c(rep(NA, 9), "character", NA, "character", NA)
+# occs <- read.csv("PBDBDates.csv", header = TRUE, stringsAsFactors=FALSE, colClasses=colCl)
+# occs <- read.delim("PostSizes_withPBDB.tab", sep = "\t", header = TRUE, stringsAsFactors=FALSE, colClasses=colCl)
+head(occs)
+
 
 # Get midpoint age for PBDB subperiods
 mids <- apply(l4s[ ,9:10], 1, mean)
