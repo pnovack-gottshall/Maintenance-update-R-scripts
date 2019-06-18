@@ -457,6 +457,34 @@ write.table(post, file="PreSizes_Constant_withPBDB.tab", quote=FALSE, sep="\t", 
 #     default, for now, is to assume all diploporitans are within Diploporita
 #     unless explicitly known not to be.)
 
+# y. Following Kroh and Smith (2010) for taxonomy of echinoids (opinions also
+#    entered into PBDB), but adding superfamily and/or suborder rankings (which
+#    they often avoided) in cases where an order is assigned and infraorder
+#    subclades are assigned. Reducing following order Camarodonta infraorders to
+#    suborders: Temnopleuridea (with families Temnopleuridae, Trigonocidaridae,
+#    Zeoglopleuridae, and Glyphocyphidae) and Echinidea (with superfamily
+#    Odontophora with families Toxopneustidae, Strongylocentrotidae, and
+#    Echinometridae, and superfamily UNCERTAIN with families Echinidae and
+#    Parechinidae) and suborder/superfamily UNCERTAIN (with family Parasaleniidae).
+#    For suborder Scutellina, reduce infraorders Laganiformes (including
+#    Fibulariidae = Echinocyamidae and Laganidae = Laganinae and Neolaganinae) and
+#    Scutelliformes (including Taiwanasteridae, Protoscutellidae [in stem group],
+#    Echinarachniidae, Dendrasteridae, Rotulidae, Scutellidae, Eoscutellidae,
+#    Scutasteridae, Abertellidae, Astriclypeidae, Monophorasteridae, and
+#    Mellitidae) to superfamily rank; family Scutellinidae is then in superfamily
+#    UNCERTAIN as stem Scutellina. Treat unranked clade Meridosternata as a
+#    suborder of Holasteroida and reduce infraorders Cardiasterina (= Stegasterina
+#    (including Stegasteridae and Cardiasteridae = Cardiotaxinae) and Urechinina
+#    (including echinoid homonym Corystidae replaced by Corystusidae, Calymnidae,
+# Carnarechinidae, Urechinidae, Plexechinidae, and Pourtelasiidae) to
+# superfamily rank [note that the corystusids and calymnids are not listed this
+# way on page 173 but clearly an error based on cladogram in fig. 2]; families
+# Echinocorythidae and Holasteridae are then in superfamily UNCERTAIN as stem
+# Meridosternata and families Stenonasteridae, Hemipneustidae, and
+# Pseudholasteridae are in superfamily and suborder UNCERTAIN as stem
+# holasteroids.
+
+
 
 
 # (6) Run code as usual in "PropogateSizes.R" or "PropogateLifeHabits.R", but
