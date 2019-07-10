@@ -21,7 +21,7 @@ head(pbdb)
 
 ## Function to add higher taxonomic names (phylum, class, order, etc.) for PBDB
 ## genus (and subgenus) names
-# gen.seq = Vector (sequence) of number of genus names to process
+# g = Vector (sequence) of number of genus names to process
 # gen.names = Vector of PBDB genus (and subgenus) names
 # pbdb = data frame of all PBDB occurrences
 #
