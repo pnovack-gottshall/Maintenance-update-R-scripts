@@ -19,10 +19,10 @@
 
 # (2) Open file in MSWord (make sure smart quotes are off: File > Options >
 # Proofing > Autocorrect Options > Autoformat As You Type > uncheck Smart
-# Quotes) and delete any hidden tabs (tab within a text field) and all
-# problematic (i.e., double) quotation marks (replacing [UNLESS THE QUOTATION
-# MARK IS CORRECTLY AT THE END OF A TEXT FIELD] "^t with ^t and replacing ^t"
-# with ^t and replacing "" with "). Re-save file in same format, if any changed.
+# Quotes). UNLESS THE TERMINAL QUOTATION MARKS ARE CORRECTLY AT THE END OF A
+# TEXT FIELD, find and replace (a) "^t with ^t and (b) replace ^t" with ^t and
+# (c) replace "" [double quotation marks] with " [single quotation marks].
+# Re-save file in same format.
 
 # (3) In Excel, add a row for headers and confirm the column headers are correct
 # (and no cells are "hanging"). (If "hanging", it means there a tab was
