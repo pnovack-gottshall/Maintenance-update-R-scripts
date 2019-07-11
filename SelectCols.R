@@ -39,6 +39,7 @@ all <- read.delim(file = "AllCols.tab", stringsAsFactors = FALSE)
 # all <- read.delim(file = "AllCols_Constant_PBDB.tab", stringsAsFactors = FALSE)
 # all <- read.delim(file = "AllCols_Mode_PBDB.tab", stringsAsFactors = FALSE)
 head(all)
+nrow(all)
 
 
 ## CHOOSE SELECTED COLUMN SET -----------------------------------------------------
