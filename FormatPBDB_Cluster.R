@@ -421,14 +421,14 @@ write.table(post, file = "PreSizes_Constant_withPBDB.tab", quote = FALSE,
 #     Hyolitha as both a phylum and class, given their taxonomic ambiguities.
 
 #  r. For the branchiopods, primarily use WoRMS instead of PBDB, with Class
-#    Branchiopoda, subclasses Calmanostraca (extant all freshwater with order
-#    Notostraca), Sarsostraca (extant all freshwater with order Anostraca), and
-#    Diplostraca (=Conchostraca, with orders Laevicaudata and Spinicaudata and all
-#    cladoceran orders). Like PBDB (and unlike WoRMS which subsumes the cladoceran
-#    taxa as individual orders), treating Cladocera as a valid order and using
-#    WoRMS cladoceran orders (Anomopoda, Ctenopoda, Haplopoda, and Onychopoda) as
-#    suborders. Genera in outdated Subclass Phyllopopda with UNCERTAIN orders are
-#    placed in Subclass UNCERTAIN because unclear whether diplostracans or notostracans.
+#     Branchiopoda, subclasses Calmanostraca (extant all freshwater with order
+#     Notostraca), Sarsostraca (extant all freshwater with order Anostraca), and
+#     Diplostraca (=Conchostraca, with orders Laevicaudata and Spinicaudata and all
+#     cladoceran orders). Like PBDB (and unlike WoRMS which subsumes the cladoceran
+#     taxa as individual orders), treating Cladocera as a valid order and using
+#     WoRMS cladoceran orders (Anomopoda, Ctenopoda, Haplopoda, and Onychopoda) as
+#     suborders. Genera in outdated Subclass Phyllopopda with UNCERTAIN orders are
+#     placed in Subclass UNCERTAIN because unclear whether diplostracans or notostracans.
 
 #  s. Use PBDB to change suffix for superfamilies to -oidea or -acea based on 
 #     consensus.
@@ -464,32 +464,32 @@ write.table(post, file = "PreSizes_Constant_withPBDB.tab", quote = FALSE,
 #     default, for now, is to assume all diploporitans are within Diploporita
 #     unless explicitly known not to be.)
 
-# y. Following Kroh and Smith (2010) for taxonomy of echinoids (opinions also
-#    entered into PBDB), but adding superfamily and/or suborder rankings (which
-#    they often avoided) in cases where an order is assigned and infraorder
-#    subclades are assigned. Reducing following order Camarodonta infraorders to
-#    suborders: Temnopleuridea (with families Temnopleuridae, Trigonocidaridae,
-#    Zeoglopleuridae, and Glyphocyphidae) and Echinidea (with superfamily
-#    Odontophora with families Toxopneustidae, Strongylocentrotidae, and
-#    Echinometridae, and superfamily UNCERTAIN with families Echinidae and
-#    Parechinidae) and suborder/superfamily UNCERTAIN (with family Parasaleniidae).
-#    For suborder Scutellina, reduce infraorders Laganiformes (including
-#    Fibulariidae = Echinocyamidae and Laganidae = Laganinae and Neolaganinae) and
-#    Scutelliformes (including Taiwanasteridae, Protoscutellidae [in stem group],
-#    Echinarachniidae, Dendrasteridae, Rotulidae, Scutellidae, Eoscutellidae,
-#    Scutasteridae, Abertellidae, Astriclypeidae, Monophorasteridae, and
-#    Mellitidae) to superfamily rank; family Scutellinidae is then in superfamily
-#    UNCERTAIN as stem Scutellina. Treat unranked clade Meridosternata as a
-#    suborder of Holasteroida and reduce infraorders Cardiasterina (= Stegasterina
-#    (including Stegasteridae and Cardiasteridae = Cardiotaxinae) and Urechinina
-#    (including echinoid homonym Corystidae replaced by Corystusidae, Calymnidae,
-#    Carnarechinidae, Urechinidae, Plexechinidae, and Pourtelasiidae) to
-#    superfamily rank [note that the corystusids and calymnids are not listed this
-#    way on page 173 but clearly an error based on cladogram in fig. 2]; families
-#    Echinocorythidae and Holasteridae are then in superfamily UNCERTAIN as stem
-#    Meridosternata and families Stenonasteridae, Hemipneustidae, and
-#    Pseudholasteridae are in superfamily and suborder UNCERTAIN as stem
-#    holasteroids.
+#  y. Following Kroh and Smith (2010) for taxonomy of echinoids (opinions also
+#     entered into PBDB), but adding superfamily and/or suborder rankings (which
+#     they often avoided) in cases where an order is assigned and infraorder
+#     subclades are assigned. Reducing following order Camarodonta infraorders to
+#     suborders: Temnopleuridea (with families Temnopleuridae, Trigonocidaridae,
+#     Zeoglopleuridae, and Glyphocyphidae) and Echinidea (with superfamily
+#     Odontophora with families Toxopneustidae, Strongylocentrotidae, and
+#     Echinometridae, and superfamily UNCERTAIN with families Echinidae and
+#     Parechinidae) and suborder/superfamily UNCERTAIN (with family Parasaleniidae).
+#     For suborder Scutellina, reduce infraorders Laganiformes (including
+#     Fibulariidae = Echinocyamidae and Laganidae = Laganinae and Neolaganinae) and
+#     Scutelliformes (including Taiwanasteridae, Protoscutellidae [in stem group],
+#     Echinarachniidae, Dendrasteridae, Rotulidae, Scutellidae, Eoscutellidae,
+#     Scutasteridae, Abertellidae, Astriclypeidae, Monophorasteridae, and
+#     Mellitidae) to superfamily rank; family Scutellinidae is then in superfamily
+#     UNCERTAIN as stem Scutellina. Treat unranked clade Meridosternata as a
+#     suborder of Holasteroida and reduce infraorders Cardiasterina (= Stegasterina
+#     (including Stegasteridae and Cardiasteridae = Cardiotaxinae) and Urechinina
+#     (including echinoid homonym Corystidae replaced by Corystusidae, Calymnidae,
+#     Carnarechinidae, Urechinidae, Plexechinidae, and Pourtelasiidae) to
+#     superfamily rank [note that the corystusids and calymnids are not listed this
+#     way on page 173 but clearly an error based on cladogram in fig. 2]; families
+#     Echinocorythidae and Holasteridae are then in superfamily UNCERTAIN as stem
+#     Meridosternata and families Stenonasteridae, Hemipneustidae, and
+#     Pseudholasteridae are in superfamily and suborder UNCERTAIN as stem
+#     holasteroids.
 
 
 
