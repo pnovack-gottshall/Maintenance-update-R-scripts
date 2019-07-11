@@ -31,7 +31,8 @@ nrow(pbdb)
 ## Family, Genus, Subgenus, Species, early_period, early_age, late_period,
 ## late_age
 occs <- read.csv("occs.csv", header = TRUE)
-table(occs$Phylum)
+ph.tbl <- table(occs$Phylum)
+sort(ph.tbl, decreasing = FALSE)
 cl.tbl <- table(occs$Class)
 sort(cl.tbl, decreasing = FALSE)
 or.tbl <- table(occs$Order)
