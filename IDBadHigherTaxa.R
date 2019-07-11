@@ -42,7 +42,8 @@ same.root
 #    f. Articulata is valid as both a crinoid subclass and a bryozoan suborder.
 #    g. Nautiloidea and Orthoceratoidea are both valid as both a cephalopod 
 #       subclass and superfamily.
-#    h. Stolonifera is valid as both a bryozoan suborder and a cnidarian order.
+#    h. Stolonifera is valid as both a bryozoan suborder and a cnidarian order,
+#       and am allowing Phymosomatoida as both an echinoid order and suborder.
 
 for (rank in 1:8) {
   for (subrank in (rank + 1):9) {
