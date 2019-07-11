@@ -49,10 +49,11 @@ nrow(all)
 cols <- c("Phylum", "Subphylum", "Class", "Subclass", "Order", "Suborder", 
           "Superfamily", "Family", "Subfamily")
 wh.cols <- match(cols, colnames(all))
-selected <- all[ ,wh.cols]
+selected <- all[, wh.cols]
 head(selected)
-if(!identical(cols, colnames(selected))) stop("column names are not as specified!")
-write.csv(selected, file="HigherTaxa.csv", row.names = FALSE)
+if (!identical(cols, colnames(selected)))
+  stop("column names are not as specified!")
+write.csv(selected, file = "HigherTaxa.csv", row.names = FALSE)
 
 
 
@@ -60,10 +61,11 @@ write.csv(selected, file="HigherTaxa.csv", row.names = FALSE)
 cols <- c("IDNumber", "Phylum", "Class", "Order", "Superfamily", "Family", "Genus", 
           "Subgenus", "Species", "max_age", "max_ma", "min_age", "min_ma")
 wh.cols <- match(cols, colnames(all))
-selected <- all[ ,wh.cols]
+selected <- all[, wh.cols]
 head(selected)
-if(!identical(cols, colnames(selected))) stop("column names are not as specified!")
-write.csv(selected, file="occs.csv", row.names = FALSE)
+if (!identical(cols, colnames(selected)))
+  stop("column names are not as specified!")
+write.csv(selected, file = "occs.csv", row.names = FALSE)
 
 
 
@@ -78,9 +80,10 @@ cols <- c("IDNumber", "Phylum", "Subphylum", "Class", "Subclass", "Order",
           "TransverseScale", "DVScale", "Est_AP", "Est_T", "Est_DV", 
           "AbsStratDistance", "Est_AbsStratDistance")
 wh.cols <- match(cols, colnames(all))
-selected <- all[ ,wh.cols]
+selected <- all[, wh.cols]
 head(selected)
-if(!identical(cols, colnames(selected))) stop("column names are not as specified!")
+if (!identical(cols, colnames(selected)))
+  stop("column names are not as specified!")
 # write.table(selected, file="PreSizes.tab", row.names = FALSE, sep = "\t", quote = FALSE)
 # write.table(selected, file="PreSizes_Constant_withPBDB.tab", row.names = FALSE, sep = "\t", quote = FALSE)
 # write.table(selected, file="PreSizes_Mode_withPBDB.tab", row.names = FALSE, sep = "\t", quote = FALSE)
@@ -116,11 +119,11 @@ cols <- c("IDNumber", "Phylum", "Subphylum", "Class", "Subclass", "Order",
           "Est_Sexual", "Est_SoftSubstratum", "Est_SolutionFeeder", "Est_Supported",
           "Est_WithinImmediate", "Est_WithinPrimary")
 wh.cols <- match(cols, colnames(all))
-selected <- all[ ,wh.cols]
+selected <- all[, wh.cols]
 head(selected)
-if(!identical(cols, colnames(selected))) stop("column names are not as specified!")
+if (!identical(cols, colnames(selected)))
+  stop("column names are not as specified!")
 # write.table(selected, file="PreLH_constant.tab", row.names = FALSE, sep = "\t", quote = FALSE)
 # write.table(selected, file="PreLH_mode.tab", row.names = FALSE, sep = "\t", quote = FALSE)
 # write.table(selected, file="PreLH_constant_PBDB.tab", row.names = FALSE, sep = "\t", quote = FALSE)
 # write.table(selected, file="PreLH_mode_PBDB.tab", row.names = FALSE, sep = "\t", quote = FALSE)
-
