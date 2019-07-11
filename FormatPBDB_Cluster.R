@@ -124,12 +124,13 @@ gen.names <- sort(unique(pbdb$accepted_name[which.gsg]))
 gen.seq <- seq_along(gen.names)
 # gen.seq <- 1:1000
 # Set up computer cluster
-cpus <- 8					# Number of CPUs to cluster together
-# sfSetMaxCPUs(cpus)			# Use if plan more than 32 CPUs
+library(parallel)
+cpus <- parallel::detectCores() # Number of CPUs to cluster together
+# sfSetMaxCPUs(cpus)			      # Use if plan more than 32 CPUs
 sfInit(parallel=T, cpus=cpus, slaveOutfile="initfile") # Initialize cluster
-stopifnot(sfCpus()==cpus)		# Confirm set up CPUs properly
+stopifnot(sfCpus()==cpus)		    # Confirm set up CPUs properly
 stopifnot(sfParallel()==TRUE)		# Confirm now running in parallel
-sfExportAll()				# Export all libraries, files, & objects
+sfExportAll()				            # Export all libraries, files, & objects
 # Execute the function
 (t.start1 <- Sys.time())
 prep <- NA
@@ -476,13 +477,13 @@ write.table(post, file="PreSizes_Constant_withPBDB.tab", quote=FALSE, sep="\t", 
 #    suborder of Holasteroida and reduce infraorders Cardiasterina (= Stegasterina
 #    (including Stegasteridae and Cardiasteridae = Cardiotaxinae) and Urechinina
 #    (including echinoid homonym Corystidae replaced by Corystusidae, Calymnidae,
-# Carnarechinidae, Urechinidae, Plexechinidae, and Pourtelasiidae) to
-# superfamily rank [note that the corystusids and calymnids are not listed this
-# way on page 173 but clearly an error based on cladogram in fig. 2]; families
-# Echinocorythidae and Holasteridae are then in superfamily UNCERTAIN as stem
-# Meridosternata and families Stenonasteridae, Hemipneustidae, and
-# Pseudholasteridae are in superfamily and suborder UNCERTAIN as stem
-# holasteroids.
+#    Carnarechinidae, Urechinidae, Plexechinidae, and Pourtelasiidae) to
+#    superfamily rank [note that the corystusids and calymnids are not listed this
+#    way on page 173 but clearly an error based on cladogram in fig. 2]; families
+#    Echinocorythidae and Holasteridae are then in superfamily UNCERTAIN as stem
+#    Meridosternata and families Stenonasteridae, Hemipneustidae, and
+#    Pseudholasteridae are in superfamily and suborder UNCERTAIN as stem
+#    holasteroids.
 
 
 
