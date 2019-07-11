@@ -56,7 +56,9 @@ which(num %in% sort(occs$IDNumber) == FALSE)
 
 # Any duplicated genus entries?
 if(length(table(table(occs$Genus))) > 1L) {
-  print(which(table(occs$Genus) > 1L))
+  foo <- which(table(occs$Genus) > 1L)
+  print(foo)
+  cat("There are", length(foo), "entries above.\n")
   stop("The above genus entries are entered twice. Delete the outdated entry/entries?")
 }
 # Ignore the 72 extant brachiopod genera with multiple species in the database
