@@ -196,26 +196,34 @@ for (i in 1:length(Gen)) {
   }
   
   # Continue with those taxa with PBDB ranges (attempting to match homonym with
-  # most similar stratigraphic range):
+  # most similar stratigraphic range if at least one FAD or LAD already
+  # provided):
   gen.pbdb <- pbdb[wh.pbdb.G,]
-  if (homonym &
-      (!is.na(occs$max_ma[wh.occs.G]) | !is.na(occs$min_ma[wh.occs.G]))) {
-    which.best <- NA
-    max.dev <- (occs$max_ma[wh.occs.G] - gen.pbdb$firstapp_max_ma) ^ 2
-    min.dev <- (occs$min_ma[wh.occs.G] - gen.pbdb$lastapp_min_ma) ^ 2
-    {
-      if (all(is.na(max.dev))) {
-        which.best <- which.min(min.dev)
-      } else if (all(is.na(min.dev))) {
-        which.best <- which.min(max.dev)
-        } else which.best <- which.min(max.dev + min.dev)
-    }
-    max.ma <- gen.pbdb$firstapp_max_ma[which.best]
-    min.ma <- gen.pbdb$lastapp_min_ma[which.best]
+  if (homonym) {
+    how.many.na <- c(is.na(occs$min_ma[wh.occs.G]), is.na(occs$max_ma[wh.occs.G]))
+    sum.how.many <- sum(how.many.na)
+    if (sum.how.many < 2L) {
+      max.dev <- (occs$max_ma[wh.occs.G] - gen.pbdb$firstapp_max_ma) ^ 2
+      min.dev <- (occs$min_ma[wh.occs.G] - gen.pbdb$lastapp_min_ma) ^ 2
+      if (sum.how.many == 1L) {
+        if (how.many.na[1])
+          which.best <- which.min(max.dev)
+        else
+          which.best <- which.min(min.dev)
+      }
+      if (sum.how.many == 0L)
+        which.best <- which.min(max.dev + min.dev)
+      max.ma <- gen.pbdb$firstapp_max_ma[which.best]
+      min.ma <- gen.pbdb$lastapp_min_ma[which.best]
     } else {
-      max.ma <- max(gen.pbdb$firstapp_max_ma)
-      min.ma <- min(gen.pbdb$lastapp_min_ma)
+      # If not able to estimate the most likely homonym, use the first entered:
+      max.ma <- gen.pbdb$firstapp_max_ma[1]
+      min.ma <- gen.pbdb$lastapp_min_ma[1]
     }
+  } else {
+    max.ma <- gen.pbdb$firstapp_max_ma
+    min.ma <- gen.pbdb$lastapp_min_ma
+  }
   
   # Flag any discrepancies in extinct / extant tags
   if (any(occs$min_age[wh.occs.G] == "Recent") &
