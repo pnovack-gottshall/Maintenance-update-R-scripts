@@ -123,7 +123,7 @@ Gen <- sort(unique(unlist(list(occs$Genus, occs$Subgenus), recursive = TRUE)))
 for (i in 1:length(Gen)) {
   # for(i in 72:length(Gen)) {
   gen.pbdb <- max.ma <- min.ma <- Early <- Late <- NA
-  override <- FALSE
+  override <- homonym <- FALSE
   gen <- as.character(Gen[i])
   if(gen == "") next   # Combining genera and subgenera sometimes adds a blank
   if(i %in% index) cat("genus ", i, ":", gen, "\n")
@@ -189,13 +189,33 @@ for (i in 1:length(Gen)) {
   # homonyms are not.)
   if (len.pbdb.G > 1L &
       (length(unique(pbdb$firstapp_max_ma[wh.pbdb.G])) > 1L |
-      length(unique(pbdb$lastapp_min_ma[wh.pbdb.G])) > 1L))
-      cat(paste("         * Manually confirm range for possible homonym ", gen, " (", occs$Class[wh.occs.G], ")\n", sep=""))
+       length(unique(pbdb$lastapp_min_ma[wh.pbdb.G])) > 1L)) {
+    homonym <- TRUE
+    cat(paste("         * Manually confirm range for possible homonym ",
+        gen, " (", occs$Class[wh.occs.G], ")\n", sep = ""))
+  }
   
-  # Continue with those taxa with PBDB ranges:
-  gen.pbdb <- pbdb[wh.pbdb.G, ]
-  max.ma <- max(gen.pbdb$firstapp_max_ma)
-  min.ma <- min(gen.pbdb$lastapp_min_ma)
+  # Continue with those taxa with PBDB ranges (attempting to match homonym with most similar stratigraphic range):
+  gen.pbdb <- pbdb[wh.pbdb.G,]
+  if (homonym &
+      (!is.na(occs$max_ma[wh.occs.G]) | !is.na(occs$min_ma[wh.occs.G]))) {
+    which.best <- NA
+    max.dev <- (occs$max_ma[wh.occs.G] - gen.pbdb$firstapp_max_ma) ^ 2
+    min.dev <- (occs$min_ma[wh.occs.G] - gen.pbdb$lastapp_min_ma) ^ 2
+    {
+      if (all(is.na(max.dev))) {
+        which.best <- which.min(min.dev)
+      } else if (all(is.na(min.dev))) {
+        which.best <- which.min(max.dev)
+      } else
+        which.best <- which.min(max.dev + min.dev)
+    }
+    max.ma <- gen.pbdb$firstapp_max_ma[which.best]
+    min.ma <- gen.pbdb$lastapp_min_ma[which.best]
+    } else {
+      max.ma <- max(gen.pbdb$firstapp_max_ma)
+      min.ma <- min(gen.pbdb$lastapp_min_ma)
+    }
   
   # Flag any discrepancies in extinct / extant tags
   if (any(occs$min_age[wh.occs.G] == "Recent") &
