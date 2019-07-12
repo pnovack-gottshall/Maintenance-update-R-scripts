@@ -233,22 +233,25 @@ for (i in 1:length(Gen)) {
       any(gen.pbdb$is_extant == "extant"))
     cat("+ Confirm extinct/extant status for", gen, "\n")
   
-  # Assign to "level-4" ages
+  # Assign to "level-4" ages (overriding if previously assigned)
   Early <-
     as.character(l4s$interval_name[length(which(l4s$min_ma < max.ma))])
   Late <-
     as.character(l4s$interval_name[length(which(l4s$min_ma <= min.ma))])
   occs$max_ma[wh.occs.G] <- rep(max.ma, len.g)
   occs$max_age[wh.occs.G] <- rep(Early, len.g)
+  
   # Implement pull-of-the-Recent
   if (any(occs$min_age[wh.occs.G] == "Recent") |
       any(gen.pbdb$is_extant == "extant")) {
     Late <- "Recent"
     min.ma <- 0
   }
+
   occs$min_ma[wh.occs.G] <- rep(min.ma, len.g)
   occs$min_age[wh.occs.G] <- rep(Late, len.g)
 }
+
 # write.csv(occs, file = "PBDBDates.csv", row.names = FALSE)
 
 # It is worthwhile to compare the original and updated ranges to troubleshoot
