@@ -195,7 +195,8 @@ for (i in 1:length(Gen)) {
         gen, " (", occs$Class[wh.occs.G], ")\n", sep = ""))
   }
   
-  # Continue with those taxa with PBDB ranges (attempting to match homonym with most similar stratigraphic range):
+  # Continue with those taxa with PBDB ranges (attempting to match homonym with
+  # most similar stratigraphic range):
   gen.pbdb <- pbdb[wh.pbdb.G,]
   if (homonym &
       (!is.na(occs$max_ma[wh.occs.G]) | !is.na(occs$min_ma[wh.occs.G]))) {
@@ -207,8 +208,7 @@ for (i in 1:length(Gen)) {
         which.best <- which.min(min.dev)
       } else if (all(is.na(min.dev))) {
         which.best <- which.min(max.dev)
-      } else
-        which.best <- which.min(max.dev + min.dev)
+        } else which.best <- which.min(max.dev + min.dev)
     }
     max.ma <- gen.pbdb$firstapp_max_ma[which.best]
     min.ma <- gen.pbdb$lastapp_min_ma[which.best]
