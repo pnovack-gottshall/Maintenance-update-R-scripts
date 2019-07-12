@@ -342,6 +342,8 @@ for (r in 1:length(ranks)) {
     if (i %in% index) cat("taxon ", i, ":", taxon, "\n")
     if (taxon == "UNCERTAIN") next
     if (taxon == "Trace fossil") next
+    if (taxon == "Cyanobacteria") next
+    if (taxon == "Chlorophyta") next
     wh.occs.taxon <- which(occs[[wh.col]] == taxon)
     t.occs[i, 1:(wh.col - 1)] <- occs[wh.occs.taxon[1], 2:wh.col]
     # Use current ranges before updating with PBDB:
@@ -365,6 +367,7 @@ for (r in 1:length(ranks)) {
         is.na(taxon.pbdb$lastapp_min_ma)) next
     max.ma <- max(taxon.pbdb$firstapp_max_ma, na.rm = TRUE)
     min.ma <- min(taxon.pbdb$lastapp_min_ma, na.rm = TRUE)
+    if (taxon.pbdb$is_extant == "extant") min.ma <- 0
     if (max.ma > occs.max.ma) t.occs$max_ma[i] <- max.ma
     if (min.ma < occs.min.ma) t.occs$min_ma[i] <- min.ma
     # Assign to "level-4" ages
