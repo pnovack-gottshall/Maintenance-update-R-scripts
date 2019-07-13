@@ -54,7 +54,7 @@
 # IF DO THIS, PERFORM THE DELETIONS ON A COPY OF THE DATABASE RATHER THAN THE
 # MASTER DATABASE ITSELF!
 
-# (1) Before exporting, sort the entries so that BodySizeScale=Species is first,
+# (1) Before exporting, sort the entries so that BodySizeScale = Species is first,
 # followed by Subgenus, Genus, etc., and second by AbsStratDistance (in
 # descending order, with largest first), and third BodyVolume (with largest
 # first). (This sort order means taxa with AbsStratDistances and all three
@@ -114,6 +114,9 @@ setwd("C:/Users/pnovack-gottshall/Desktop/Databases/Maintenance & update R scrip
 pre.input <- read.delim(file = "preSizes.tab", stringsAsFactors = FALSE)
 # pre.input <- read.delim(file = "PreSizes_Constant_withPBDB.tab", stringsAsFactors = FALSE)
 # pre.input <- read.delim(file = "EchinoPreSizes_withPBDB.tab", stringsAsFactors = FALSE)
+
+# Following confirms that certain columns (with many empty cells) are treated as
+# characters:
 est.cols <- which(colnames(pre.input) == "SizeChanged" | 
                     colnames(pre.input) == "Est_AP" |
                     colnames(pre.input) == "Est_T" |
@@ -121,6 +124,7 @@ est.cols <- which(colnames(pre.input) == "SizeChanged" |
 colCl <- c(rep(NA, ncol(pre.input)))
 colCl[est.cols] <- "character"
 rm(pre.input)
+
 input <- read.delim(file = "preSizes.tab", stringsAsFactors = FALSE, colClasses = colCl)
 # input <- read.delim(file = "PreSizes_Constant_withPBDB.tab", stringsAsFactors = FALSE)
 # input <- read.delim(file = "EchinoPreSizes_withPBDB.tab", stringsAsFactors = FALSE)
