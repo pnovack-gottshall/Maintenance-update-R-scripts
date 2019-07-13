@@ -84,7 +84,7 @@ selected <- all[, wh.cols]
 head(selected)
 if (!identical(cols, colnames(selected)))
   stop("column names are not as specified!")
-# write.table(selected, file="PreSizes.tab", row.names = FALSE, sep = "\t", quote = FALSE)
+write.table(selected, file="PreSizes.tab", row.names = FALSE, sep = "\t", quote = FALSE)
 # write.table(selected, file="PreSizes_Constant_withPBDB.tab", row.names = FALSE, sep = "\t", quote = FALSE)
 # write.table(selected, file="PreSizes_Mode_withPBDB.tab", row.names = FALSE, sep = "\t", quote = FALSE)
 
