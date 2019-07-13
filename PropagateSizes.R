@@ -112,8 +112,8 @@ setwd("C:/Users/pnovack-gottshall/Desktop/Databases/Maintenance & update R scrip
 # setwd("C:/Users/pnovack-gottshall/Documents/GSA (& NSF & NAPC)/2016GSA/GSA2016 analyses")
 
 pre.input <- read.delim(file = "preSizes.tab", stringsAsFactors = FALSE)
-# pre.input <- read.delim(file="PreSizes_Constant_withPBDB.tab", stringsAsFactors=FALSE)
-# pre.input <- read.delim(file="EchinoPreSizes_withPBDB.tab", stringsAsFactors=FALSE)
+# pre.input <- read.delim(file = "PreSizes_Constant_withPBDB.tab", stringsAsFactors = FALSE)
+# pre.input <- read.delim(file = "EchinoPreSizes_withPBDB.tab", stringsAsFactors = FALSE)
 est.cols <- which(colnames(pre.input) == "SizeChanged" | 
                     colnames(pre.input) == "Est_AP" |
                     colnames(pre.input) == "Est_T" |
@@ -121,9 +121,9 @@ est.cols <- which(colnames(pre.input) == "SizeChanged" |
 colCl <- c(rep(NA, ncol(pre.input)))
 colCl[est.cols] <- "character"
 rm(pre.input)
-input <- read.delim(file="preSizes.tab", stringsAsFactors=FALSE, colClasses=colCl)
-# input <- read.delim(file="PreSizes_Constant_withPBDB.tab", stringsAsFactors=FALSE)
-# input <- read.delim(file="EchinoPreSizes_withPBDB.tab", stringsAsFactors=FALSE)
+input <- read.delim(file = "preSizes.tab", stringsAsFactors = FALSE, colClasses = colCl)
+# input <- read.delim(file = "PreSizes_Constant_withPBDB.tab", stringsAsFactors = FALSE)
+# input <- read.delim(file = "EchinoPreSizes_withPBDB.tab", stringsAsFactors = FALSE)
 scales <- c("Species", "Subgenus", "Genus", "Subfamily", "Family", "Superfamily",
   "Suborder", "Order", "Subclass", "Class", "Subphylum", "Phylum", "", NA)
 scales <- factor(scales, levels = scales, ordered = TRUE)
@@ -345,7 +345,7 @@ rels <- find.rel(out, i, photo.cols = photo.cols, est.cols = est.cols,
 nr <- 1:nrow(rels)
 sapply(nr, function(nr) get.strat(out[i,], rels[nr, ]))
 
-rm(list=c("i", "rel"))
+rm(list = c("i", "rel"))
 
 
 
@@ -379,7 +379,7 @@ AbsStratDist.text <- c("AP.", "T.", "DV.", "30 degrees (from horiz.) of AP, or h
   "400% of DV.")
 seq.AbsStratDist <- rep(seq.int(AbsStratDist.text), 2)
 interactive <- TRUE   # If want to watch updates in real time
-if(interactive) par("ask"=TRUE) else par("ask"=FALSE)
+if(interactive) par("ask" = TRUE) else par("ask" = FALSE)
 record.log <- TRUE
 record.file <- "SizeLog.txt"
 if(record.log) cat("Changes made to body sizes on", today, ":\n\n", file = record.file, append = FALSE)
@@ -531,7 +531,7 @@ for (i in 1:nrow(out)) {
   # geologically contemporaneous or with missing some size measures)
   if (missing.strat) {
     # ... if missing AbsStratDist but available via ALL best relatives (that are
-    # within same suborder [end=7] or lower resolution)
+    # within same suborder [end = 7] or lower resolution)
     rels <- find.rel(x = out, i = i, end = 7, photo.cols = photo.cols, 
                      est.cols = est.cols, sim.time = FALSE, all.3 = FALSE)$rel
     rels.with.strats <- 0L
@@ -616,7 +616,7 @@ library(beepr)
 beep(3)
 
 # Note that occasionally a rounding error [caused by minor differences between
-# the better.all.equal(sig.digits=3) amd better.all.equal(sig.digits=2)] occurs
+# the better.all.equal(sig.digits = 3) amd better.all.equal(sig.digits = 2)] occurs
 # that triggers a false positive change. This results in a 'data frame with 0
 # columns and 2 rows' result. You can ignore these results.
 
