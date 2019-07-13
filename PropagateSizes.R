@@ -679,7 +679,9 @@ write.table(out, file = "PostSizes.tab", quote = FALSE, sep = "\t", row.names = 
 
 # Once imported (BEFORE THE LIFE HABITS are propogated, but then again
 # afterwards, too), run the following manual corrections. (Note the RelStrat
-# should not be deleted, but updated as needed, with other stratifications.)
+# should not be deleted, but updated as needed, with appropriate
+# stratifications.) The current version of the FileMakerPro database includes
+# these rules as pre-defined "saved finds."
 
 # For the first run-through (BEFORE propogating life habits), only need to check
 # entries where ECOSCALE OR BODYSIZESCALE = "SPECIES" OR "GENUS". (The
