@@ -152,20 +152,20 @@ colnames(out[AP.cols])          # "APLength", "PhotoAP", "APScale"
 colnames(out[T.cols])           # "TrLength", "PhotoTr", "TrScale"
 colnames(out[DV.cols])          # "DVLength", "PhotoDV", "DVScale"
 str(input)
+
 # TROUBLESHOOT: Make sure the 4 "SizeChanged" and "Est_X" columns are input as
 # characters. If a column is blank, it is classed by default as a logical (which
 # causes errors below). If needed (such as when there are no "check"ed entries,
 # use next lines to force to proper class.)
 
-# input$SizeChanged <-
-  replace(input$SizeChanged, which(is.na(input$SizeChanged)), "")
+# input$SizeChanged <- replace(input$SizeChanged, which(is.na(input$SizeChanged)), "")
 
 head(input)
 tail(input)
 table(input$BodySizeScale)
 
 # Troubleshooting
-if(any(is.na(input$max_ma)) || any(is.na(input$min_ma)))
+if (any(is.na(input$max_ma)) || any(is.na(input$min_ma)))
   stop("Some entries have missing age ranges, which is used in body size propogation 
 algorithm. Leaving ranges empty will mean that missing size measurements will not be propogated for these taxa. Update ages from the Paleobiology Database before proceeding.\n")
 
@@ -192,7 +192,7 @@ if (any(table(input$IDNumber) > 1)) {
 #  all.3 = logical. If TRUE (default), the relatives ONLY contain values for all
 #     three measurements. Recommend setting FALSE when propogating body sizes for
 #     higher taxa (greater than genus level), where it is acceptable that there is
-#     at least one available measurement, with other measurements are estimated
+#     at least one available measurement, with other measurements estimated
 #     using complete relatives, and when propagating AbsStratDistance.
 #  sim.time = logical. If TRUE (default), uses similarity of geological range to
 #     choose among multiple relatives. If no range available, uses all relatives.
@@ -233,7 +233,7 @@ find.rel <- function(x, i, start = 4, end = 12, photo.cols = NULL,
       rels <- poss.rels[part.complete,]
       nr <- nrow(rels)
     }
-    if (nr > 0L) break
+    if (nr > 0L) break # Note this sets 'rels' to be NULL rather than blank matrix
   }
   size.sc <- as.character(scales[e])
   # If multiple matches, pick one with most similar geologic range. If still
@@ -266,11 +266,11 @@ any.missing <- function(x, photo.cols, est.cols) {
   missing <- any(is.na(x[ ,photo.cols])) || any(x[ ,photo.cols] == "") ||
     (any(x[ ,est.cols] == "Estimated"))
   AP <- Trans <- DV <- NULL
-  if(missing & (is.na(x[ ,photo.cols[1]]) | x[ ,photo.cols[1]] == "" | 
+  if (missing & (is.na(x[ ,photo.cols[1]]) | x[ ,photo.cols[1]] == "" | 
                 x[ ,est.cols[1]] == "Estimated")) AP <- "AP"
-  if(missing & (is.na(x[ ,photo.cols[2]]) | x[ ,photo.cols[2]] == "" | 
+  if (missing & (is.na(x[ ,photo.cols[2]]) | x[ ,photo.cols[2]] == "" | 
                 x[ ,est.cols[2]] == "Estimated")) Trans <- "T"
-  if(missing & (is.na(x[ ,photo.cols[3]]) | x[ ,photo.cols[3]] == "" | 
+  if (missing & (is.na(x[ ,photo.cols[3]]) | x[ ,photo.cols[3]] == "" | 
                 x[ ,est.cols[3]] == "Estimated")) DV <- "DV"
   return(list(any = missing, which = c(AP, Trans, DV)))
 }
@@ -383,10 +383,10 @@ AbsStratDist.text <- c("AP.", "T.", "DV.", "30 degrees (from horiz.) of AP, or h
   "400% of DV.")
 seq.AbsStratDist <- rep(seq.int(AbsStratDist.text), 2)
 interactive <- TRUE   # If want to watch updates in real time
-if(interactive) par("ask" = TRUE) else par("ask" = FALSE)
+if (interactive) par("ask" = TRUE) else par("ask" = FALSE)
 record.log <- TRUE
 record.file <- "SizeLog.txt"
-if(record.log) cat("Changes made to body sizes on", today, ":\n\n", file = record.file, append = FALSE)
+if (record.log) cat("Changes made to body sizes on", today, ":\n\n", file = record.file, append = FALSE)
 (start.t <- Sys.time())
 
 for (i in 1:nrow(out)) {
@@ -414,13 +414,13 @@ for (i in 1:nrow(out)) {
   # are missing, proceed to estimating missing measurements:
   if (this.scale <= "Genus" & missing$any) {
     
-    if(number.missing == 3L) stop(paste("Entry", i, "(", out$Genus[i], ")",
+    if (number.missing == 3L) stop(paste("Entry", i, "(", out$Genus[i], ")",
       "is listed as species/subgenus/genus level, but is missing all measurements.\n"))
 
     rel <- find.rel(x = out, i = i, photo.cols = photo.cols, 
                     est.cols = est.cols, all.3 = TRUE)
-    if(nrow(rel$rel) == 0L) next
-
+    if (nrow(rel$rel) == 0L) next
+    
     AP.DV <- rel$rel$APLength / rel$rel$DVLength
     AP.Tr <- rel$rel$APLength / rel$rel$TransverseLength
     DV.Tr <- rel$rel$DVLength / rel$rel$TransverseLength
@@ -505,7 +505,7 @@ for (i in 1:nrow(out)) {
       (this.scale <= "Genus" & number.missing == 3L)) {
     rel <- find.rel(x = out, i = i, photo.cols = photo.cols, est.cols = est.cols, 
                     sim.time = TRUE, all.3 = FALSE)
-    if (nrow(rel$rel) == 0L) next
+    if (is.null(rel$rel)) next
     out$RefGenusSize[i] <- rel$rel$RefGenusSize
     out$RefSpeciesSize[i] <- rel$rel$RefSpeciesSize
     out$BodySizeScale[i] <- rel$size.sc
