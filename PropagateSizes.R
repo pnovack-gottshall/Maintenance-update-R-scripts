@@ -429,7 +429,7 @@ for (i in 1:nrow(out)) {
     # measurements) to estimating missing ones
     if (number.missing == 2L) {
       
-      # If A/P is only available measurement:
+      # If AP is only available measurement:
       if (!"AP" %in% missing$which) {
         out$TransverseScale[i] <- out$DVScale[i] <- out$APScale[i]
         out$Est_T[i] <- out$Est_DV[i] <- "Estimated"
@@ -445,7 +445,7 @@ for (i in 1:nrow(out)) {
         out$PhotoDV[i] <- out$DVScale[i] * out$TransverseLength[i] * DV.Tr
       }
 
-      # If D/V is only available measurement:
+      # If DV is only available measurement:
       if (!"DV" %in% missing$which) {
         out$TransverseScale[i] <- out$APScale[i] <- out$DVScale[i]
         out$Est_T[i] <- out$Est_AP[i] <- "Estimated"
@@ -459,7 +459,7 @@ for (i in 1:nrow(out)) {
     if (number.missing == 1L) {
       est1 <- est2 <- NA
       
-      # If A/P is only missing measurement:
+      # If AP is only missing measurement:
       if ("AP" %in% missing$which) {
         out$APScale[i] <- out$TransverseScale[i]
         out$Est_AP[i] <- "Estimated"
@@ -477,7 +477,7 @@ for (i in 1:nrow(out)) {
         out$PhotoTransverse[i] <- mean(c(est1, est2))
       }
 
-      # If D/V is only missing measurement:
+      # If DV is only missing measurement:
       if ("DV" %in% missing$which) {
         out$DVScale[i] <- out$TransverseScale[i]
         out$Est_DV[i] <- "Estimated"
@@ -675,7 +675,7 @@ write.table(out, file = "PostSizes.tab", quote = FALSE, sep = "\t", row.names = 
 ## need to add an "exception" field when a coding defies the standard coding
 ## rules (for example, when crinoid sizes lack column lengths but a AbsStrat
 ## coding is still possible, or when the functional gill size in vermiculariids
-## is best approximated by transverse width instead of A/P length).
+## is best approximated by transverse width instead of AP length).
 
 # Once imported (BEFORE THE LIFE HABITS are propogated, but then again
 # afterwards, too), run the following manual corrections. (Note the RelStrat
@@ -760,7 +760,7 @@ write.table(out, file = "PostSizes.tab", quote = FALSE, sep = "\t", row.names = 
 
 # (6) Confirm that RelStrat corresponds to appropriate body axis. Best to sort
 # by Phylum > Class (and for some groups, like brachiopods, subclass/order) >
-# D/V / A/P because different taxa have different living orientations. If list
+# DV / AP because different taxa have different living orientations. If list
 # is too long to run through, can limit to Sizechanged = "checked".
 # (Alternatively, can find all taxa with all major axes in the same size range
 # [e.g., 0.1-1], which should all have the same RelStrat.) Watch out for
@@ -769,15 +769,15 @@ write.table(out, file = "PostSizes.tab", quote = FALSE, sep = "\t", row.names = 
 # part may not correspond to the intact animal. (2) Animals close to a
 # size-boundary that are diagonally oriented (such as pedunculate brachiopods,
 # and some bivalves and rugose corals). (3) Distinctive subtaxa with distinct
-# orientations (such as agnostids scaled to 2/3 A/P and terrestrial birds and
-# pterosaurs scaled to diagonally oriented A/P and flatfishes [Family Soleidae]
+# orientations (such as agnostids scaled to 2/3 AP and terrestrial birds and
+# pterosaurs scaled to diagonally oriented AP and flatfishes [Family Soleidae]
 # scaled to transverse.). (4) Rhynchonellatan brachiopods and bivalves and other
 # animals whose orientation is sometimes based on a diagonal orientation based
-# on A/P length. (5) Corals and encrusting bryozoans where RelStrat is based on
-# A/P. (6) Some bactritid and turrilitoid ancyloceratine cephalopods and sessile
+# on AP length. (5) Corals and encrusting bryozoans where RelStrat is based on
+# AP. (6) Some bactritid and turrilitoid ancyloceratine cephalopods and sessile
 # filter-feeding snails (Superfamilies Euomphaloidea and Macluritoidea and
 # Cerithioidea [only families Siliquariidae and Turritellidae > only subfamily
-# Vermiculariinae]) are vertically oriented, based on A/P length. (7) Some
+# Vermiculariinae]) are vertically oriented, based on AP length. (7) Some
 # colonial animals (sponges, stromatoporoids, corals, and to a lesser extent
 # bryozoans) are given larger AbsStrat & RelStrat values than the measured
 # specimens provide, on the basis that the specimen is only one part of a
@@ -796,7 +796,7 @@ write.table(out, file = "PostSizes.tab", quote = FALSE, sep = "\t", row.names = 
 # floor. Check LifeHabitNotes.docx for taxon-specific conventions.
 
 # (8) Confirm RelFoodStrat for filter feeders, sorting by phyla and then either
-# AbsStratDist or A/P length. For ambient filter feeders (PORIFERA and
+# AbsStratDist or AP length. For ambient filter feeders (PORIFERA and
 # suspension-feeding ECHINODERMATA and CNIDARIA and CIRRIPEDIA) where flow rate
 # depends on distance from sea floor, confirm those ~15-200 mm tall are 0.5;
 # refer to LifeHabitNotes.docs for additional categorizations. But note that for
@@ -806,15 +806,15 @@ write.table(out, file = "PostSizes.tab", quote = FALSE, sep = "\t", row.names = 
 # PTEROBRANCHS, and CEPHALOCHORDATA should be 0.25. Filter-feeding
 # MICROCRUSTACEANS (amphipods, mysids, etc.) and burrowing filter-feeding SHRIMP
 # generally should be 0.25. ASCIDIANS should generally be 0.5. Filter-feeding
-# fishes and whales should generally be 1.0. BRACHIOPODS should be half the A/P
+# fishes and whales should generally be 1.0. BRACHIOPODS should be half the AP
 # length. Filter-feeding mollusks (BIVALVES, ROSTROCONCHS, and GASTROPODS)
-# should be twice the A/P length. POLYCHAETES, TENTACULITIDS, and other tubular
+# should be twice the AP length. POLYCHAETES, TENTACULITIDS, and other tubular
 # taxa (Sorbeoconch snails in Cerithioidea [especially families Siliquariidae
 # and Turritellidae, although propagations might include other cerithioids])
 # should (generally) be twice the transverse length, instead. Tentaculate
 # web-feeding (filter-feeding) ammonoids (such as those in Superfamily
 # Turrilitoidea and Order Ceratitida) have many exceptions but are typically
-# approximated by the A/P conch length. (Exceptions typically have the same
+# approximated by the AP conch length. (Exceptions typically have the same
 # scale for both life habit and size.)
 
 # (9) Confirm that wholly infaunal filter-feeders (AboveAbsStrat = 0, WithinAbs
@@ -852,11 +852,57 @@ write.table(out, file = "PostSizes.tab", quote = FALSE, sep = "\t", row.names = 
 # acceptable. If not sure which to delete, consult the alternative propagation
 # method data set for a reference.
 
-# (14) Need to write out rules for hunters, scavengers, and mass feeders,
-# especially regarding food tier (half D/V for predators to account for smaller
-# size of prey?) and sensory distances when scouting. (Speed can also be a proxy
-# for this.) This might be best to sort by Phylum > Class > A/P / D/V because
-# different taxa often have distinct foraging strategies.
+# (14) Confirm AbsFoodStrat and RelFoodStrat for predators (and location of
+# food). Search for Raptor=1, Carnivore=1, BulkFeeder=1 (rest 0s) and sort by
+# Fluid > Phylum > Class > AP / DV. Be aware the same higher taxon can have
+# widely varying codings among its genera, depending on many subtle factors,
+# such as prey specializations, body size, foraging habits, and sensory
+# differences (e.g., parasites, durophagous predators, predators of infaunal
+# prey, etc.). See LifeHabitNotes.docx for details. Best to run each check below
+# separately for each higher taxon. Common checks:  (1) Ambush-hunting
+# (typically infaunal) annelids, priapulids, and other vermiform predators:
+# RelFoodStrat ~ length of extrovert/proboscis (typically longer than transverse
+# diameter, and often a substantial portion of A/P). (2) Predatory benthic
+# trilobites: AbsFoodStrat ~ 1/2 DV height and RelFoodStrat ~ 1 X AP. Common
+# exceptions include highly visual taxa (coded with 2 X AP) or ambush-hunting
+# trilobites with eye stalks (typically coding 1 X AP) (e.g., several asaphids,
+# phacopids [especially phacopines], odontopleurids, and homalonotid and and
+# encrinurid phacopids) and pelagic trilobites (e.g., cyclopygids, coding 2 X
+# AP). Trilobites generally coded as feeding on "epifaunal" prey (unless
+# evidence of Rusophycus, which gets coded as eating prey both above and below
+# the sediment-water interface). (3) Run separate check on scan-and-trap
+# "raptorial" agnostids (Search for Order = Agnostida without any life habit
+# codings and sort by DV): RelFoodStrat ~ 1 X DV. (4) Use the following
+# conventions for fishes, non-shelled cephalopods, and other swimming predators:
+# (a) Nektonic (and planktonic) forms feed in the water column (AbsFoodStrat
+# typically = 1, RelFood = 1/1 for being above and "within"). (b) Benthopelagic
+# and demersal forms swim in water column and often (but not always) have
+# benthic prey (RelFood = 0/1 for being only "within/below" their swimming
+# position and AbsFoodStrat ~ 1/2 DV height if epibenthic or shallow infaunal
+# prey, but many exceptions). (c) Nektobenthic forms rest on (or within) the
+# seafloor and also typically have benthic prey (with AbsFoodStrat ~ 1/2 DV
+# height), but RelFood will depend on whether the prey is epifaunal or infaunal.
+# In all cases, RelFoodStrat estimated by distance the predator (or their organ,
+# such as an introvert, proboscis, or tentacles) moves to snare prey. If
+# swimming or moving to attack, RelFoodStrat scales with AP length (<1X to 1X
+# for crawlers, 2X for swimmers, 4X for flyers), but with many exceptions. Can
+# usually distinguish crawlers from swimmers by sorting by fluidic substrate.)
+# (5) For cnidarians and sedentary carnivores, RelFoodStrat ~ tentacle lengt (=
+# corallite diameter) and AbsFoodStrat = AbsStrat. (6) Carnivorous crinoids
+# (some taxocrinids and sagenocrinids) and echinoids (e.g., Histocidaris) have
+# RelFoodStrat = 0.25 and AbsFoodStrat = AbsStrat. (7) RelFoodStrat rules for
+# crawling predators: (a) Asteroids = 0.25. (b) Decapods ~ 1 X AP or DV scale,
+# depending on locomotive type (and as long as don't swim when foraging). (c)
+# Snails = 0 slower (often mass-feeding) forms and 0.25 for fastest ones (often
+# predators). (8) For shelled cephalopods (ammonoids, nautiloids, etc.,
+# including order Spirulida), use 1 X T as an estimate of tentacle length. For
+# (swimming) non-shelled coleoids (except shelled spirulids), use 2 X AP.
+
+# Need to write out rules for scavengers and mass feeders, especially regarding
+# food tier (half DV for predators to account for smaller size of prey?) and
+# sensory distances when scouting. (Speed can also be a proxy for this.) This
+# might be best to sort by Phylum > Class > AP / DV because different taxa often
+# have distinct foraging strategies.
 
 # (15) Once these checks are run, re-run them and clear the SizeChanged = Check
 # tags.
