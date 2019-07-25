@@ -491,8 +491,10 @@ write.table(post, file = "PreSizes_Constant_withPBDB.tab", quote = FALSE,
 #     Pseudholasteridae are in superfamily and suborder UNCERTAIN as stem
 #     holasteroids.
 
-
-
+#  y. Following Parry, et al. (2019) that demonstrates machaeridians are
+#     polychaetes in order Phyllodocida and suborder Aphroditiformia, downgrade
+#     machaeridian orders Lepidocoleomorpha, Hercolepadida, and Turrilepadomorpha
+#     as new superfamilies.
 
 # (6) Run code as usual in "PropogateSizes.R" or "PropogateLifeHabits.R", but
 # resaving as postX_withPBDB" file name. Make sure to add new IDNumbers to the
