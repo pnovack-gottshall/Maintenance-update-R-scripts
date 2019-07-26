@@ -847,62 +847,105 @@ write.table(out, file = "PostSizes.tab", quote = FALSE, sep = "\t", row.names = 
 # FilterDensity and propogate its dependent FilterFeeder = 1 and check the
 # Estimated box.)
 
-# (13) Go through each character and confirm no "all-zeros" (i.e., if all
+# (13) Confirm AbsFoodStrat and RelFoodStrat for predators. Search for Raptor =
+# 1, Carnivore = 1, BulkFeeder = 1 (rest 0s) and sort by Fluid > Phylum > Class
+# > AP / DV. Be aware the same higher taxon can have widely varying codings
+# among its genera, depending on many subtle factors, such as prey
+# specializations, body size, foraging habits, and sensory differences (e.g.,
+# parasites, durophagous predators, predators of infaunal prey, etc.). See
+# LifeHabitNotes.docx for details. Best to run each check below separately for
+# each higher taxon. Common checks:  (1) Ambush-hunting (typically infaunal)
+# annelids, priapulids, and other vermiform predators: RelFoodStrat ~ length of
+# extrovert/proboscis (typically longer than transverse diameter, and often a
+# substantial portion of A/P). (2) Predatory benthic trilobites: AbsFoodStrat ~
+# 1/2 DV height and RelFoodStrat ~ 1 X AP. Common exceptions include highly
+# visual taxa (coded with 2 X AP) or ambush-hunting trilobites with eye stalks
+# (typically coding 1 X AP) (e.g., several asaphids, phacopids [especially
+# phacopines], odontopleurids, and homalonotid and and encrinurid phacopids) and
+# pelagic trilobites (e.g., cyclopygids, coding 2 X AP). Trilobites generally
+# coded as feeding on "epifaunal" prey (unless evidence of Rusophycus, which
+# gets coded as eating prey both above and below the sediment-water interface).
+# (3) Run separate check on scan-and-trap "raptorial" agnostids (Search for
+# Order = Agnostida without any life habit codings and sort by DV): RelFoodStrat
+# ~ 1 X DV. (4) Use the following conventions for fishes, non-shelled
+# cephalopods, and other swimming predators: (a) Nektonic (and planktonic) forms
+# feed in the water column (AbsFoodStrat typically = 1, RelFood = 1/1 for being
+# above and "within"). (b) Benthopelagic and demersal forms swim in water column
+# and often (but not always) have benthic prey (RelFood = 0/1 for being only
+# "within/below" their swimming position and AbsFoodStrat ~ 1/2 DV height if
+# epibenthic or shallow infaunal prey, but many exceptions). (c) Nektobenthic
+# forms rest on (or within) the seafloor and also typically have benthic prey
+# (with AbsFoodStrat ~ 1/2 DV height), but RelFood will depend on whether the
+# prey is epifaunal or infaunal. In all cases, RelFoodStrat estimated by
+# distance the predator (or their organ, such as an introvert, proboscis, or
+# tentacles) moves to ensnare prey. If swimming or moving to attack, RelFoodStrat
+# scales with AP length (<1X to 1X for crawlers, 2X for swimmers, 4X for
+# flyers), but with many exceptions. Can usually distinguish crawlers from
+# swimmers by sorting by fluidic substrate.) (5) For cnidarians and sedentary
+# carnivores, RelFoodStrat ~ tentacle lengt (= corallite diameter) and
+# AbsFoodStrat = AbsStrat. (6) Carnivorous crinoids (some taxocrinids and
+# sagenocrinids) and echinoids (e.g., Histocidaris) have RelFoodStrat = 0.25 and
+# AbsFoodStrat = AbsStrat. (7) RelFoodStrat rules for crawling predators: (a)
+# Asteroids = 0.25. (b) Decapods ~ 1 X AP or DV scale, depending on locomotive
+# type (and as long as don't swim when foraging). (c) Snails = 0 slower (often
+# mass-feeding) forms and 0.25 for fastest ones (often predators). (8) For
+# shelled cephalopods (ammonoids, nautiloids, etc., including order Spirulida),
+# use 1 X T as an estimate of tentacle length. For (swimming) non-shelled
+# coleoids (except shelled spirulids), use 2 X AP.
+
+# (14) Confirm AbsFoodStrat and RelFoodStrat for mass feeders (both detritus
+# feeders, algae scrapers, and some scavengers). Search for Mass = 1 and rest
+# 0s, and sort by FoodAbovePrimary > Phylum > Class > DV/T to distinguish
+# epifaunal from infaunal foods. (1) Surficial mass (typically algal) feeders:
+# Animals scraping or eating algal films / detritus on substrate (e.g., snails,
+# monoplacophorans, chitons, a few infaunal tellinid bivalves, jawless and early
+# fishes, and some some polychaetes, echinoids, asteroids, and ophiuroids),
+# typically are coded as AbsFoodStrat = 0. (Note macroalgae feeders are excluded
+# here because they are bulk feeders and often raptorial.) RelFoodStrat depends
+# on where the feeding organ is located: If the mouth is emplaced against
+# sediment in resting (non-feeding) position, RelFoodStrat = 0. If the head is
+# raised substantially and a proboscis is used for feeding (or the animal
+# swims), then the distance will correspond to the distance from the organism to
+# the food. Similar logic is used if the animal is infaunal (tellinids,
+# polychaetes) and feed using extensible feeding organs like palps or siphons or
+# introverts. RelFoodAbove/Within coding depends on whether the organism
+# considers the food above or below their level. For most animals, the surficial
+# film with be "above" their immediate microhabitat, but animals with long
+# feeding organs or demersal animals may be coded as below their immediate
+# microhabitat. (2) "Deposit" and detritus feeders eating within sediment:
+# AbsFoodStrat based on location of food, typically corresponding to burial
+# depth. For surficial "deposit-feeding" trilobites, use 1/2 X transverse width
+# (or D/V depth, if smaller value) as proxy for depth of sediment churned. Code
+# RelFoodStrat = 0 unless there is a cephalic shield present (i.e.,
+# trinucleoideans, bathyurids, harpines, and several bathycheilid,
+# brachymetopid, and proetoidean genera), in which case RelFoodStrat = 1/2 X D/V
+# (typically = 0.25). For consistency, using the same conventions for
+# non-trilobites (e.g., mud-grubbing early fishes). Non-selective
+# sediment-feeders (including those using mucus to catch seston) will have
+# RelFoodStrat = 0 unless use an organ to collect and ingest sediment, in which
+# case RelFoodStrat = the length of this organ. In the case of nuculid and
+# nuculanid (only) protobranchs, RelFoodStrat = 0.25 (technically, 25% X D/V).
+
+# (15) Confirm RelFoodStrat and AbsFoodStrat are correct for absorptive feeders,
+# incorporeal feeders, and autotrophs, running each separately (the state = 1,
+# rest = 0). Sort by RelFoodStrat > AbsStrat > RelStrat > Phylum > Class.
+# Ambient and incorporeal feeders should have RelFoodStrat = 0 and AbsStrat =
+# RelStrat, and no animals should be listed as an autotroph (but animals can be
+# ambient- and/or incorporeal-feeders).
+
+# (16) Confirm RelFoodStrat and AbsFoodStrat are correct for attachment feeders
+# and solution feeders, running each separately (the state = 1, rest = 0). For
+# attachment feeders, RelFoodStrat will depend on depth of penetration. Best
+# strategy is to review propagated values and use logic from relatives to fill
+# in blank states.
+
+# (17) Go through each character and confirm no "all-zeros" (i.e., if all
 # dietary states are 0, etc.), removing some estimates as needed. All 1s are
 # acceptable. If not sure which to delete, consult the alternative propagation
-# method data set for a reference.
+# method data set for a reference. (Do this check BEFORE subsequent ones because
+# it can lead to new entries with a particular feeding mode.)
 
-# (14) Confirm AbsFoodStrat and RelFoodStrat for predators (and location of
-# food). Search for Raptor=1, Carnivore=1, BulkFeeder=1 (rest 0s) and sort by
-# Fluid > Phylum > Class > AP / DV. Be aware the same higher taxon can have
-# widely varying codings among its genera, depending on many subtle factors,
-# such as prey specializations, body size, foraging habits, and sensory
-# differences (e.g., parasites, durophagous predators, predators of infaunal
-# prey, etc.). See LifeHabitNotes.docx for details. Best to run each check below
-# separately for each higher taxon. Common checks:  (1) Ambush-hunting
-# (typically infaunal) annelids, priapulids, and other vermiform predators:
-# RelFoodStrat ~ length of extrovert/proboscis (typically longer than transverse
-# diameter, and often a substantial portion of A/P). (2) Predatory benthic
-# trilobites: AbsFoodStrat ~ 1/2 DV height and RelFoodStrat ~ 1 X AP. Common
-# exceptions include highly visual taxa (coded with 2 X AP) or ambush-hunting
-# trilobites with eye stalks (typically coding 1 X AP) (e.g., several asaphids,
-# phacopids [especially phacopines], odontopleurids, and homalonotid and and
-# encrinurid phacopids) and pelagic trilobites (e.g., cyclopygids, coding 2 X
-# AP). Trilobites generally coded as feeding on "epifaunal" prey (unless
-# evidence of Rusophycus, which gets coded as eating prey both above and below
-# the sediment-water interface). (3) Run separate check on scan-and-trap
-# "raptorial" agnostids (Search for Order = Agnostida without any life habit
-# codings and sort by DV): RelFoodStrat ~ 1 X DV. (4) Use the following
-# conventions for fishes, non-shelled cephalopods, and other swimming predators:
-# (a) Nektonic (and planktonic) forms feed in the water column (AbsFoodStrat
-# typically = 1, RelFood = 1/1 for being above and "within"). (b) Benthopelagic
-# and demersal forms swim in water column and often (but not always) have
-# benthic prey (RelFood = 0/1 for being only "within/below" their swimming
-# position and AbsFoodStrat ~ 1/2 DV height if epibenthic or shallow infaunal
-# prey, but many exceptions). (c) Nektobenthic forms rest on (or within) the
-# seafloor and also typically have benthic prey (with AbsFoodStrat ~ 1/2 DV
-# height), but RelFood will depend on whether the prey is epifaunal or infaunal.
-# In all cases, RelFoodStrat estimated by distance the predator (or their organ,
-# such as an introvert, proboscis, or tentacles) moves to snare prey. If
-# swimming or moving to attack, RelFoodStrat scales with AP length (<1X to 1X
-# for crawlers, 2X for swimmers, 4X for flyers), but with many exceptions. Can
-# usually distinguish crawlers from swimmers by sorting by fluidic substrate.)
-# (5) For cnidarians and sedentary carnivores, RelFoodStrat ~ tentacle lengt (=
-# corallite diameter) and AbsFoodStrat = AbsStrat. (6) Carnivorous crinoids
-# (some taxocrinids and sagenocrinids) and echinoids (e.g., Histocidaris) have
-# RelFoodStrat = 0.25 and AbsFoodStrat = AbsStrat. (7) RelFoodStrat rules for
-# crawling predators: (a) Asteroids = 0.25. (b) Decapods ~ 1 X AP or DV scale,
-# depending on locomotive type (and as long as don't swim when foraging). (c)
-# Snails = 0 slower (often mass-feeding) forms and 0.25 for fastest ones (often
-# predators). (8) For shelled cephalopods (ammonoids, nautiloids, etc.,
-# including order Spirulida), use 1 X T as an estimate of tentacle length. For
-# (swimming) non-shelled coleoids (except shelled spirulids), use 2 X AP.
-
-# Need to write out rules for scavengers and mass feeders, especially regarding
-# food tier (half DV for predators to account for smaller size of prey?) and
-# sensory distances when scouting. (Speed can also be a proxy for this.) This
-# might be best to sort by Phylum > Class > AP / DV because different taxa often
-# have distinct foraging strategies.
-
-# (15) Once these checks are run, re-run them and clear the SizeChanged = Check
-# tags.
+# (18) Once these checks are run, re-run them (except no. 6 that checks every
+# one) and clear the SizeChanged = Check tags. Then do a final search for any
+# that are still checked, focusing on the size-related characters, to confirm
+# sensibility, clearing them at end.
