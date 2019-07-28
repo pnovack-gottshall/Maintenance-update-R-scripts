@@ -41,12 +41,12 @@
 # RelFoodStrat) are only over-written when the states are missing or when
 # EcoScale > Species/Genus. If any of these four states are changed AND the
 # BodySizeScale was Species/Genus (implying they were originally checked after
-# the Propogatesizes.R algorithm), add a "check" tag to force a manual check. If
-# any life habit codings are changed, add (or override) the record-keeping text
-# to History_Ecology field. This documents a history of life-habit changes that
-# can be restored using earlier back-up database copies. If there is no date in
-# the 'DateEntered_Ecology' date field (i.e., this is the first update), just
-# update the date (without an update to the history text). If secondarily
+# the PropogateSizes.R algorithm), add a "check" tag to force a manual re-check.
+# If any life habit codings are changed, add (or override) the record-keeping
+# text to History_Ecology field. This documents a history of life-habit changes
+# that can be restored using earlier back-up database copies. If there is no
+# date in the 'DateEntered_Ecology' date field (i.e., this is the first update),
+# just update the date (without an update to the history text). If secondarily
 # filled-in states are changed (that are different than the chosen relative),
 # record those changes to the History field.
 
@@ -62,10 +62,10 @@
 
 ## IMPORT DATA -------------------------------------------------------------
 
-# Make sure the stratifications are updated from the size propogation BEFORE
-# running this algorithm! (The algorithm reverts to original stratifications
-# when size was coded as genus or species level, but still adds a size "Check"
-# to trigger a second look-over afterwards.)
+# Make sure the stratifications are updated from the size propogation
+# (PropagateSizes.R) BEFORE running this algorithm! (The algorithm reverts to
+# original stratifications when size was coded as genus or species level, but
+# still adds a size "Check" to trigger a second look-over afterwards.)
 
 # (1) Before exporting, sort the entries so that EcoScale=Species is first,
 # followed by Subgenus, Genus, etc. That way those with best scales are checked
@@ -413,7 +413,7 @@ size.col <- which(colnames(input[ ,eco.col]) == "AbsFoodStratification" |
 # Confirm assignments
 if (length(eco.col) != 39)
   stop("double-check the life habit column assignments")
-colnames(input)[eco.col]              # AboveImmediate  < ----- >  WithinPrimary
+colnames(input)[eco.col]              # AboveImmediate   < ----- >  WithinPrimary
 colnames(input)[est.col]              # Est_AboveImmediate  < -- >  Est_WithinPrimary
 if (length(eco.col) != length(est.col))
   stop("the raw and Est_X assignments have different lengths")
@@ -478,7 +478,7 @@ for(i in 1:nrow(out)) {
     # only if non-size states changed)
     cs <- consensus(rels = rels$rels, cols = eco.col, method = method, 
                     na.rm = TRUE)
-    # Following lines works but deprecated for now 
+    # Following lines work but deprecated for now 
     # exemplar <- best.ref(rels = rels$rels, cols = eco.col, scale = rels$eco.sc)
     # If old reference taxon is no longer a good relative, pick different
     # exemplar (if possible)
@@ -660,7 +660,7 @@ write.table(out, file="PostLH_withPBDB_constant.tab", quote=FALSE, sep="\t", row
 # (4) Refer to PropogateSizes.R for common troubleshooting corrections to run
 # through in case of manual overrides.
 
-# On the post-life-habit propogation, focus on the SizeChanged=Check tagged
+# On the post-life-habit propogation, focus on the SizeChanged = Check tagged
 # entries, but also check ALL entries using the following criteria. (Can omit
 # those coded at EcoScale=Species/Genus.) MAKE SURE THAT IF ADD/CHANGE A STATE
 # FOR A EcoScale=SPECIES/GENUS, to tag as "Estimated" and to update the History
