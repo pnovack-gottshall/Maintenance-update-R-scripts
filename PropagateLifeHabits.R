@@ -612,8 +612,8 @@ beep(3)
 
 # Note that if the only change is "SizeChanged", that means the size codings
 # (AbsStrat, RelStrat, etc.) were reverted from the consensus state "back" to
-# the state input into the database based on PropogateSizes.R updates for
-# entries with size values at species/genus level.
+# the input state for size values at species/genus level (which was pre-checked
+# after running PropogateSizes.R).
 
 warnings()
 # Warnings about "no suitable relatives" typically means the EcoScale in
