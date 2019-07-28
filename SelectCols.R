@@ -14,8 +14,8 @@
 # IDIOSYNCRATICALLY CHANGES NAs TO 0s AND 1s!! (MUST be tab-delimited, as
 # several text fields contain commas!!!). Save a duplicate as an Excel Workbook
 # (AllColsHeadings.xlsx) to automatically obtain column headings. (Need to
-# create this colnames file EVERY TIME in case the order of columns has
-# changed.)
+# create this colnames file EVERY TIME and for EVERY FILE in case the order of
+# columns has changed or is different between files.)
 
 # (2) Open file in MSWord (make sure smart quotes are off: File > Options >
 # Proofing > Autocorrect Options > Autoformat As You Type > uncheck Smart
