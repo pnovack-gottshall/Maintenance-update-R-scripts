@@ -67,7 +67,7 @@
 # original stratifications when size was coded as genus or species level, but
 # still adds a size "Check" to trigger a second look-over afterwards.)
 
-# (1) Before exporting, sort the entries so that EcoScale=Species is first,
+# (1) Before exporting, sort the entries so that EcoScale = Species is first,
 # followed by Subgenus, Genus, etc. That way those with best scales are checked
 # for completeness first.
 
@@ -323,14 +323,14 @@ combined.any.missing(missings, estimateds)
 rels <- r$rels
 (cs.c <- consensus(rels = rels, cols = cols, method = "constant"))
 (cs.m <- consensus(rels = rels, cols = cols, method = "mode"))
-best <- best.ref(rels=rels, cols=cols, scale=r$eco.sc)
+best <- best.ref(rels = rels, cols = cols, scale = r$eco.sc)
 input[best, ] # Notice the proper type taxon chosen that is in same higher taxon
 rbind(out[i, cols], cs.c, cs.m, input[best, cols])
 r$eco.sc
 
 # Compare proxy methods:
-proxy1 <- consensus(rels, cols=cols, method="mode")
-proxy2 <- consensus(rels, cols=cols, method="constant")
+proxy1 <- consensus(rels, cols = cols, method = "mode")
+proxy2 <- consensus(rels, cols = cols, method = "constant")
 rbind(proxy1, proxy2)
 
 rel.1 <- find.rels(input, i, min.rels = 1)
@@ -354,7 +354,7 @@ rm(list = c("i", "r", "cols", "est.cols", "missings", "estimateds", "cs.c",
 
 # Go through each record and life-habit state one by one, propogating codings as
 # relevant.
-index <- seq(100, nrow(input), by=100) # For keeping track
+index <- seq(100, nrow(input), by = 100) # For keeping track
 today <- format(Sys.Date(), "%m/%d/%Y")
 
 # Confirm correct columns for life habit codings (match manually):
@@ -642,10 +642,10 @@ if (any(table(input$IDNumber) > 1)) {
 }
 
 ## EXPORT DATA -------------------------------------------------------------
-# write.table(out, file="PostLH_constant.tab", quote=FALSE, sep="\t", row.names=FALSE)
-# write.table(out, file="PostLH_mode.tab", quote=FALSE, sep="\t", row.names=FALSE)
-# write.table(out, file="PostLH_withPBDB_mode.tab", quote=FALSE, sep="\t", row.names=FALSE)
-write.table(out, file="PostLH_withPBDB_constant.tab", quote=FALSE, sep="\t", row.names=FALSE)
+# write.table(out, file = "PostLH_constant.tab", quote = FALSE, sep = "\t", row.names = FALSE)
+# write.table(out, file = "PostLH_mode.tab", quote = FALSE, sep = "\t", row.names = FALSE)
+# write.table(out, file = "PostLH_withPBDB_mode.tab", quote = FALSE, sep = "\t", row.names = FALSE)
+write.table(out, file = "PostLH_withPBDB_constant.tab", quote = FALSE, sep = "\t", row.names = FALSE)
 
 # (1) Open in Excel to confirm looks acceptable. Replace (matching entire cell
 # contents) "NA"s in life habit data.
