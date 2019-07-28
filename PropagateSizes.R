@@ -233,7 +233,9 @@ find.rel <- function(x, i, start = 4, end = 12, photo.cols = NULL,
       rels <- poss.rels[part.complete,]
       nr <- nrow(rels)
     }
-    if (nr > 0L) break # Note this sets 'rels' to be NULL rather than blank matrix
+    # Next line sets 'rels' to be NULL rather than blank matrix (which is a
+    # better behavior for below)
+    if (nr > 0L) break
   }
   size.sc <- as.character(scales[e])
   # If multiple matches, pick one with most similar geologic range. If still
