@@ -132,9 +132,9 @@ if (any(table(input$IDNumber) > 1)) {
 ## GENERA, SUBGENERA, AND SPECIES WHEN POSSIBLE)
 # x = data frame of all data
 # i = index (row number for taxon entry being considered)
-# start = taxonomic level to start (default = subfamily, with 1=species and
-#   14=NA). Note should never be '1' or else 'relatives' will include unrelated
-#   taxa sharing the same species epithet.
+# start = taxonomic level to start (default = subfamily, with 1 = species and 
+#   14 = NA). Note should never be '1' or else 'relatives' will include 
+#   unrelated taxa sharing the same species epithet
 # end = taxonomic level to end (default = NA, running higher up through all
 #    levels, including unknowns)
 # min.rels = minimum number of relatives needed in output
@@ -150,6 +150,7 @@ find.rels <- function(x, i, min.rels = 1, start = 4, end = 12, ref.g.col = 15,
   scales <- factor(scales, levels = scales, ordered = TRUE)
   others <- x[-i, ] # Entry cannot be its own relative
   low.res <- NA
+  rels <- array(NA, dim = 0)
   for (e in start:end) {
     # Identify correct column for taxonomic scale being considered
     sc.col <- which(colnames(others) == scales[e])
@@ -314,7 +315,7 @@ better.all.equal <- function(a, b) {
 ## Examples --------------------------------------------------------------------
 cols <- 21:59 # LH cols
 est.cols <- 60:98 # Est_X cols
-i <- which(out$Genus == "Murravia") # Brachiopod Murravia
+i <- which(out$Genus == "Stylophyllum")[1] # Coral Stylophyllum, brachiopods Dallithyris and Murravia
 out[i, cols]
 (missings <- any.missing(out[i, ], cols))
 (estimateds <- any.est(out[i,], est.cols))
@@ -454,44 +455,33 @@ for(i in 1:nrow(out)) {
 
   # Propogate (and update, if needed) life habit codings if higher taxon
   if (this.scale > "Genus") {
+    
     rels <- find.rels(x = out, i = i, eco.col = eco.col, start = 4, 
                       end = min(12, which(scales == this.scale)))
-    # WITH NEW CODING PHILOSOPHY, THE FOLLOWING MAY NO LONGER BE NEEDED:
-    # If entry is sole record for higher taxon and has at least 33% states
-    # coded, include as a reasonable life habit. (In other words, it is
-    # essentially coded at genus/species scale already.)
-    if (this.scale < "" & nrow(rels$rels) == 0L &
-        length(combined.any.missing(any.missing(out[i, ], eco.col),
-                any.est(out[i, ], est.col))$which) < 0.33 * length(eco.col)) {
-      rels$rels <- out[i,]
-    }
+
+    # Before rejecting for having no relatives, consider whether the
+    # 'EcologyScale' was incorrect (i.e., perhaps the higher taxonomic
+    # assignments have changed) and there actually are other relatives (coded at
+    # species, subgenus, and genus-scale) available to use
+    if (nrow(rels$rels) < 1L)
+      rels <- find.rels(x = out, i = i, eco.col = eco.col, start = 4, end = 12)
     
-    if (nrow(rels$rels) < 1L)
+    # But reject (with a warning) if there truly are no available relatives
+    nr <- nrow(rels$rels)
+    if (nr < 1L)
       warning(paste("no suitable relatives exist for taxon", input$Genus[i], "\n"))
-    if (nrow(rels$rels) < 1L)
+    if (nr < 1L)
       next
 
-    # WITH NEW CODING PHILOSOPHY, SOME OF THE FOLLOWING (LIKE REFERENCING A
-    # 'BEST' EXEMPLAR RELATIVE) MAY NO LONGER BE NEEDED:
-    
-    # Propogate codings, identify exemplar relative, and update metadata (but
-    # only if non-size states changed)
+    # Propogate codings and update metadata (but only if non-size states
+    # changed)
     cs <- consensus(rels = rels$rels, cols = eco.col, method = method, 
                     na.rm = TRUE)
-    # Following lines work but deprecated for now 
-    # exemplar <- best.ref(rels = rels$rels, cols = eco.col, scale = rels$eco.sc)
-    # If old reference taxon is no longer a good relative, pick different
-    # exemplar (if possible)
-    # if (!out$RefGenusEco[i] %in% rels$rels$Genus & nrow(rels$rels) > 1L) {
-    #  wh.row <- which(rels$rels$Genus == out$Genus[i])
-    #  exemplar <- best.ref(rels = rels$rels[-2, ], cols = eco.col, 
-    #                       scale = rels$eco.sc)
-    # }
 
     # When proxies are consensus across multiple higher taxa, use the higher
-    # taxon as the reference taxon (or the sole related species is only single
-    # reference relative)
-    if (nrow(rels$rels) > 1L){
+    # taxon as the reference taxon (or the sole related species if there is only
+    # one reference relative)
+    if (nr > 1L){
       out$RefGenusEco[i] <- rels$rels[1, which(colnames(rels$rels) == rels$eco.sc)]
       out$RefSpeciesEco[i] <- "indet."
     } else {
@@ -617,6 +607,8 @@ for(i in 1:nrow(out)) {
   
 }
 (Sys.time() - start.t)
+library(beepr)
+beep(3)
 
 # Note that if the only change is "SizeChanged", that means the size codings
 # (AbsStrat, RelStrat, etc.) were reverted from the consensus state "back" to
