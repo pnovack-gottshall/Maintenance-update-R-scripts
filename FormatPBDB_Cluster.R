@@ -241,7 +241,7 @@ write.csv(marine.taxa, file = "PBDBformatted_NoTerr.csv", row.names = FALSE)
 
 # (2) Open here and run following code to remove duplicated genus entries.
 
-rm(list=ls())
+rm(list = ls())
 setwd("C:/Users/pnovack-gottshall/Desktop/Databases/Maintenance & update R scripts")
 # pre <- read.delim(file = "PreSizes_Constant_withPBDB.tab", stringsAsFactors = FALSE)
 head(pre)
@@ -346,7 +346,7 @@ write.table(post, file = "PreSizes_Constant_withPBDB.tab", quote = FALSE,
 #  g. For opisthobranch and pulmonate gastropods, use a modified version of 
 #     Bouchet and Rocroi (2005), that is also consistent with how WoRMS treats 
 #     their clade names. Treat Heterobranchia as the subclass that includes the 
-#     orders Allogastropoda (=lower Heterobranchia, including Architectibranchia 
+#     orders Allogastropoda (= lower Heterobranchia, including Architectibranchia 
 #     as a suborder), Opisthobranchia, and Pulmonata, and treat their major 
 #     subgroups as suborders. Treat Sepkoski's Order Heterostrophia as 
 #     Opisthobranchia incertae sedis and his Order Cephalaspida as opisthobranch 
