@@ -425,7 +425,7 @@ write.table(post, file = "PreSizes_Constant_withPBDB.tab", quote = FALSE,
 #  r. For the branchiopods, primarily use WoRMS instead of PBDB, with Class
 #     Branchiopoda, subclasses Calmanostraca (extant all freshwater with order
 #     Notostraca), Sarsostraca (extant all freshwater with order Anostraca), and
-#     Diplostraca (=Conchostraca, with orders Laevicaudata and Spinicaudata and all
+#     Diplostraca (= Conchostraca, with orders Laevicaudata and Spinicaudata and all
 #     cladoceran orders). Like PBDB (and unlike WoRMS which subsumes the cladoceran
 #     taxa as individual orders), treating Cladocera as a valid order and using
 #     WoRMS cladoceran orders (Anomopoda, Ctenopoda, Haplopoda, and Onychopoda) as
