@@ -167,9 +167,9 @@ head(x)
 # modified from Bush and Bambach (2015) to explicitly include three cetacean
 # suborders (because Cetacea now listed within Order Artiodactyla in PBDB) and
 # known marine xiphosurans, and to exclude Myriapoda, Kannemeyeriiformes,
-# Pelycosauria, Theriodontia, Therocephalia, freshwater conchostrans, and all
-# known arachnid taxa (because many arachnids are getting listed in the
-# xiphosuran download).
+# Pelycosauria, Theriodontia, Therocephalia, freshwater Branchiopoda (=
+# conchostrans, nNotostracans, cladocerans, etc.), and all known arachnid taxa (because many arachnids are
+# getting listed in the xiphosuran download).
 non.marine <- c("Arachnida", "Insecta", "Collembola", "Palaeophreatoicidae",
     "Limnocytheridae", "Darwinuloidea", "Cypridoidea", "Cytherideidae", "Assimineidae",
     "Stenothyridae", "Hydrobiidae", "Ampullariidae", "Cyclophoridae", "Diplommatinidae",
@@ -184,10 +184,12 @@ non.marine <- c("Arachnida", "Insecta", "Collembola", "Palaeophreatoicidae",
     "Percidae", "Esocidae", "Siluriformes", "Lepidosirenidae", "Polypteridae",
     "Cichlidae", "Gonorynchiformes", "Characiformes", "Gymnotiformes", "Myriapoda",
     "Kannemeyeriiformes", "Pelycosauria", "Theriodontia", "Therocephalia",
-    "Notostraca", "Ammotrechidae", "Anthracomartidae", "Anthracosironidae",
-    "Anthracotarbidae", "Aphantomartidae", "Archaeomartidae", "Archaeometidae",
-    "Architarbidae", "Ceromidae", "Chaerilobuthidae", "Daesiidae", "Devonotarbidae",
-    "Dracochelidae", "Eophrynidae", "Eukoeneniidae", "Garypidae", "Heterotarbidae",
+    "Branchiopoda", "Notostraca", "Calmanostraca", "Diplostraca", "Cladocera", 
+    "Laevicaudata", "Spinicaudata", "Ammotrechidae", "Anthracomartidae", 
+    "Anthracosironidae", "Anthracotarbidae", "Aphantomartidae", 
+    "Archaeomartidae", "Archaeometidae", "Architarbidae", "Ceromidae", 
+    "Chaerilobuthidae", "Daesiidae", "Devonotarbidae", "Dracochelidae", 
+    "Eophrynidae", "Eukoeneniidae", "Garypidae", "Heterotarbidae",
     "Kreischeriidae", "Lissomartidae", "Opiliotarbidae", "Palaeocharinidae", 
     "Palaeotrilineatidae", "Proscorpiidae", "Trigonotarbidae", "Cheiridioidea",
     "Cheliferoidea", "Chthonioidea", "Feaelloidea", "Garypoidea", "Neobisioidea",
@@ -208,7 +210,7 @@ marine.exceptions <- c("Chelonioidea", "Ophidiomorpha", "Mosasauroidea",
     "Plotosidae", "Archaeoceti", "Mysticeti", "Odontoceti", "Diploaspididae",
     "Mycteropidae", "Pterygotidae", "Woodwardopteridae", "Waeringopteroidea",
     "Bellinurina", "Eurypterina", "Limulina", "Stylonurina")
-    
+
 sq <- 1:nrow(x)
 # Extract the known marine taxa (in lineages that are typically non-marine):
 marine.vert.exceptions <- x[sapply(sq, function(sq) any(marine.exceptions %in% x[sq, ])), ]
@@ -427,7 +429,7 @@ write.table(post, file = "PreSizes_Constant_withPBDB.tab", quote = FALSE,
 #     cladoceran orders). Like PBDB (and unlike WoRMS which subsumes the cladoceran
 #     taxa as individual orders), treating Cladocera as a valid order and using
 #     WoRMS cladoceran orders (Anomopoda, Ctenopoda, Haplopoda, and Onychopoda) as
-#     suborders. Genera in outdated Subclass Phyllopopda with UNCERTAIN orders are
+#     suborders. Genera in outdated Subclass Phyllopoda with UNCERTAIN orders are
 #     placed in Subclass UNCERTAIN because unclear whether diplostracans or notostracans.
 
 #  s. Use PBDB to change suffix for superfamilies to -oidea or -acea based on 
