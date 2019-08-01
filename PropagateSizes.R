@@ -1,4 +1,4 @@
-## PROPOGATE BODY SIZE CODINGS ACROSS ENTRIES, USING RELATIVES AS PROXIES
+## propagatE BODY SIZE CODINGS ACROSS ENTRIES, USING RELATIVES AS PROXIES
 
 ## BASIC LOGIC -------------------------------------------------------------
 
@@ -46,7 +46,7 @@
 ## EXPORT DATA -------------------------------------------------------------
 
 # (0) Not required (because the code algorithmically updates), but if want a
-# "fresh" propogation, consider first deleting all body size data for any
+# "fresh" propagation, consider first deleting all body size data for any
 # estimates (EstAP, EstT, EstDV or non-species/subgenus/genus). (This is
 # recommended if, for example, a species/subgenus/genus A entry has at least one
 # estimated size measurement, and it might be used to estimate a missing size
@@ -60,7 +60,7 @@
 # first). (This sort order means taxa with AbsStratDistances and all three
 # measurements are placed before those missing one or more sizes.)
 
-# (2) Run relevant code in SelectCols.R for PropogateSizes.R to obtain following
+# (2) Run relevant code in SelectCols.R for propagateSizes.R to obtain following
 # output. Then continue with step 3.
 
 # IDNumber
@@ -77,7 +77,7 @@
 # APScale, TransverseScale, DVScale, Est_AP, Est_T, Est_DV, AbsStratDist
 
 # (Note "Intact" is excluded because only appropriate to the raw (observed) 
-# species/genus-level entries) and not the propogated ones.
+# species/genus-level entries) and not the propagated ones.
 
 # (3) Open file in MSWord (make sure smart quotes are off: File > Options >
 # Proofing > Autocorrect Options > Autoformat As You Type > uncheck Smart
@@ -98,7 +98,7 @@
 # more-complete sizes are checked first, so that later entries can use the
 # largest available pool of relatives. (2) Second, sort item by AbsStratDist,
 # with largest values first (so those with estimated AbsStratDists are
-# considered first to propogate to those lacking them). (3) Third, sort by Body
+# considered first to propagate to those lacking them). (3) Third, sort by Body
 # Size, with largest values first. (You can use the product of remaining values
 # as a proxy.)
 
@@ -166,8 +166,8 @@ table(input$BodySizeScale)
 
 # Troubleshooting
 if (any(is.na(input$max_ma)) || any(is.na(input$min_ma)))
-  stop("Some entries have missing age ranges, which is used in body size propogation 
-algorithm. Leaving ranges empty will mean that missing size measurements will not be propogated for these taxa. Update ages from the Paleobiology Database before proceeding.\n")
+  stop("Some entries have missing age ranges, which is used in body size propagation 
+algorithm. Leaving ranges empty will mean that missing size measurements will not be propagated for these taxa. Update ages from the Paleobiology Database before proceeding.\n")
 
 ## Any duplicated ID numbers?
 # Will match the incorrect life habits when importing
@@ -190,7 +190,7 @@ if (any(table(input$IDNumber) > 1)) {
 #  photo.cols and est.cols = which columns to use when calling 'any.missing' to
 #     extract relatives with complete measurements.
 #  all.3 = logical. If TRUE (default), the relatives ONLY contain values for all
-#     three measurements. Recommend setting FALSE when propogating body sizes for
+#     three measurements. Recommend setting FALSE when propagating body sizes for
 #     higher taxa (greater than genus level), where it is acceptable that there is
 #     at least one available measurement, with other measurements estimated
 #     using complete relatives, and when propagating AbsStratDistance.
@@ -309,7 +309,7 @@ better.all.equal <- function(a, b, sig.digits = 2, nums = sort(c(AP.cols, T.cols
 }
 
 
-## IDENTIFY HOW ABSOLUTE STRAT DISTANCE WAS CALCULATED, AND PROPOGATE USING SAME
+## IDENTIFY HOW ABSOLUTE STRAT DISTANCE WAS CALCULATED, AND propagatE USING SAME
 ## CALCULATION. CALCULATIONS USED INCLUDE 30, 45, & 60 DEGREES, and 25%, 33%, 
 ## 50%, 67%, 75%, 90%, 200%, and 400%. NOTE USES 3 SIGNIFICANT DIGITS FOR
 ## IDENTIFYING MATCHES (IN CASE OF INEXACT EQUALITY), BUT OUTPUTS ALL DIGITS,
@@ -357,7 +357,7 @@ rm(list = c("i", "rel"))
 
 
 
-## PROPOGATE BODY SIZES --------------------------------------------
+## propagatE BODY SIZES --------------------------------------------
 
 # Go through each record one by one, estimating body size measurements when
 # missing. Because we are assuming an isometric (same-shape) model, measurements
@@ -519,7 +519,7 @@ for (i in 1:nrow(out)) {
       # Only update metadata if actually changed (reference taxa and estimates
       # are always over-ridden in case there is new data)
       change <- "maybe"
-      # Tag with date the size is propogated for record-keeping:
+      # Tag with date the size is propagated for record-keeping:
       out$DateEntered_Size[i] <- today
       # But credit the original data enterer:
       out$Enterer[i] <- rel$rel$Enterer
@@ -533,7 +533,7 @@ for (i in 1:nrow(out)) {
   out$TransverseLength[i] <- out$PhotoTransverse[i] / out$TransverseScale[i]
   out$DVLength[i] <- out$PhotoDV[i] / out$DVScale[i]
 
-  # Propogate AbsStratDist (using closest relatives, regardless of whether
+  # propagate AbsStratDist (using closest relatives, regardless of whether
   # geologically contemporaneous or with missing some size measures)
   if (missing.strat) {
     # ... if missing AbsStratDist but available via ALL best relatives (that are
@@ -588,7 +588,7 @@ for (i in 1:nrow(out)) {
             signif(input$AbsStratDistance[i], 3), ". ", out$History_Size[i])
   }
   
-  # Interactive mode (to observe how states are being propogated in real time).
+  # Interactive mode (to observe how states are being propagated in real time).
   # Deprecating printing of History_Size because of false positives due to
   # simple change in date, and recalculations to ATD lengths.
   changes.made <- ncol(better.all.equal(input[i, -c(22, ATD.cols)], out[i, -c(22, ATD.cols)],
@@ -667,7 +667,7 @@ write.table(out, file = "PostSizes.tab", quote = FALSE, sep = "\t", row.names = 
 # the IDNumber as the matching identifier. (Fine to not import the taxonomic
 # names and geological ranges, but import everything else.)
 
-## Manual trouble-shooting: Some propogations are known to be (potentially)
+## Manual trouble-shooting: Some propagations are known to be (potentially)
 ## incorrect. It would be more efficient if the following rules could be checked
 ## algorithmically, but that may be challenging because of the interpretative
 ## nuances involved. One possibility (for the size-related feeding and mobility
@@ -679,36 +679,42 @@ write.table(out, file = "PostSizes.tab", quote = FALSE, sep = "\t", row.names = 
 ## coding is still possible, or when the functional gill size in vermiculariids
 ## is best approximated by transverse width instead of AP length).
 
-# Once imported (BEFORE THE LIFE HABITS are propogated, but then again
+# Once imported (BEFORE THE LIFE HABITS are propagated, but then again
 # afterwards, too), run the following manual corrections. (Note the RelStrat
 # should not be deleted, but updated as needed, with appropriate
 # stratifications.) The current version of the FileMakerPro database includes
 # these rules as pre-defined "saved finds."
 
-# For the first run-through (BEFORE propogating life habits), only need to check
+# For the first run-through (BEFORE propagating life habits), only need to check
 # entries where ECOSCALE OR BODYSIZESCALE = "SPECIES" OR "GENUS". (The
 # life-habit algorithm maintains the four body-size-scale-related states
 # [AbsStrat, RelStrat, etc.] when EcoScale = Species/Genus, and uses the
 # consensus across relatives when missing or not EcoScale = Species/Genus, but
 # reverts back to the original codings when BodySizeScale = Species/Genus.)
 
-# On the pre-life-habit propogation, focus on the scales above, and also the
-# SizeChanged = Check tagged entries. On the post-life-habit propogation, focus
+# On the pre-life-habit propagation, focus on the scales above, and also the
+# SizeChanged = Check tagged entries. On the post-life-habit propagation, focus
 # on the SizeChanged = Check tagged entries, but also check ALL entries using
 # the following criteria. (Can omit those coded at EcoScale = Species/Genus.)
 # MAKE SURE THAT IF ADD/CHANGE A STATE FOR A EcoScale = SPECIES/GENUS, to tag as
 # "Estimated."
 
-# NOTE: When error-checking for a PBDB propogation, preferable to start with no.
+# When checking with the pre-life-habit propagation, if a size-based coding (or
+# any, really) is uncertain, it is better to leave blank than to guess. Leaving
+# blank will allow a relative's state to be estimated when running
+# PropagateLifeHabits.R, but filling in will tend to defer to the filled-in
+# state instead.
+
+# NOTE: When error-checking for a PBDB propagation, preferable to start with no.
 # 7 (run through AbsStratDist to make sure AbsStrat, and sometimes RelStrat, is
 # correct) and then no. 6 (RelStrat based on major body axes) because they could
 # un-do other error-check changes. Similarly, because the combination of
 # different life habit and body size can create novel body orientations, a
 # useful convention is to only change RelStrat if it is not sensible with some
 # orientation of the specified taxon's body size. (In other words, the
-# propogated life habit may suggest a body orientation that the reference size
+# propagated life habit may suggest a body orientation that the reference size
 # taxon does not have in its life habit. This is an acceptable outcome of the
-# propogation's "exploration" of ecospace.) An example is for colonial animals
+# propagation's "exploration" of ecospace.) An example is for colonial animals
 # (bryozoans and tabulate corals) where a "self-supported" colony would be
 # raised into water column whereas a "supported" colony would be oriented as
 # encrusting some host. If the orientation could be multiple ones (e.g., the
@@ -733,12 +739,12 @@ write.table(out, file = "PostSizes.tab", quote = FALSE, sep = "\t", row.names = 
 # immediate stratifications.) Set fluidic = 0, above primary = 1, within primary
 # = 0, and supported/self-supported as either 0/1 or 1/0. Then sort by AbsStrat
 # > RelStrat > AbsStratDist. In many cases, the AbsStrat and AbsFoodStrat should
-# also match, but confirm that any propogated AbsStratDist values are also
+# also match, but confirm that any propagated AbsStratDist values are also
 # sensible. Be aware that there will be a few exceptions (e.g., very long
 # crinoid Traumatocrinus that is attached to floating logs, crinoid
 # Paracatillocrinus that has an unusual means of "wrapped" attachment that
 # warrants being "attached" despite not being raised significantly higher into
-# water column). During post-life-habit-propogation processing, add back in
+# water column). During post-life-habit-propagation processing, add back in
 # appropriate "self-supported" AbsStrat, and AbsFoodStrat (if filter-feeding)
 # and AbsStratDist (if obvious), BUT ONLY FOR TAXA SCALED AT > GENUS/SPECIES! Be
 # reminded that stemmed echinoderms (crinoids, blastoids, etc.) will frequently
@@ -844,9 +850,9 @@ write.table(out, file = "PostSizes.tab", quote = FALSE, sep = "\t", row.names = 
 # (12) For filter-feeding echinoderms, clear the FilterDensity field if the
 # entry is NOT a filter-feeder. Check FilterDensity = High/Medium/Low and
 # FilterFeeder != 1. (If FilterFeeder is blank in the Constant data set, check
-# the Mode propogation; if a FilterDensity coding was propogated in the Constant
+# the Mode propagation; if a FilterDensity coding was propagated in the Constant
 # data set and the Mode data set has FilterFeeder = 1, then keep the
-# FilterDensity and propogate its dependent FilterFeeder = 1 and check the
+# FilterDensity and propagate its dependent FilterFeeder = 1 and check the
 # Estimated box.)
 
 # (13) Confirm AbsFoodStrat and RelFoodStrat for predators (really, all
