@@ -891,13 +891,16 @@ write.table(out, file = "PostSizes.tab", quote = FALSE, sep = "\t", row.names = 
 # RelFoodStrat = 0.25 and AbsFoodStrat = AbsStrat. (7) RelFoodStrat rules for
 # crawling predators: (a) Asteroids = 0.25. (b) Decapods ~ 1 X AP or DV scale,
 # depending on locomotive type (and as long as don't swim when foraging). (c)
-# Snails = 0 slower (often mass-feeding) forms and 0.25 for fastest ones (often
-# predators). (8) For shelled cephalopods (ammonoids, nautiloids, etc.,
-# including order Spirulida), use 1 X T as an estimate of tentacle length. For
-# (swimming) non-shelled coleoids (except shelled spirulids), use 2 X AP. (9)
-# For macroalgae feeders (raptors on bulk microbes), generally code RelFoodStrat
-# as a crawler based on size, but downgrading one level to account for reduced
-# mobility because of immobile food.
+# Small scavenging crustaceans (some amphipods, tanaidaceans, isopods), use 1 X
+# AP if crawling to "bulky" herbivorous or carnivorous food or 1 X DV if
+# generally immobile and feeding on detritus, surficial algae, or other
+# microbial food. (d) Snails = 0 slower (often mass-feeding) forms and 0.25 for
+# fastest ones (often predators). (8) For shelled cephalopods (ammonoids,
+# nautiloids, etc., including order Spirulida), use 1 X T as an estimate of
+# tentacle length. For (swimming) non-shelled coleoids (except shelled
+# spirulids), use 2 X AP. (9) For macroalgae feeders (raptors on bulk microbes),
+# generally code RelFoodStrat as a crawler based on size, but downgrading one
+# level to account for reduced mobility because of immobile food.
 
 # (14) Confirm AbsFoodStrat and RelFoodStrat for mass feeders (both detritus
 # feeders, algae scrapers, and some scavengers). Search for Mass = 1 and rest
