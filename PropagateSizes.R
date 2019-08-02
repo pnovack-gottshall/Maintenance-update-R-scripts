@@ -730,7 +730,8 @@ write.table(out, file = "PostSizes.tab", quote = FALSE, sep = "\t", row.names = 
 # SupportedByOthers = 1 & AbsStratDist = ">-10000" [ANY] & SizeChanged = CHECK
 # and delete AbsStratDist (if needs correcting). (The valid exceptions will
 # typically have AbsStratDist values that do NOT correspond to the organism's
-# major axes. Easiest to confirm if sort by History_Size.)
+# major axes, or are semi-infaunal in which case the AbsStrat and RelStrat may
+# differ. Easiest to confirm if sort by History_Size.)
 
 # (3) Confirm that epifaunal "Self-supported" taxa have the same tier for
 # AbsStrat and RelStrat. (And that "supported" taxa have different values.)
@@ -762,34 +763,34 @@ write.table(out, file = "PostSizes.tab", quote = FALSE, sep = "\t", row.names = 
 # exclusively epifaunal taxa have positive values. (But don't be surprised by
 # semi-infaunal taxa that are simultaneously epifaunal and infaunal.) Test that
 # all above = 1/in = 0 have positive AbsStratDists and all above = 0/in = 1 have
-# negative ones. Converse, confirm that all with negative AbsStratDists have
+# negative ones. Conversely, confirm that all with negative AbsStratDists have
 # WithinAbsStrat = 1 and that all with positive AbsStratDists have AboveAbsStrat
 # = 1.
 
 # (6) Confirm that RelStrat corresponds to appropriate body axis. Best to sort
-# by Phylum > Class (and for some groups, like brachiopods, subclass/order) >
-# DV / AP because different taxa have different living orientations. If list
-# is too long to run through, can limit to Sizechanged = "checked".
-# (Alternatively, can find all taxa with all major axes in the same size range
-# [e.g., 0.1-1], which should all have the same RelStrat.) Watch out for
-# following exceptions: (1) Crinoids, blastoids, rhombiferans, pedunculately
-# raised (Cambrian) lingulids, and other stemmed animals where the measured body
-# part may not correspond to the intact animal. (2) Animals close to a
-# size-boundary that are diagonally oriented (such as pedunculate brachiopods,
-# and some bivalves and rugose corals). (3) Distinctive subtaxa with distinct
-# orientations (such as agnostids scaled to 2/3 AP and terrestrial birds and
-# pterosaurs scaled to diagonally oriented AP and flatfishes [Family Soleidae]
-# scaled to transverse.). (4) Rhynchonellatan brachiopods and bivalves and other
-# animals whose orientation is sometimes based on a diagonal orientation based
-# on AP length. (5) Corals and encrusting bryozoans where RelStrat is based on
-# AP. (6) Some bactritid and turrilitoid ancyloceratine cephalopods and sessile
-# filter-feeding snails (Superfamilies Euomphaloidea and Macluritoidea and
-# Cerithioidea [only families Siliquariidae and Turritellidae > only subfamily
-# Vermiculariinae]) are vertically oriented, based on AP length. (7) Some
-# colonial animals (sponges, stromatoporoids, corals, and to a lesser extent
-# bryozoans) are given larger AbsStrat & RelStrat values than the measured
-# specimens provide, on the basis that the specimen is only one part of a
-# substantially larger colony. (8) Sessile polychaetes (i.e., Sedentaria) that
+# by Phylum > Class (and for some groups, like brachiopods, subclass/order) > DV
+# / AP because different taxa have different living orientations. If list is too
+# long to run through, can limit to Sizechanged = "checked". (Alternatively, can
+# find all taxa with all major axes in the same size range [e.g., 0.1-1], which
+# should all have the same RelStrat.) Watch out for following exceptions: (1)
+# Crinoids, blastoids, rhombiferans, pedunculately raised (Cambrian) lingulids,
+# and other stemmed animals where the measured body part may not correspond to
+# the intact animal. (2) Animals close to a size-boundary that are diagonally
+# oriented (such as pedunculate brachiopods, and some bivalves and rugose
+# corals). (3) Distinctive subtaxa with distinct orientations (such as agnostids
+# scaled to 2/3 AP and terrestrial birds and pterosaurs scaled to diagonally
+# oriented AP [14.2-141 as 0.5, 142-1414 as 0.75, >1415 as 1] and flatfishes
+# [Family Soleidae] scaled to transverse.). (4) Rhynchonellatan brachiopods and
+# bivalves and other animals whose orientation is sometimes based on a diagonal
+# orientation based on AP length. (5) Corals and encrusting bryozoans where
+# RelStrat is based on AP. (6) Some bactritid and turrilitoid ancyloceratine
+# cephalopods and sessile filter-feeding snails (Superfamilies Euomphaloidea and
+# Macluritoidea and Cerithioidea [only families Siliquariidae and Turritellidae
+# > only subfamily Vermiculariinae]) are vertically oriented, based on AP
+# length. (7) Some colonial animals (sponges, stromatoporoids, corals, and to a
+# lesser extent bryozoans) are given larger AbsStrat & RelStrat values than the
+# measured specimens provide, on the basis that the specimen is only one part of
+# a substantially larger colony. (8) Sessile polychaetes (i.e., Sedentaria) that
 # present many different orientations, even within individual families.
 
 # (7) Confirm that taxa with AbsStratDist = ">-100000" values [ANY] match the
