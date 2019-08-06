@@ -7,12 +7,13 @@
 # data.
 
 # Before running: Export data from FMP in Excel format with headers. (Saving to
-# .xlsx does a better job maintaining the text in EcologyNotes, but adds double
-# quotes, that need to be scrubbed in Word.) The mode file should be named
-# 'AllMode' and the constant file should be 'AllConstant'. Then open in Excel,
-# find-and-replaces all entire-cell NAs and resave as tab-delimited (.tab)
-# files. Make sure ALL columns are exported (including EcologyNotes and all body
-# size cells), in any order. The data below will sort the columns and rows.
+# .xlsx does a better job maintaining the text in EcologyNotes. The annoying
+# double-quotes are fine to keep, if present, as they should be identical in
+# both data sets.) The mode file should be named 'AllMode' and the constant file
+# should be 'AllConstant'. Then open in Excel, find-and-replaces all entire-cell
+# NAs and resave as tab-delimited (.tab) files. Make sure ALL columns are
+# exported (including EcologyNotes and all body size cells), in any order. The
+# data below will sort the columns and rows.
 
 rm(list = ls())
 setwd("C:/Users/pnovack-gottshall/Desktop/Databases/Maintenance & update R scripts")
@@ -113,6 +114,7 @@ better.all.equal <- function(a, b) {
   ab <- rbind(a, b)
   return(ab[ , which(wh.diff), drop = FALSE])
 }
+
 
 # Check entries coded at species/genus rank (where mostly everything should be
 # identical)
