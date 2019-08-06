@@ -215,7 +215,7 @@ consensus <- function(rels, cols, method = "constant", na.rm = TRUE) {
 }
 
 
-## WITH NEW CODING PHILOSOPHY, THE FOLLOWING MAY NO LONGER BE NEEDED:
+## WITH NEW CODING PHILOSOPHY, THE FOLLOWING FUNCTION HAS BEEN DEPRECATED:
 
 ## FIND THE MOST SIMILAR REFERENCE TAXON TO TYPICAL STATES, WHERE 'MOST SIMILAR'
 ## IS CALCULATED USING EUCLIDEAN DISTANCE TO THE MODAL STATES
@@ -450,7 +450,7 @@ for(i in 1:nrow(out)) {
        this.scale == "Genus")) next
 
   rels <- cs <- eco.sc <- char.changed <- NA
-  # exemplar <- NA # Deprecated
+  higher.rels <- list(rels = NULL, eco.sc = "Species")
   wh.changed <- FALSE
 
   # Propogate (and update, if needed) life habit codings if higher taxon
@@ -526,70 +526,88 @@ for(i in 1:nrow(out)) {
 
   
   # Go through any remaining missing / unknowns / previously estimated, and
-  # propogate using higher taxa, if constant across at least 5 relatives, but
+  # propogate using higher taxa where at least 5 coded relatives exist, but
   # ignoring size-related characters if size was coded at species/genus. (not
   # recorded in history because constant across the higher taxon, but tagged in
   # "Est_X" fields)
-  if (input$BodySizeScale[i] <= "Genus") {
-    still.missing <-
-      combined.any.missing(any.missing(out[i,], eco.col[-size.col]),
-                           any.est(out[i,], est.col[-size.col]))
-  } else {
-    still.missing <-
-      combined.any.missing(any.missing(out[i,], eco.col),
-                           any.est(out[i,], est.col))
-  }
 
-  if (still.missing$any) {
-    higher.rels <- find.rels(x = out, i = i, eco.col = eco.col, min.rels = 5,
-      start = max(2, which(scales == as.character(out$EcologyScale[i]))), end = 12)
-    higher.cs <- consensus(rels = higher.rels$rels, cols = still.missing$which, 
-      method = method, na.rm = TRUE)
-    # Drop size columns, if 'reverted' above
-    # Ignore if consensus is missing or NA: 
-    l.cs <- seq_along(still.missing$which)
-    wh.changed <- !sapply(l.cs, function(l.cs) is.na(higher.cs[l.cs]) | 
-                    higher.cs[l.cs] == "")
-    if (any(wh.changed))
-      out[i, still.missing$which[wh.changed]] <- higher.cs[wh.changed]
-  }
-
-  # 'Check' whether the size-related characters were changed:
-  size.changed.yet.again <-
-    ncol(better.all.equal(input[i, eco.col[size.col]],
-                          out[i, eco.col[size.col]])) >= 1L
-  if (size.changed.yet.again)
-    out$SizeChanged[i] <- "Check"
+  # Note these "higher" propagations work recursively, working up higher ranks
+  # to fill in as many un-coded states as possible. (E.g., it may not be known
+  # whether any Order Agnostida reproduced sexually or asexually, but all extant
+  # Phylum Arthropoda reproduce sexually.)
   
-  # If changed, tag any changes as "Estimated" (or remove if no longer
-  # estimated) and add changes to history:
-  if (any(wh.changed)) {
-    char.changed <-
-      colnames(better.all.equal(input[i, eco.col], out[i, eco.col]))
-    changed.col <- match(char.changed, colnames(input[i, eco.col]))
-    out[i, est.col[changed.col]] <- "Estimated"
-    dropped <-
-      is.na(out[i, eco.col[changed.col]]) | out[i, eco.col[changed.col]] == ""
-    if (any(dropped))
-      out[i, est.col[changed.col[which(dropped)]]] <- ""
-    # Note: Those entered today will be propogated at a level > genus, and so
-    # there is no need to continue documenting previous history of life-habit
-    # proxies. Remainder of changes (not tagged with updated date) are updating
-    # empty cells using appropriate higher taxa, either for a genus/species
-    # entry or for higher taxon proxy. In these cases, it is valuable to record
-    # the history of estimatations.
-    if (out$DateEntered_Ecology[i] != today) {
-      out$History_Ecology[i] <- paste0(length(which(wh.changed)), 
-                          " additional states updated ", today,
-                          " based on consensus of ", higher.rels$eco.sc, " ", 
-                          out[i, which(colnames(out) == higher.rels$eco.sc)], 
-                          ". ", out$History_Ecology[i])
+  repeat {
+
+    if (input$BodySizeScale[i] <= "Genus") {
+      still.missing <-
+        combined.any.missing(any.missing(out[i, ], eco.col[-size.col]),
+                             any.est(out[i, ], est.col[-size.col]))
     } else {
-      out$History_Ecology[i] <- paste0(length(which(wh.changed)), 
-                          " additional states updated ", today,
-                          " based on consensus of ", higher.rels$eco.sc, " ", 
-                          out[i, which(colnames(out) == higher.rels$eco.sc)], ".")
+      still.missing <-
+        combined.any.missing(any.missing(out[i, ], eco.col),
+                             any.est(out[i, ], est.col))
     }
+    
+    # Add a 'break' to end 'repeat' loop when no more missing states, or have
+    # exhausted all possible 'higher' relatives:
+    if (!still.missing$any | higher.rels$eco.sc == "Phylum")
+      break
+    
+    # Identify consensus states among higher taxa:
+    if (still.missing$any) {
+      start.scale <- max(which(scales == as.character(out$EcologyScale[i])), 
+                         (which(scales == as.character(higher.rels$eco.sc))) + 1)
+      higher.rels <- find.rels(x = out, i = i, eco.col = eco.col, min.rels = 5, 
+                               start = start.scale, end = 12)
+      higher.cs <- consensus(rels = higher.rels$rels, cols = still.missing$which, 
+                             method = method, na.rm = TRUE)
+      # Drop size columns, if 'reverted' above
+      # (Ignore if consensus is missing or NA): 
+      l.cs <- seq_along(still.missing$which)
+      wh.changed <- !sapply(l.cs, function(l.cs) is.na(higher.cs[l.cs]) | 
+                      higher.cs[l.cs] == "")
+      if (any(wh.changed))
+        out[i, still.missing$which[wh.changed]] <- higher.cs[wh.changed]
+    }
+    
+    # 'Check' whether the size-related characters were changed:
+    size.changed.yet.again <-
+      ncol(better.all.equal(input[i, eco.col[size.col]],
+                            out[i, eco.col[size.col]])) >= 1L
+    if (size.changed.yet.again)
+      out$SizeChanged[i] <- "Check"
+    
+    # If changed, tag any changes as "Estimated" (or remove if no longer
+    # estimated) and add changes to history:
+    if (any(wh.changed)) {
+      char.changed <-
+        colnames(better.all.equal(input[i, eco.col], out[i, eco.col]))
+      changed.col <- match(char.changed, colnames(input[i, eco.col]))
+      out[i, est.col[changed.col]] <- "Estimated"
+      dropped <-
+        is.na(out[i, eco.col[changed.col]]) | out[i, eco.col[changed.col]] == ""
+      if (any(dropped))
+        out[i, est.col[changed.col[which(dropped)]]] <- ""
+      # Note: Those ":"entered" today will be propogated at a level > genus, and
+      # so there is no need to continue documenting previous history of life-habit
+      # proxies. Remainder of changes (not tagged with updated date) are updating
+      # empty cells using appropriate higher taxa, either for a genus/species
+      # entry or for higher taxon proxy. In these cases, it is valuable to record
+      # the history of estimatations.
+      if (out$DateEntered_Ecology[i] != today) {
+        out$History_Ecology[i] <- paste0(length(which(wh.changed)), 
+                            " additional states updated ", today,
+                            " based on consensus of ", higher.rels$eco.sc, " ", 
+                            out[i, which(colnames(out) == higher.rels$eco.sc)], 
+                            ". ", out$History_Ecology[i])
+      } else {
+        out$History_Ecology[i] <- paste0(length(which(wh.changed)), 
+                            " additional states updated ", today,
+                            " based on consensus of ", higher.rels$eco.sc, " ", 
+                            out[i, which(colnames(out) == higher.rels$eco.sc)], ".")
+      }
+    }
+    
   }
   
   # Interactive mode (to observe how states are being propogated)
