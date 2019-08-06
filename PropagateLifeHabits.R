@@ -190,6 +190,9 @@ Mode <- function(x, na.rm = FALSE) {
 ## VARIABLE)
 # rels = the data frame containing identified relatives.
 # cols  = identifies which columns to check across.
+# method = which consensus method to use? 'constant' (detault) returns a value
+#           only if unanimous (and NA otherwise). 'mode' returns the most 
+#           frequent value.
 # na.rm = should NAs and "" missing data be removed? Default is TRUE
 consensus <- function(rels, cols, method = "constant", na.rm = TRUE) {
   method <- tolower(method) # In case capitalized
@@ -456,7 +459,7 @@ for(i in 1:nrow(out)) {
   # Propogate (and update, if needed) life habit codings if higher taxon
   if (this.scale > "Genus") {
     
-    rels <- find.rels(x = out, i = i, eco.col = eco.col, start = 4, 
+    rels <- find.rels(x = input, i = i, eco.col = eco.col, start = 4, 
                       end = min(12, which(scales == this.scale)))
 
     # Before rejecting for having no relatives, consider whether the
@@ -464,7 +467,7 @@ for(i in 1:nrow(out)) {
     # assignments have changed) and there actually are other relatives (coded at
     # species, subgenus, and genus-scale) available to use
     if (nrow(rels$rels) < 1L)
-      rels <- find.rels(x = out, i = i, eco.col = eco.col, start = 4, end = 12)
+      rels <- find.rels(x = input, i = i, eco.col = eco.col, start = 4, end = 12)
     
     # But reject (with a warning) if there truly are no available relatives
     nr <- nrow(rels$rels)
@@ -557,7 +560,7 @@ for(i in 1:nrow(out)) {
     if (still.missing$any) {
       start.scale <- max(which(scales == as.character(out$EcologyScale[i])), 
                          (which(scales == as.character(higher.rels$eco.sc))) + 1)
-      higher.rels <- find.rels(x = out, i = i, eco.col = eco.col, min.rels = 5, 
+      higher.rels <- find.rels(x = input, i = i, eco.col = eco.col, min.rels = 5, 
                                start = start.scale, end = 12)
       higher.cs <- consensus(rels = higher.rels$rels, cols = still.missing$which, 
                              method = method, na.rm = TRUE)
