@@ -202,7 +202,7 @@ non.marine <- c("Arachnida", "Insecta", "Collembola", "Palaeophreatoicidae",
 tetrapods <- c("Mammalia", "Reptilia")
 # Then add back in the known marine tetrapods (and some known marine arachnids,
 # etc.):
-marine.exceptions <- c("Chelonioidea", "Ophidiomorpha", "Mosasauroidea",
+marine.exceptions <- c("Chelonioidea", "Ophidiomorpha", "Mosasauroidea", "Mosasauria",
     "Thalattosauria", "Sauropterygia", "Ichthyopterygia", "Mesoeucrocodylia",
     "Pterosauria", "Hesperornithiformes", "Ichthyornithiformes", "Sphenisciformes",
     "Procellariiformes", "Pelecaniformes", "Pelagornithidae", "Plotopteridae",
@@ -326,8 +326,9 @@ write.table(post, file = "PreSizes_Constant_withPBDB.tab", quote = FALSE,
 #       (vix)  bryozoan order Cystoporida to Cystoporata 
 #       (x)    barnacle order Thoracica to Sessilia
 #       (xi)   diploporitan superfamily Glyptosphaeritida to 
-#              Glyptosphaeritidacea to (in order UNCERTAIN). 
+#              Glyptosphaeritidacea (in order UNCERTAIN). 
 #              (See below for details on other diploporitans.)
+#       (xii)  Superfamily Mosasauria to superfamily Mosasauroidea
 
 #  f. Because the most recent bivalve classification (Carter, et al. 2011, to be
 #     used in the forthcoming Treatise) contains only two subclasses for all
