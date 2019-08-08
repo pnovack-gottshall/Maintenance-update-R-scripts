@@ -731,7 +731,8 @@ write.table(out, file = "PostSizes.tab", quote = FALSE, sep = "\t", row.names = 
 # and delete AbsStratDist (if needs correcting). (The valid exceptions will
 # typically have AbsStratDist values that do NOT correspond to the organism's
 # major axes, or are semi-infaunal in which case the AbsStrat and RelStrat may
-# differ. Easiest to confirm if sort by History_Size.)
+# differ, or have a typically known raised distance [such as encrusters of known
+# hosts]. Easiest to confirm if sort by History_Size.)
 
 # (3) Confirm that epifaunal "Self-supported" taxa have the same tier for
 # AbsStrat and RelStrat. (And that "supported" taxa have different values.)
@@ -749,7 +750,12 @@ write.table(out, file = "PostSizes.tab", quote = FALSE, sep = "\t", row.names = 
 # appropriate "self-supported" AbsStrat, and AbsFoodStrat (if filter-feeding)
 # and AbsStratDist (if obvious), BUT ONLY FOR TAXA SCALED AT > GENUS/SPECIES! Be
 # reminded that stemmed echinoderms (crinoids, blastoids, etc.) will frequently
-# lack AbsStrat and AbsFoodStrat because of unknown stem lengths.
+# lack AbsStrat and AbsFoodStrat because of unknown stem lengths. If need to
+# change, use the bulk of the evidence to find the parsimonious solution. (E.g.,
+# if AbsStrat and AbsFoodStrat and RelStrat and AbsStratDistance are all
+# consistent, it is more parsimonious to change a "self-supported" coding to
+# "supported" than to change the size-related categories. Usually give
+# primacy to the AbsStratDist, which is based on an actual specimen.)
 
 # (4) Epibiotic (but barely raised, so should be coded as "self-supported") taxa
 # given incorrect benthic (as if not epibiotic) AbsStratDists: Find Biotic = 1 &
@@ -799,10 +805,12 @@ write.table(out, file = "PostSizes.tab", quote = FALSE, sep = "\t", row.names = 
 # general, if animal is epibenthic, self-supported, and filter-feeder, the
 # AbsFoodStrat will be same as AbsStrat; if surficial mass-feeder, AbsFoodStrat
 # will be 0; and if raptorial, AbsFoodStrat will be where food is located (often
-# 0.25 coding if epibenthic prey). For RelStrat, useful to sort by
-# Phylum>Class>DV or AP length. For RelStrat, recall that for semi-infaunals
-# RelStrat will correspond to the animal's major axis and not the distance from sea
-# floor. Check LifeHabitNotes.docx for taxon-specific conventions.
+# 0.25 coding if epibenthic prey). For RelStrat, useful to sort by Phylum >
+# Class > DV or AP length. For RelStrat, recall that for semi-infaunals RelStrat
+# will correspond to the animal's major axis and not the distance from sea
+# floor. If states are inconsistent, usually give primacy to the AbsStratDist,
+# which is based on an actual specimen. Check LifeHabitNotes.docx for
+# taxon-specific conventions.
 
 # (8) Confirm RelFoodStrat for filter feeders, sorting by phyla and then either
 # AbsStratDist or AP length. For ambient filter feeders (PORIFERA and
@@ -816,23 +824,23 @@ write.table(out, file = "PostSizes.tab", quote = FALSE, sep = "\t", row.names = 
 # MICROCRUSTACEANS (amphipods, mysids, etc.) and burrowing filter-feeding SHRIMP
 # generally should be 0.25. ASCIDIANS should generally be 0.5. Filter-feeding
 # fishes and whales should generally be 1.0. BRACHIOPODS should be half the AP
-# length. Filter-feeding mollusks (BIVALVES, ROSTROCONCHS, and GASTROPODS)
-# should be twice the AP length. POLYCHAETES, TENTACULITIDS, and other tubular
-# taxa (Sorbeoconch snails in Cerithioidea [especially families Siliquariidae
-# and Turritellidae, although propagations might include other cerithioids])
-# should (generally) be twice the transverse length, instead. Tentaculate
-# web-feeding (filter-feeding) ammonoids (such as those in Superfamily
-# Turrilitoidea and Order Ceratitida) have many exceptions but are typically
-# approximated by the AP conch length. (Exceptions typically have the same
-# scale for both life habit and size.)
+# length, and HYOLITHS the transverse width. Filter-feeding mollusks (BIVALVES,
+# ROSTROCONCHS, and GASTROPODS) should be twice the AP length. POLYCHAETES,
+# TENTACULITIDS, and other tubular taxa (Sorbeoconch snails in Cerithioidea
+# [especially families Siliquariidae and Turritellidae, although propagations
+# might include other cerithioids]) should (generally) be twice the transverse
+# length, instead. Tentaculate web-feeding (filter-feeding) ammonoids (such as
+# those in Superfamily Turrilitoidea and Order Ceratitida) have many exceptions
+# but are typically approximated by the AP conch length. (Exceptions typically
+# have the same scale for both life habit and size.)
 
 # (9) Confirm that wholly infaunal filter-feeders (AboveAbsStrat = 0, WithinAbs
 # = 1, Filter = 1 [rest 0]) have AbsFoodStrat at 0.25 (typically) and that
 # AbsFood is "Above" the seafloor (with exceptions, like callianassoids that
-# also ingest sediment from burrow wall, or Cenozoic cave-dwelling brachiopods,
-# or thin productids that rested within the sediment with gape at seafloor, or
-# echinoids like clypeasteroid mellitid Encope that emerge at surface to filter
-# feed, or interstitial meiofauna).
+# also ingest sediment from burrow wall, or [Cenozoic] cave-dwelling
+# brachiopods, or thin productids that rested within the sediment with gape at
+# seafloor, or echinoids like clypeasteroid mellitid Encope that emerge at
+# surface to filter feed, or interstitial meiofauna).
 
 # (10) Confirm that filter feeders (whether infaunal or epifaunal) that extend
 # body above sea floor (AboveAbsStrat = 1 & FeedAbovePrimary = 1 & Filter = 1
