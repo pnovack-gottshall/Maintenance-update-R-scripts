@@ -90,7 +90,8 @@
 # (HINT: Use = MIN((3-COUNTA(Est_AP:Est_DV)),COUNT(APLength:DVLength)) that
 # allows including the Est_X columns!) TROUBLESHOOT: Confirm that all
 # 'Sp/Subg/Gen' have at least 1 measurement! Also delete any NAs in
-# AbsStratDistance and size measures, and delete size measures that are 0.
+# AbsStratDistance and size measures, and delete size /AbsStratDist measures
+# that are 0 or "NA".
 
 # (6) Sort the BodySizeScale = 'Sp/Subg/Gen' rows by (1) number of PhotoX
 # columns (largest first) so entries with complete (all 3) size measurements are
@@ -385,6 +386,7 @@ AbsStratDist.text <- c("AP.", "T.", "DV.", "30 degrees (from horiz.) of AP, or h
   "400% of DV.")
 seq.AbsStratDist <- rep(seq.int(AbsStratDist.text), 2)
 interactive <- TRUE   # If want to watch updates in real time
+# interactive <- FALSE
 if (interactive) par("ask" = TRUE) else par("ask" = FALSE)
 record.log <- TRUE
 record.file <- "SizeLog.txt"
@@ -877,52 +879,55 @@ write.table(out, file = "PostSizes.tab", quote = FALSE, sep = "\t", row.names = 
 # many subtle factors, such as prey specializations, body size, foraging habits,
 # and sensory differences (e.g., parasites, durophagous predators, predators of
 # infaunal prey, etc.). See LifeHabitNotes.docx for details. Best to run each
-# check below separately for each higher taxon. Common checks:  (1)
-# Ambush-hunting (typically infaunal) ANNELIDS, PRIAPULIDS, and other vermiform
-# predators: RelFoodStrat ~ length of introvert/proboscis (typically longer than
-# transverse diameter, and often a substantial portion of A/P). (2) Predatory
-# benthic TRILOBITES: AbsFoodStrat ~ 1/2 DV height and RelFoodStrat ~ 1 X AP.
-# Common exceptions include highly visual taxa (coded with 2 X AP) or
-# ambush-hunting trilobites with eye stalks (typically coding 1 X AP) (e.g.,
-# several ASAPHIDS, PHACOPIDS [especially PHACOPINES], ODONTOPLEURIDS, and
+# check below separately for each higher taxon. (1) Use the following
+# conventions for FISHES, non-shelled cephalopods (e.g., COLEOIDS), and other
+# swimming predators (and generally crawling benthic predators, too): (a)
+# NEKTONIC (and PLANKTONIC) forms feed in the water column (AbsFoodStrat
+# typically = 1, RelFood = 1/1 for being above and "within"). (b) BENTHOPELAGIC
+# and DEMERSAL forms swim in water column and often (but not always) have
+# benthic prey (RelFood = 0/1 for being only "within/below" their swimming
+# position and AbsFoodStrat ~ 1/2 DV height if epibenthic or shallow infaunal
+# prey, but many exceptions). (c) NEKTOBENTHIC (and the typical convention for
+# non-swimming benthic predators) forms rest on (or within) the seafloor and
+# also typically have benthic prey (with AbsFoodStrat ~ 1/2 DV height), but
+# RelFood will depend on whether the prey is epifaunal and/or infaunal. In all
+# cases, RelFoodStrat estimated by distance the predator (or their organ, such
+# as an introvert, proboscis, or tentacles) moves to ensnare prey. If swimming
+# or moving to attack, RelFoodStrat scales with AP length (<1X to 1X for
+# crawlers, 2X for swimmers, 4X for flyers), but with many exceptions. Can
+# usually distinguish crawlers from swimmers by sorting by fluidic substrate.)
+# (2) RelFoodStrat rules for crawling predators: (a) ASTEROIDS = 0.25. (b)
+# DECAPODS ~ 1 X AP or DV scale, depending on locomotive type (and as long as
+# don't swim when foraging). (c) Small scavenging crustaceans (some AMPHIPODS,
+# TANAIDACEANS, ISOPODS), use 1 X AP if crawling to "bulky" herbivorous or
+# carnivorous food or 1 X DV if generally immobile and feeding on detritus,
+# surficial algae, or other microbial food. (d) SNAILS = 0 slower (often
+# mass-feeding) forms and 0.25 for fastest ones (often predators). (e) For
+# macroalgae feeders (raptors on bulk microbes), generally code RelFoodStrat as
+# a crawler based on size, but downgrading one level to account for reduced
+# mobility because of immobile food.(2) Ambush-hunting (typically infaunal)
+# ANNELIDS, PRIAPULIDS, and other vermiform predators: RelFoodStrat ~ length of
+# introvert/proboscis (typically longer than transverse diameter, and often a
+# substantial portion of A/P). (3) Predatory benthic TRILOBITES: AbsFoodStrat ~
+# 1/2 DV height and RelFoodStrat ~ 1 X AP. Common exceptions include highly
+# visual taxa (coded with 2 X AP) or ambush-hunting trilobites with eye stalks
+# (typically coding 1 X AP) (e.g., several ASAPHIDS, PHACOPIDS [especially
+# PHACOPINES, which are nearly all coded at 2 X AP], ODONTOPLEURIDS, and
 # HOMALONOTID and and ENCRINURID PHACOPIDS) and pelagic trilobites (e.g.,
 # CYCLOPYGIDS, coding 2 X AP). Trilobites generally coded as feeding on
 # "epifaunal" prey (unless evidence of Rusophycus, which gets coded as eating
-# prey both above and below the sediment-water interface). (3) Run separate
-# check on scan-and-trap "raptorial" plankton (Search for Order = AGNOSTIDA,
-# Subclass = DIPLOSTRACA, Class = OSTRACODA, Class = COPEPODA) without any life
-# habit codings and sort by DV): RelFoodStrat ~ 1 X DV. (4) Use the following
-# conventions for FISHES, non-shelled cephalopods (e.g., COLEOIDS), and other
-# swimming predators: (a) Nektonic (and planktonic) forms feed in the water
-# column (AbsFoodStrat typically = 1, RelFood = 1/1 for being above and
-# "within"). (b) Benthopelagic and demersal forms swim in water column and often
-# (but not always) have benthic prey (RelFood = 0/1 for being only
-# "within/below" their swimming position and AbsFoodStrat ~ 1/2 DV height if
-# epibenthic or shallow infaunal prey, but many exceptions). (c) Nektobenthic
-# forms rest on (or within) the seafloor and also typically have benthic prey
-# (with AbsFoodStrat ~ 1/2 DV height), but RelFood will depend on whether the
-# prey is epifaunal or infaunal. In all cases, RelFoodStrat estimated by
-# distance the predator (or their organ, such as an introvert, proboscis, or
-# tentacles) moves to ensnare prey. If swimming or moving to attack,
-# RelFoodStrat scales with AP length (<1X to 1X for crawlers, 2X for swimmers,
-# 4X for flyers), but with many exceptions. Can usually distinguish crawlers
-# from swimmers by sorting by fluidic substrate.) (5) For CNIDARIANS and
-# sedentary carnivores, RelFoodStrat ~ tentacle lengt (= corallite diameter) and
-# AbsFoodStrat = AbsStrat. (6) Carnivorous crinoids (some TAXOCRINIDS and
+# prey both above and below the sediment-water interface). (4) For CNIDARIANS
+# and sedentary carnivores, RelFoodStrat ~ tentacle lengt (= corallite diameter)
+# and AbsFoodStrat = AbsStrat. (5) Carnivorous crinoids (some TAXOCRINIDS and
 # SAGENOCRINIDS) and ECHINOIDS (e.g., Histocidaris) have RelFoodStrat = 0.25 and
-# AbsFoodStrat = AbsStrat. (7) RelFoodStrat rules for crawling predators: (a)
-# ASTEROIDS = 0.25. (b) DECAPODS ~ 1 X AP or DV scale, depending on locomotive
-# type (and as long as don't swim when foraging). (c) Small scavenging
-# crustaceans (some AMPHIPODS, TANAIDACEANS, ISOPODS), use 1 X AP if crawling to
-# "bulky" herbivorous or carnivorous food or 1 X DV if generally immobile and
-# feeding on detritus, surficial algae, or other microbial food. (d) SNAILS = 0
-# slower (often mass-feeding) forms and 0.25 for fastest ones (often predators).
-# (8) For shelled cephalopods (AMMONOIDS, NAUTILOIDS, etc., including order
-# SPIRULIDA), use 1 X T as an estimate of tentacle length. For (swimming)
-# non-shelled COLEOIDS (except shelled spirulids), use 2 X AP. (9) For
-# macroalgae feeders (raptors on bulk microbes), generally code RelFoodStrat as
-# a crawler based on size, but downgrading one level to account for reduced
-# mobility because of immobile food.
+# AbsFoodStrat = AbsStrat. (6) For shelled cephalopods (AMMONOIDS, NAUTILOIDS,
+# etc., including order SPIRULIDA), use 1 X T as an estimate of tentacle length.
+# For (swimming) non-shelled COLEOIDS (except shelled spirulids), use 2 X AP.
+
+# (13B) Run separate check on scan-and-trap "raptorial" plankton (Search for
+# Order = AGNOSTIDA, Subclass = DIPLOSTRACA, Class = OSTRACODA, Class =
+# COPEPODA) without any life habit codings and sort by DV): RelFoodStrat ~ 1 X
+# DV.
 
 # (14) Confirm AbsFoodStrat and RelFoodStrat for mass feeders (both detritus
 # feeders, algae scrapers, and some scavengers). Search for Mass = 1 and rest
