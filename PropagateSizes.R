@@ -867,9 +867,15 @@ write.table(out, file = "PostSizes.tab", quote = FALSE, sep = "\t", row.names = 
 # (12) Confirm that entries that are definitely benthic (whether infaunal or
 # epifaunal) are not listed as fluidic or insubstantial. Search for AbsStratDist
 # = ">-100000" values [ANY], omitting those with Fluidic = 0 or Insubstantial =
-# 0. Sort by AbovePrimary > Phylum > Class. If warranted, set Fluidic = 1 and
-# Insubstantial = 1. If only a single substrate type of blank, that state can be
-# added as the likely substrate type.
+# 0. Sort by AbovePrimary > Phylum > Class. If warranted, set Fluidic = 0 and
+# Insubstantial = 0. If both of these "aquatic" states are checked, they are
+# normally the only states checked for these characters. (Exceptions include
+# some amphibious tetrapods that regularly rest on land and within water, such
+# as early CETACEANS, CROCODYLIANS, PINNIPEDS, and other coastal tetrapods, and
+# some floating marine BIRDS, which can be both fluidic and Soft-substrate
+# resters.) If other substrates are checked, reconcile the conflict by setting
+# the correct state combinations. If only a single substrate type of blank, that
+# state can be added as the likely substrate type.
 
 # (13) For filter-feeding ECHINODERMS, clear the FilterDensity field if the
 # entry is NOT a filter-feeder. Check FilterDensity = High/Medium/Low and
