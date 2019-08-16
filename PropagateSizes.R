@@ -864,7 +864,14 @@ write.table(out, file = "PostSizes.tab", quote = FALSE, sep = "\t", row.names = 
 # organisms (AbovePrimary = 1, WithinPrimary = 0) that have RelStrat = 1 also
 # have AbsStrat = 1.
 
-# (12) For filter-feeding ECHINODERMS, clear the FilterDensity field if the
+# (12) Confirm that entries that are definitely benthic (whether infaunal or
+# epifaunal) are not listed as fluidic or insubstantial. Search for AbsStratDist
+# = ">-100000" values [ANY], omitting those with Fluidic = 0 or Insubstantial =
+# 0. Sort by AbovePrimary > Phylum > Class. If warranted, set Fluidic = 1 and
+# Insubstantial = 1. If only a single substrate type of blank, that state can be
+# added as the likely substrate type.
+
+# (13) For filter-feeding ECHINODERMS, clear the FilterDensity field if the
 # entry is NOT a filter-feeder. Check FilterDensity = High/Medium/Low and
 # FilterFeeder != 1. (If FilterFeeder is blank in the Constant data set, check
 # the Mode propagation; if a FilterDensity coding was propagated in the Constant
@@ -872,7 +879,7 @@ write.table(out, file = "PostSizes.tab", quote = FALSE, sep = "\t", row.names = 
 # FilterDensity and propagate its dependent FilterFeeder = 1 and check the
 # Estimated box.)
 
-# (13) Confirm AbsFoodStrat and RelFoodStrat for "predators" (really, all
+# (14) Confirm AbsFoodStrat and RelFoodStrat for "predators" (really, all
 # raptorial feeders, including scavengers). Search for Raptor = 1 only and sort
 # by Fluidic > Microbivore > Phylum > Class > AP / DV. Be aware the same higher
 # taxon can have widely varying codings among its genera, depending on many
@@ -926,42 +933,43 @@ write.table(out, file = "PostSizes.tab", quote = FALSE, sep = "\t", row.names = 
 # use 1 X T as an estimate of tentacle length. For (swimming) non-shelled
 # COLEOIDS (except shelled spirulids), use 2 X AP.
 
-# (13B) Run separate check on scan-and-trap "raptorial" plankton (Search for
+# (14B) Run separate check on scan-and-trap "raptorial" plankton (Search for
 # Order = AGNOSTIDA, Order = EODISCIDA, Subclass = DIPLOSTRACA, Class =
 # OSTRACODA, Class = COPEPODA and smallest subfamily = LEPTOPLASTINAE) without
 # any life habit codings and sort by DV): RelFoodStrat ~ 1 X DV.
 
-# (14) Confirm AbsFoodStrat and RelFoodStrat for mass feeders (both detritus
+# (15) Confirm AbsFoodStrat and RelFoodStrat for mass feeders (both detritus
 # feeders, algae scrapers, and some scavengers). Search for Mass = 1 and rest
-# 0s, and sort by FoodAbovePrimary > Phylum > Class > DV/T to distinguish
-# epifaunal from infaunal foods. (14A) Surficial mass (typically algal) feeders
-# (including those that use body mucus to capture seston): Animals scraping or
-# eating algal films / detritus ON/ABOVE substrate (e.g., SNAILS,
-# MONOPLACOPHORANS, CHITONS, a few infaunal TELLINID BIVALVES, JAWLESS and EARLY
-# FISHES, and some POLYCHAETES, ECHINOIDS, ASTEROIDS, and OPHIUROIDS), typically
-# are coded as AbsFoodStrat = 0. (Note macroalgae feeders are excluded here
-# because they are bulk feeders and often raptorial.) RelFoodStrat depends on
-# where the feeding organ is located: If the mouth is emplaced against sediment
-# in resting (non-feeding) position, RelFoodStrat = 0. If the head is raised
-# substantially and a proboscis is used for feeding (or the animal swims), then
-# the distance will correspond to the distance from the organism to the food.
-# Similar logic is used if the animal is infaunal (TELLINIDS, POLYCHAETES) and
-# feed using extensible feeding organs like palps or siphons or introverts.
-# RelFoodAbove/Within coding depends on whether the organism considers the food
-# above or below their level. For most animals, the surficial film with be
-# "above" their immediate microhabitat, but animals with long feeding organs or
-# demersal animals may be coded as below their immediate microhabitat. For
-# mass-feeding OSTRACODES and similar animals using appendages to collect food
-# particles (usually within sediment, but sometimes above it), RelFoodStrat will
-# generally correspond with appendage length, approximated by D/V, a minimal
-# modification (because of lateral compression) from the logic used for
-# trilobites. Surficial mass-feeding, carnivorous (or macro-algal) scavengers
-# (e.g., ASTEROIDS, OPHIUROIDS, STENUROIDS and some ECHINOIDS) are typically
-# coded as RelFoodStrat = 0.25 because of presumably larger food. Animals that
-# ingest bodily-secreted mucus ensnared with seston (e.g., a few ASTEROIDS) are
-# coded AbsFoodStrat as the uppermost body surface and RelFoodStrat = 0.
+# 0s, and sort by FoodAbovePrimary > Carnivore > Phylum > Class > DV/T to
+# distinguish epifaunal from infaunal foods. (15A) Surficial mass (typically
+# algal) feeders (including those that use body mucus to capture seston):
+# Animals scraping or eating algal films / detritus ON/ABOVE substrate (e.g.,
+# SNAILS, MONOPLACOPHORANS, CHITONS, a few infaunal TELLINID BIVALVES, JAWLESS
+# and EARLY FISHES, and some POLYCHAETES, ECHINOIDS, ASTEROIDS, and OPHIUROIDS),
+# typically are coded as AbsFoodStrat = 0. (Note macroalgae feeders are excluded
+# here because they are bulk feeders and often raptorial.) RelFoodStrat depends
+# on where the feeding organ is located: If the mouth is emplaced against
+# sediment in resting (non-feeding) position, RelFoodStrat = 0. If the head is
+# raised substantially and a proboscis is used for feeding (or the animal
+# swims), then the distance will correspond to the distance from the organism to
+# the food. Similar logic is used if the animal is infaunal (TELLINIDS,
+# POLYCHAETES) and feed using extensible feeding organs like palps or siphons or
+# introverts. RelFoodAbove/Within coding depends on whether the organism
+# considers the food above or below their level. For most animals, the surficial
+# film with be "above" their immediate microhabitat, but animals with long
+# feeding organs or demersal animals may be coded as below their immediate
+# microhabitat. For mass-feeding OSTRACODES and similar animals using appendages
+# to collect food particles (usually within sediment, but sometimes above it),
+# RelFoodStrat will generally correspond with appendage length, approximated by
+# D/V, a minimal modification (because of lateral compression) from the logic
+# used for trilobites. Surficial mass-feeding, carnivorous (or macro-algal)
+# scavengers (e.g., ASTEROIDS, OPHIUROIDS, STENUROIDS and some ECHINOIDS) are
+# typically coded as RelFoodStrat = 0.25 because of presumably larger food.
+# Animals that ingest bodily-secreted mucus ensnared with seston (e.g., a few
+# ASTEROIDS) are coded AbsFoodStrat as the uppermost body surface and
+# RelFoodStrat = 0.
 #
-# (14B) "Deposit" and detritus feeders eating WITHIN sediment: AbsFoodStrat
+# (15B) "Deposit" and detritus feeders eating WITHIN sediment: AbsFoodStrat
 # based on location of food, typically corresponding to burial depth. For
 # surficial "deposit-feeding" TRILOBITES, use 1/2 X transverse width (or 1 X D/V
 # depth, if smaller value) as proxy for depth of sediment churned. Code
@@ -978,26 +986,26 @@ write.table(out, file = "PostSizes.tab", quote = FALSE, sep = "\t", row.names = 
 # of NUCULID and NUCULANID (only) PROTOBRANCHS, RelFoodStrat = 0.25
 # (technically, 25% X D/V).
 
-# (15) Confirm RelFoodStrat and AbsFoodStrat are correct for absorptive feeders,
+# (16) Confirm RelFoodStrat and AbsFoodStrat are correct for absorptive feeders,
 # incorporeal feeders, and autotrophs, running each separately (the state = 1,
 # rest = 0). Sort by RelFoodStrat > AbsStrat > RelStrat > Phylum > Class.
 # Ambient and incorporeal feeders should have RelFoodStrat = 0 and AbsStrat =
 # RelStrat, and no animals should be listed as an autotroph (but animals can be
 # ambient- and/or incorporeal-feeders).
 
-# (16) Confirm RelFoodStrat and AbsFoodStrat are correct for attachment feeders
+# (17) Confirm RelFoodStrat and AbsFoodStrat are correct for attachment feeders
 # and solution feeders, running each separately (the state = 1, rest = 0). For
 # attachment feeders, RelFoodStrat will depend on depth of penetration. Best
 # strategy is to review propagated values and use logic from relatives to fill
 # in blank states.
 
-# (17) Go through each character and confirm no "all-zeros" (i.e., if all
+# (18) Go through each character and confirm no "all-zeros" (i.e., if all
 # dietary states are 0, etc.), removing some estimates as needed. All 1s are
 # acceptable. If not sure which to delete, consult the alternative propagation
 # method data set for a reference. (Do this check BEFORE subsequent ones because
 # it can lead to new entries with a particular feeding mode.)
 
-# (18) Once these checks are run, re-run them (except no. 6 that checks every
+# (19) Once these checks are run, re-run them (except no. 6 that checks every
 # one) and clear the SizeChanged = Check tags. Then do a final search for any
 # that are still checked, focusing on the size-related characters, to confirm
 # sensibility, clearing them at end.
