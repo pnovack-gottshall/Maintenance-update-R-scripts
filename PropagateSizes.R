@@ -729,6 +729,15 @@ write.table(out, file = "PostSizes.tab", quote = FALSE, sep = "\t", row.names = 
 # committed), best to leave the state uncoded. This is also common with bivalves
 # and some brachiopods where the orientation depends on many factors.
 
+# (0) Are there any entries where, through process of elimination, the life
+# habit states can be coded? For example, search for any entries that are Biotic
+# = 0 + Lithic = 0 but omit Fluidic = 1; if so, then fluidic should be coded as
+# 1. Run this check across all 5 such characters (substrate composition,
+# substrate consistency, diet, physical condition of food, and foraging habit)
+# BEFORE running subsequent checks, because it can introduce new life habit
+# codings. If adding a state to a Sp/Gen-level entry, make sure to "Check" that
+# the added state is "Estimated."
+
 # (1) Pelagic taxa given benthic AbsStratDists: Find Fluidic = 1 & Insubstantial
 # = 1 & AbsStratDist = ">-10000" [ANY] & SizeChanged = CHECK and delete
 # AbsStratDist (if needs correcting).
