@@ -1,4 +1,4 @@
-## Confirm raw data in 'mode' and 'constant' databases are identical
+## CONFIRM RAW DATA IN 'MODE' AND 'CONSTANT' DATABASES ARE IDENTICAL
 
 # Explanation: When dealing with two databases in which some states are
 # estimated by different propagation algorithms, it is critical that the raw,
