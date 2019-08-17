@@ -838,7 +838,7 @@ write.table(out, file = "PostSizes.tab", quote = FALSE, sep = "\t", row.names = 
 # incurrent flow occurs in lower ostia. For active filter feeders, the coding
 # depends on the size of the pumping organ. All BRYOZOANS, GRAPTOLITES,
 # PTEROBRANCHS, and CEPHALOCHORDATA should be 0.25. Filter-feeding
-# MICROCRUSTACEANS (amphipods, mysids, etc.) and burrowing filter-feeding SHRIMP
+# MICROCRUSTACEANS (AMPHIPODS, MYSIDS, etc.) and burrowing filter-feeding SHRIMP
 # generally should be 0.25. ASCIDIANS should generally be 0.5. Filter-feeding
 # FISHES and WHALES should generally be 1.0. BRACHIOPODS should be half the AP
 # length, and HYOLITHS the transverse width. Filter-feeding mollusks (BIVALVES,
