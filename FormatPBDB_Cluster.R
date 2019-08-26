@@ -69,62 +69,21 @@ unpack.PBDB <- function(prep) {
 }
 
 
-
-# Serial version (running through 1000 genera)
-(start.t <- Sys.time())
-# Use genera and subgenera
-which.gsg <- which(pbdb$accepted_rank == "genus" | pbdb$accepted_rank == "subgenus")
-n.gen <- length(unique(pbdb$accepted_name[which.gsg]))
-x <- data.frame(Phylum = character(n.gen), Subphylum = character(n.gen), 
-                Class = character(n.gen), Subclass = character(n.gen), 
-                Order = character(n.gen), Suborder = character(n.gen), 
-                Superfamily = character(n.gen), Family = character(n.gen), 
-                Subfamily = character(n.gen), Genus = sort(unique(pbdb$accepted_name[which.gsg])), 
-                Subgenus = character(n.gen), Species = rep("sp.", n.gen), 
-                early_age = numeric(n.gen), late_age = numeric(n.gen), 
-                stringsAsFactors = FALSE)
-scales <- c("phylum", "subphylum", "class", "subclass", "order", "suborder", 
-            "superfamily", "family", "subfamily", "genus", "subgenus")
-for(g in 1:1000) {
-  wh <- which(pbdb$accepted_name == x$Genus[g] & (pbdb$taxon_rank == "genus" | 
-                                                    pbdb$taxon_rank == "subgenus"))[1]
-  x$early_age[g] <- pbdb$firstapp_max_ma[wh]
-  x$late_age[g] <- pbdb$lastapp_min_ma[wh]
-  if (pbdb$accepted_rank[wh] == "subgenus")
-    x$Subgenus[g] <- as.character(x$Genus[g])
-  parent <- pbdb[which(pbdb$accepted_no == pbdb$parent_no[wh]), ][1, ]
-  repeat {
-    if(parent$accepted_rank %in% scales) 
-      x[g, which(scales == parent$accepted_rank)] <- as.character(parent$accepted_name)
-    parent <- pbdb[which(pbdb$accepted_no == parent$parent_no), ][1, ]
-    if(all(is.na(parent))) break
-  }
-}
-(Sys.time() - start.t)    
-
-# Serial version takes 232.3 seconds for 1000 (or 4.65 hours for all)
+# Identify possibly problematic homonym genera
+which.gsg <- 
+  which((pbdb$accepted_rank == "genus" | pbdb$accepted_rank == "subgenus") 
+        & pbdb$difference == "")
+sort(table(pbdb$accepted_name[which.gsg]), decreasing = TRUE)[1:30]
+pbdb[which(pbdb$accepted_name == "Lowenstamia"), ]
 
 
-
-# Re-do using lapply (only 1 CPU)
-(start.t <- Sys.time())
-which.gsg <-
-  which(pbdb$accepted_rank == "genus" | pbdb$accepted_rank == "subgenus")
-gen.names <- sort(unique(pbdb$accepted_name[which.gsg]))
-# gen.seq <- seq_along(gen.names)
-gen.seq <- 1:1000
-prep <- lapply(X = gen.seq, FUN = prep.PBDB, gen.names = gen.names, pbdb = pbdb)
-output <- unpack.PBDB(prep)
-(Sys.time() - start.t)    
-# Serial lapply version takes 41.2 seconds for 1000 (or 49.4 mins for all)
-
-
-# Now compare using parallel computing:
+# Version using parallel computing:
 library(snowfall)
 (t.start0 <- Sys.time())
 # Initialize
-which.gsg <-
-  which(pbdb$accepted_rank == "genus" | pbdb$accepted_rank == "subgenus")
+which.gsg <- 
+  which((pbdb$accepted_rank == "genus" | pbdb$accepted_rank == "subgenus") 
+        & pbdb$difference == "")
 gen.names <- sort(unique(pbdb$accepted_name[which.gsg]))
 gen.seq <- seq_along(gen.names)
 # gen.seq <- 1:1000
@@ -149,17 +108,44 @@ output2 <- unpack.PBDB(prep)
 head(output2)
 write.csv(output2, file = "PBDBformatted.csv", row.names = FALSE)
 
-# Parallel lapply version takes 60.2 secs for 1000 (21 s for the sfLapply) (or 27.8 min for all)
-# Parallel lapply version (w/o export time) takes 19.7 secs for 1000 (or 23.7 mins for all)
-# Parallel lapplyLB version takes 642 secs for 1000 (or 12.8 hrs for all)
-# Parallel lapplyLB version (w/o export time) takes 602 secs for 1000 (or 12.0 hrs for all)
 
 
-# Compare output
-rbind(x[1000, ], output[1000, ], output2[1000, ])
+## Check on homonyms and possibly duplicate names
+# Most genera with multiple entries are legitimate, in which the genus as a
+# whole, plus each subgenus are listed separately.
+mults <- sort(table(output2$Genus), decreasing = TRUE)
+mults <- mults[mults >= 2]
+head(mults, 20)
+cat("The presence of subgenera, homonyms, and possible duplicates equals", 
+    round(100 * length(mults) / nrow(output2), 1), "% of the database\n")
+output2[which(output2$Genus == "Acanthopyge"), ]
+
+for(d in 1:length(mults)) {
+  sus.gen <- names(mults[d])
+  suspicious <- output2[which(output2$Genus == sus.gen), ]
+  classes <- unique(suspicious$Class)
+  sq <- 1:nrow(suspicious)
+  if (length(classes) == 1L)
+    if (all(apply(suspicious[sq, 1:9], 2, function(sq) length(unique) == 1)) 
+        & suspicious$Subgenus[1] == "" & all(suspicious$Subgenus[-1] != ""))
+      cat("OK: Genus", names(mults[d]), "has", nrow(suspicious) - 1, "subgenera.\n")
+  if (any(apply(suspicious[sq, 1:9], 2, function(sq) length(unique) != 1)) 
+      & length(classes) == 1L)
+    cat("WARNING: Genus", names(mults[d]), "may be a duplicate genus entry. Investigate and override in PBDB if true.")
+  if (length(classes) == 2L)
+    cat("OK: Genus", names(mults[d]), "is a homonym for genera in difference classes:", classes, "\n")
+}
+
+# For any genera tagged as "WARNING", the best-practice is to add a new genus
+# taxon to the PBDB that overrides the duplicate (and to re-classify
+# occurrences) and to do a fresh download from PBDB before proceeding. Either
+# way, make sure such erroneous duplicates are deleted from my database
+# (manually, if needed).
 
 
 
+
+## Post-process to focus on marine taxa and to standardize taxonomy with mine
 # x <- read.csv(file = "PBDBformatted.csv", header = TRUE, stringsAsFactors = FALSE)
 head(x)
 
