@@ -25,7 +25,9 @@ head(pbdb)
 # gen.names = Vector of PBDB genus (and subgenus) names
 # pbdb = data frame of all PBDB occurrences
 #
-# output is a list, with each item the taxonomy for a single genus
+# Output is a list, with each item the taxonomy for a single genus. Extends LAD
+# to 'Recent' if genus is extant and splits subgenus names into genus and
+# subgenus components.
 prep.PBDB <- function(g = 1, gen.names, pbdb) {
   scales <- c("phylum", "subphylum", "class", "subclass", "order", "suborder", 
               "superfamily", "family", "subfamily", "genus", "subgenus")
@@ -41,8 +43,15 @@ prep.PBDB <- function(g = 1, gen.names, pbdb) {
                                                    pbdb$taxon_rank == "subgenus"))[1]
   out$early_age <- as.numeric(pbdb$firstapp_max_ma[wh])
   out$late_age <- as.numeric(pbdb$lastapp_min_ma[wh])
-  if (pbdb$accepted_rank[wh] == "subgenus")
-    out$Subgenus <- as.character(out$Genus)
+  # Implement 'Pull-of-the-Recent' extension:
+  if (any(pbdb$is_extant == "extant"))
+    out$late_age <- 0
+  # Properly assign subgenera and genera:
+  if (pbdb$accepted_rank[wh] == "subgenus") {
+    split.subgenus <- strsplit(out$Genus, " ")[[1]]
+    out$Genus <- as.character(split.subgenus[1])
+    out$Subgenus <- as.character(gsub("[()]", "", split.subgenus[2]))
+  }
   parent <- pbdb[which(pbdb$accepted_no == pbdb$parent_no[wh]), ][1, ]
   repeat {
     if (parent$accepted_rank %in% scales)
@@ -141,6 +150,15 @@ for(d in 1:length(mults)) {
 # occurrences) and to do a fresh download from PBDB before proceeding. Either
 # way, make sure such erroneous duplicates are deleted from my database
 # (manually, if needed).
+
+
+
+
+## Add geological subperiod names to stratigraphic ranges.
+
+
+
+# Strategy: Best to loop through the subperiods rather than each row!
 
 
 
