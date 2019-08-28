@@ -41,11 +41,11 @@ prep.PBDB <- function(g = 1, gen.names, pbdb) {
   out$Genus <- as.character(gen.names[g])
   wh <- which(pbdb$accepted_name == out$Genus & (pbdb$taxon_rank == "genus" | 
                                                    pbdb$taxon_rank == "subgenus"))[1]
-  out$early_age <- as.numeric(pbdb$firstapp_max_ma[wh])
-  out$late_age <- as.numeric(pbdb$lastapp_min_ma[wh])
+  out$max_ma <- as.numeric(pbdb$firstapp_max_ma[wh])
+  out$min_ma <- as.numeric(pbdb$lastapp_min_ma[wh])
   # Implement 'Pull-of-the-Recent' extension:
-  if (any(pbdb$is_extant == "extant"))
-    out$late_age <- 0
+  if (any(pbdb$is_extant[wh] == "extant"))
+    out$min_ma <- 0
   # Properly assign subgenera and genera:
   if (pbdb$accepted_rank[wh] == "subgenus") {
     split.subgenus <- strsplit(out$Genus, " ")[[1]]
