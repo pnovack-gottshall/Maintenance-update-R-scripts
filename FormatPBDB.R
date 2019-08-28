@@ -108,7 +108,6 @@ sfExportAll()				            # Export all libraries, files, & objects
 (t.start1 <- Sys.time())
 prep <- NA
 prep <- sfLapply(x = gen.seq, fun = prep.PBDB, gen.names = gen.names, pbdb = pbdb) # Version without load-balancing
-# prep <- sfClusterApplyLB(x = gen.seq, fun = prep.PBDB, gen.names = gen.names, pbdb = pbdb) 	# Version using load-balancing
 sfStop()
 (Sys.time() - t.start1)
 output2 <- unpack.PBDB(prep)
