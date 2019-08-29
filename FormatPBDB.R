@@ -29,15 +29,18 @@ head(pbdb)
 # to 'Recent' if genus is extant and splits subgenus names into genus and
 # subgenus components.
 prep.PBDB <- function(g = 1, gen.names, pbdb) {
-  scales <- c("phylum", "subphylum", "class", "subclass", "order", "suborder", 
+  scales <- c("phylum", "subphylum", "superclass", "class", "subclass", 
+              "infraclass", "superorder", "order", "suborder", "infraorder", 
               "superfamily", "family", "subfamily", "genus", "subgenus")
   out <- data.frame(Phylum = character(1), Subphylum = character(1), 
-                  Class = character(1), Subclass = character(1), 
-                  Order = character(1), Suborder = character(1),
-                  Superfamily = character(1), Family = character(1), 
-                  Subfamily = character(1), Genus = character(1), 
-                  Subgenus = character(1), Species = "sp.", 
-                  stringsAsFactors = FALSE)
+                    Superclass = character(1), Class = character(1), 
+                    Subclass = character(1), Infraclass = character(1), 
+                    Superorder = character(1), Order = character(1), 
+                    Suborder = character(1), Infraorder = character(1), 
+                    Superfamily = character(1), Family = character(1), 
+                    Subfamily = character(1), Genus = character(1), 
+                    Subgenus = character(1), Species = "sp.", 
+                    stringsAsFactors = FALSE)
   out$Genus <- as.character(gen.names[g])
   wh <- which(pbdb$accepted_name == out$Genus & (pbdb$taxon_rank == "genus" | 
                                                    pbdb$taxon_rank == "subgenus"))[1]
