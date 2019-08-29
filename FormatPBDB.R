@@ -20,15 +20,17 @@ head(pbdb)
 
 
 ## Function to add higher taxonomic names (phylum, class, order, etc.) for PBDB
-## genus (and subgenus) names
-# g = Vector (sequence) of number of genus names to process
-# gen.names = Vector of PBDB genus (and subgenus) names
-# pbdb = data frame of all PBDB occurrences
+## genus (and subgenus) names.
+# g = Vector (sequence) of number of genus names to process.
+# gen.order = Vector of ordered PBDB genus (and subgenus) names.
+# which.gsg = Vector of indices for PBDB entries tagged as accepted genus or 
+#   subgenus names.
+# pbdb = data frame of all PBDB occurrences.
 #
 # Output is a list, with each item the taxonomy for a single genus. Extends LAD
 # to 'Recent' if genus is extant and splits subgenus names into genus and
 # subgenus components.
-prep.PBDB <- function(g = 1, gen.names, pbdb) {
+prep.PBDB <- function(g = 1, gen.order, which.gsg, pbdb) {
   scales <- c("phylum", "subphylum", "superclass", "class", "subclass", 
               "infraclass", "superorder", "order", "suborder", "infraorder", 
               "superfamily", "family", "subfamily", "genus", "subgenus")
@@ -41,9 +43,8 @@ prep.PBDB <- function(g = 1, gen.names, pbdb) {
                     Subfamily = character(1), Genus = character(1), 
                     Subgenus = character(1), Species = "sp.", 
                     stringsAsFactors = FALSE)
-  out$Genus <- as.character(gen.names[g])
-  wh <- which(pbdb$accepted_name == out$Genus & (pbdb$taxon_rank == "genus" | 
-                                                   pbdb$taxon_rank == "subgenus"))[1]
+  out$Genus <- as.character(pbdb$accepted_name[which.gsg][gen.order[g]])
+  wh <- which.gsg[gen.order[g]]
   out$max_ma <- as.numeric(pbdb$firstapp_max_ma[wh])
   out$min_ma <- as.numeric(pbdb$lastapp_min_ma[wh])
   # Implement 'Pull-of-the-Recent' extension:
@@ -96,8 +97,8 @@ library(snowfall)
 which.gsg <- 
   which((pbdb$accepted_rank == "genus" | pbdb$accepted_rank == "subgenus") 
         & pbdb$difference == "")
-gen.names <- sort(unique(pbdb$accepted_name[which.gsg]))
-gen.seq <- seq_along(gen.names)
+gen.order <- order(pbdb$accepted_name[which.gsg])
+gen.seq <- seq_along(gen.order)
 # gen.seq <- 1:1000
 # Set up computer cluster
 library(parallel)
@@ -110,7 +111,8 @@ sfExportAll()				            # Export all libraries, files, & objects
 # Execute the function
 (t.start1 <- Sys.time())
 prep <- NA
-prep <- sfLapply(x = gen.seq, fun = prep.PBDB, gen.names = gen.names, pbdb = pbdb) # Version without load-balancing
+prep <- sfLapply(x = gen.seq, fun = prep.PBDB, gen.order = gen.order, 
+                 which.gsg = which.gsg, pbdb = pbdb) # Version without load-balancing
 sfStop()
 (Sys.time() - t.start1)
 output2 <- unpack.PBDB(prep)
