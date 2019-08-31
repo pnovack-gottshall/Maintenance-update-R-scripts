@@ -82,6 +82,7 @@ unpack.PBDB <- function(prep) {
 }
 
 
+
 # Identify possibly problematic homonym genera
 which.gsg <- 
   which((pbdb$accepted_rank == "genus" | pbdb$accepted_rank == "subgenus") 
@@ -119,7 +120,44 @@ output2 <- unpack.PBDB(prep)
 (Sys.time() - t.start0)
 (Sys.time() - t.start1)
 head(output2)
-write.csv(output2, file = "PBDBformatted.csv", row.names = FALSE)
+
+
+## Add named geological intervals to stratigraphic ranges
+strat_names <-
+  read.csv("https://www.paleobiodb.org/data1.2/intervals/list.csv?all_records&vocab=pbdb")
+# 1 = eons, 2 = eras, 3 = periods, 4 (the default) = subperiods, and 5 = epochs.
+scale_level <- 4
+ages <- strat_names[which(strat_names$scale_level == scale_level),]
+edia <- strat_names[which(strat_names$interval_name == "Ediacaran"), ]
+ages <- rbind(ls, edia)
+tail(ages[, 1:5])
+output2$max_age <- character(1)
+output2$min_age <- character(1)
+
+for(int in 1:nrow(ages)) {
+  wh.FAD <- which(output2$max_ma > ages$min_ma[int] 
+                  & output2$max_ma <= ages$max_ma[int])
+  wh.LAD <- which(output2$min_ma >= ages$min_ma[int] 
+                  & output2$min_ma < ages$max_ma[int])
+  output2$max_age[wh.FAD] <- as.character(ages$interval_name[int])
+  output2$min_age[wh.LAD] <- as.character(ages$interval_name[int])
+}
+
+# Special work-around for singletons (only problematic for those that occur on a
+# boundary):
+wh.singleton <- which(output2$max_ma == output2$min_ma)
+output2$min_age[wh.singleton] <- output2$max_age[wh.singleton]
+
+# Recent is included for extant taxa (although no PBDB taxa have FADs = 0):
+wh.Recent.FAD <- which(output2$max_ma == 0)
+wh.Recent.LAD <- which(output2$min_ma == 0)
+output2$max_age[wh.Recent.FAD] <- "Recent"
+output2$min_age[wh.Recent.FAD] <- "Recent"
+
+head(output2)
+
+## Save output
+# write.csv(output2, file = "PBDBformatted.csv", row.names = FALSE)
 
 
 
