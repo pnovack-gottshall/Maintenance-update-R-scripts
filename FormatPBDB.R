@@ -19,6 +19,8 @@ pbdb <- read.csv("pbdb_data.csv")
 head(pbdb)
 
 
+## FUNCTIONS -------------------------------------------------------------------
+
 ## Function to add higher taxonomic names (phylum, class, order, etc.) for PBDB
 ## genus (and subgenus) names.
 # g = Vector (sequence) of number of genus names to process.
@@ -91,6 +93,9 @@ sort(table(pbdb$accepted_name[which.gsg]), decreasing = TRUE)[1:30]
 pbdb[which(pbdb$accepted_name == "Lowenstamia"), ]
 
 
+
+## Format the PBDB data using a parallel-computing environment ---------------
+
 # Version using parallel computing:
 library(snowfall)
 (t.start0 <- Sys.time())
@@ -161,42 +166,55 @@ head(output2)
 
 
 
-## Check on homonyms and possibly duplicate names
-# Most genera with multiple entries are legitimate, in which the genus as a
-# whole, plus each subgenus are listed separately.
-mults <- sort(table(output2$Genus), decreasing = TRUE)
+## Check for homonyms and possibly duplicate names -----------------------------
+
+# Most genera with multiple entries are legitimate, caused by listing the genus
+# as a whole, plus each subgenus separately. Saves the list to file specified
+# below.
+
+# Do you want to return the list of genera with subgenera? (DEFAULT = FALSE)
+return.subgenera <- FALSE
+
+mults <- sort(table(output$Genus), decreasing = TRUE)
 mults <- mults[mults >= 2]
 head(mults, 20)
+file.name <- "multiGenera.txt"
+sq <- 1:19     # Higher taxonomy columns
 cat("The presence of subgenera, homonyms, and possible duplicates equals", 
-    round(100 * length(mults) / nrow(output2), 1), "% of the database\n")
-output2[which(output2$Genus == "Acanthopyge"), ]
+    round(100 * length(mults) / nrow(output), 1), "% of the database\n", 
+    file = file.name)
+output[which(output$Genus == "Acanthopyge"), ] # Example of multiple subgenera
 
 for(d in 1:length(mults)) {
   sus.gen <- names(mults[d])
-  suspicious <- output2[which(output2$Genus == sus.gen), ]
+  suspicious <- output[which(output$Genus == sus.gen), ]
   classes <- unique(suspicious$Class)
-  sq <- 1:nrow(suspicious)
   if (length(classes) == 1L)
-    if (all(apply(suspicious[sq, 1:9], 2, function(sq) length(unique) == 1)) 
-        & suspicious$Subgenus[1] == "" & all(suspicious$Subgenus[-1] != ""))
-      cat("OK: Genus", names(mults[d]), "has", nrow(suspicious) - 1, "subgenera.\n")
-  if (any(apply(suspicious[sq, 1:9], 2, function(sq) length(unique) != 1)) 
-      & length(classes) == 1L)
-    cat("WARNING: Genus", names(mults[d]), "may be a duplicate genus entry. Investigate and override in PBDB if true.")
+    # Identify likely subgenera:
+    if (return.subgenera & all(sapply(sq, function(sq)
+      length(unique(suspicious[[sq]])) == 1)) &
+      suspicious$Subgenus[1] == "" & all(suspicious$Subgenus[-1] != ""))
+      cat("OK: Genus", names(mults[d]), "has", nrow(suspicious) - 1, 
+          "subgenera.\n", file = file.name, append = TRUE)
+  # Identify likely problematic duplicated entries:
+  if (any(sapply(sq, function(sq) 
+    length(unique(suspicious[[sq]])) != 1)) & length(classes) == 1L)
+    cat("WARNING: Genus", names(mults[d]), 
+        "may be a duplicate genus entry. Investigate and override in PBDB if true.\n", 
+        file = file.name, append = TRUE)
+  # Identify likely legitimate homonyms:
   if (length(classes) == 2L)
-    cat("OK: Genus", names(mults[d]), "is a homonym for genera in difference classes:", classes, "\n")
+    cat("OK: Genus", names(mults[d]), 
+        "is a homonym for genera in difference classes:", classes, "\n", 
+        file = file.name, append = TRUE)
 }
 
-# For any genera tagged as "WARNING", the best-practice is to add a new genus
-# taxon to the PBDB that overrides the duplicate (and to re-classify
-# occurrences) and to do a fresh download from PBDB before proceeding. Either
-# way, make sure such erroneous duplicates are deleted from my database
-# (manually, if needed).
+# For any genera tagged as "WARNING", the best-practice is to add a new taxon to
+# the PBDB that overrides the duplicate (and to re-classify their occurrences).
 
 
 
-
-
+## Post-processing marine-only standardizations --------------------------------
 
 ## Post-process to focus on marine taxa and to standardize taxonomy with mine
 # x <- read.csv(file = "PBDBformatted.csv", header = TRUE, stringsAsFactors = FALSE)
