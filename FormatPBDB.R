@@ -120,7 +120,7 @@ strat_names <-
 scale_level <- 4
 ages <- strat_names[which(strat_names$scale_level == scale_level),]
 edia <- strat_names[which(strat_names$interval_name == "Ediacaran"), ]
-ages <- rbind(ls, edia)
+ages <- rbind(ages, edia)
 tail(ages[, 1:5])
 output$max_age <- character(1)
 output$min_age <- character(1)
