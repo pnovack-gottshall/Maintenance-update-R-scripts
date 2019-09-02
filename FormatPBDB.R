@@ -71,18 +71,6 @@ prep.PBDB <- function(g = 1, gen.order, which.gsg, pbdb) {
   return(out)
 }
 
-## Function to unpack the list into a compact data frame
-# Note that with a large PBDB object that this still takes some time to
-# complete. Consider tweaking to speed up.
-unpack.PBDB <- function(prep) {
-  Seq <- seq(length(prep))
-  out <- prep[[1]]
-  for (i in 2:length(prep)) {
-    out[i, ] <- prep[[i]]
-  }
-  return(out)
-}
-
 
 
 # Identify possibly problematic homonym genera
@@ -97,6 +85,7 @@ pbdb[which(pbdb$accepted_name == "Lowenstamia"), ]
 ## Format the PBDB data using a parallel-computing environment ---------------
 
 # Version using parallel computing:
+library(data.table) # Required below for merging parallel lists into dataframe
 library(snowfall)
 (t.start0 <- Sys.time())
 # Initialize
@@ -115,16 +104,13 @@ stopifnot(sfCpus() == cpus)		    # Confirm set up CPUs properly
 stopifnot(sfParallel() == TRUE)		# Confirm now running in parallel
 sfExportAll()				            # Export all libraries, files, & objects
 # Execute the function
-(t.start1 <- Sys.time())
 prep <- NA
 prep <- sfLapply(x = gen.seq, fun = prep.PBDB, gen.order = gen.order, 
                  which.gsg = which.gsg, pbdb = pbdb) # Version without load-balancing
 sfStop()
-(Sys.time() - t.start1)
-output2 <- unpack.PBDB(prep)
+output <- data.table::rbindlist(prep)
 (Sys.time() - t.start0)
-(Sys.time() - t.start1)
-head(output2)
+head(output)
 
 
 ## Add named geological intervals to stratigraphic ranges
@@ -136,33 +122,33 @@ ages <- strat_names[which(strat_names$scale_level == scale_level),]
 edia <- strat_names[which(strat_names$interval_name == "Ediacaran"), ]
 ages <- rbind(ls, edia)
 tail(ages[, 1:5])
-output2$max_age <- character(1)
-output2$min_age <- character(1)
+output$max_age <- character(1)
+output$min_age <- character(1)
 
 for(int in 1:nrow(ages)) {
-  wh.FAD <- which(output2$max_ma > ages$min_ma[int] 
-                  & output2$max_ma <= ages$max_ma[int])
-  wh.LAD <- which(output2$min_ma >= ages$min_ma[int] 
-                  & output2$min_ma < ages$max_ma[int])
-  output2$max_age[wh.FAD] <- as.character(ages$interval_name[int])
-  output2$min_age[wh.LAD] <- as.character(ages$interval_name[int])
+  wh.FAD <- which(output$max_ma > ages$min_ma[int] 
+                  & output$max_ma <= ages$max_ma[int])
+  wh.LAD <- which(output$min_ma >= ages$min_ma[int] 
+                  & output$min_ma < ages$max_ma[int])
+  output$max_age[wh.FAD] <- as.character(ages$interval_name[int])
+  output$min_age[wh.LAD] <- as.character(ages$interval_name[int])
 }
 
 # Special work-around for singletons (only problematic for those that occur on a
 # boundary):
-wh.singleton <- which(output2$max_ma == output2$min_ma)
-output2$min_age[wh.singleton] <- output2$max_age[wh.singleton]
+wh.singleton <- which(output$max_ma == output$min_ma)
+output$min_age[wh.singleton] <- output$max_age[wh.singleton]
 
 # Recent is included for extant taxa (although no PBDB taxa have FADs = 0):
-wh.Recent.FAD <- which(output2$max_ma == 0)
-wh.Recent.LAD <- which(output2$min_ma == 0)
-output2$max_age[wh.Recent.FAD] <- "Recent"
-output2$min_age[wh.Recent.FAD] <- "Recent"
+wh.Recent.FAD <- which(output$max_ma == 0)
+wh.Recent.LAD <- which(output$min_ma == 0)
+output$max_age[wh.Recent.FAD] <- "Recent"
+output$min_age[wh.Recent.FAD] <- "Recent"
 
-head(output2)
+head(output)
 
 ## Save output
-# write.csv(output2, file = "PBDBformatted.csv", row.names = FALSE)
+# write.csv(output, file = "PBDBformatted.csv", row.names = FALSE)
 
 
 
