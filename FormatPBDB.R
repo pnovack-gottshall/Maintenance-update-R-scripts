@@ -542,6 +542,14 @@ write.table(post, file = "PreSizes_Constant_withPBDB.tab", quote = FALSE,
 #     machaeridian orders Lepidocoleomorpha, Hercolepadida, and Turrilepadomorpha
 #     as new superfamilies.
 
+#  z. Based on the affirmation of Lindberg and Ponder (2020) regarding
+#     conclusions of Dzik (2010), treating problematic tergomyan
+#     ("monoplacophoran") families Kirengellidae, Pygmaeoconidae = Pygmaeoconinae,
+#     Romaniellidae, and Scenellidae as synonyms of Hypseloconidae in Order
+#     Kirengellida (= senior to junior synonyms Hypseloconida and Romaniellida),
+#     and treating all as uncertain (possibly stem-group Craniiformea) members of
+#     Brachiopoda (class UNCERTAIN and subphylum blank).
+
 # (6) Run code as usual in "PropogateSizes.R" or "PropogateLifeHabits.R", but
 # resaving as postX_withPBDB" file name. Make sure to add new IDNumbers to the
 # new PBDB entries!
