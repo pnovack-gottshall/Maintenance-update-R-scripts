@@ -237,11 +237,11 @@ non.marine <- c("Arachnida", "Insecta", "Collembola", "Palaeophreatoicidae",
     "Kreischeriidae", "Lissomartidae", "Opiliotarbidae", "Palaeocharinidae", 
     "Palaeotrilineatidae", "Proscorpiidae", "Trigonotarbidae", "Cheiridioidea",
     "Cheliferoidea", "Chthonioidea", "Feaelloidea", "Garypoidea", "Neobisioidea",
-    "Sternophoroidea", "Bilobosternina", "Cyphophthalmi", "Dyspnoi", "Euproopidae",
-    "Eupnoi", "Holosternina", "Ixodida", "Laniatores", "Lobosternina", 
-    "Meristosternina", "Mesostigmata", "Opilioacarida", "Orthosternina", 
-    "Posteriorricinulei", "Primoricinulei", "Sarcoptiformes", "Tetrophthalmi", 
-    "Trombidiformes", "Tetrapulmonata")
+    "Sternophoroidea", "Bellinuridae", "Bilobosternina", "Cyphophthalmi", 
+    "Dyspnoi", "Euproopidae", "Eupnoi", "Holosternina", "Ixodida", "Laniatores", 
+    "Lobosternina", "Meristosternina", "Mesostigmata", "Opilioacarida", 
+    "Orthosternina", "Posteriorricinulei", "Primoricinulei", "Sarcoptiformes", 
+    "Tetrophthalmi", "Trombidiformes", "Tetrapulmonata")
 # Most tetrapods are terrestrial, so remove by default:
 tetrapods <- c("Mammalia", "Reptilia")
 # Then add back in the known marine tetrapods (and some known marine xiphosurans,
@@ -253,7 +253,7 @@ marine.exceptions <- c("Chelonioidea", "Ophidiomorpha", "Mosasauroidea", "Mosasa
     "Charadriiformes", "Cetacea", "Sirenia", "Pinnipedia", "Desmostylia", "Ariidae", 
     "Plotosidae", "Archaeoceti", "Mysticeti", "Odontoceti", "Diploaspididae",
     "Mycteropidae", "Pterygotidae", "Woodwardopteridae", "Waeringopteroidea",
-    "Aglaspida", "Bellinuridae", "Eurypterina", "Limulina", "Stylonurina")
+    "Aglaspida", "Eurypterina", "Limulina", "Stylonurina")
 
 sq <- 1:nrow(x)
 # Extract the known marine taxa (in lineages that are typically non-marine):
@@ -433,7 +433,7 @@ write.table(post, file = "PreSizes_Constant_withPBDB.tab", quote = FALSE,
 #     eurypterids are currently classified in PBDB in Order Eurypterida within
 #     Order Xiphosurida, their eurypterid affiliation will be over-ridden with the
 #     algorithm above. Assign members of suborders Eurypterina and Stylonurina to
-#     Order Eurypterida.
+#     Order Eurypterida (in blank subclass).
 
 #  l. Given ongoing difficulty in classification of chaetetids (most are 
 #     demosponge form taxa with a few putative tabulates, c.f., Webby, et al. 
