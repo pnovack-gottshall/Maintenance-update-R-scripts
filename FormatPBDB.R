@@ -243,7 +243,7 @@ non.marine <- c("Arachnida", "Insecta", "Collembola", "Palaeophreatoicidae",
     "Tetrapulmonata")
 # Most tetrapods are terrestrial, so remove by default:
 tetrapods <- c("Mammalia", "Reptilia")
-# Then add back in the known marine tetrapods (and some known marine arachnids,
+# Then add back in the known marine tetrapods (and some known marine xiphosurans,
 # etc.):
 marine.exceptions <- c("Chelonioidea", "Ophidiomorpha", "Mosasauroidea", "Mosasauria",
     "Thalattosauria", "Sauropterygia", "Ichthyopterygia", "Mesoeucrocodylia",
