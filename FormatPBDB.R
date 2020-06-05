@@ -253,7 +253,7 @@ marine.exceptions <- c("Chelonioidea", "Ophidiomorpha", "Mosasauroidea", "Mosasa
     "Charadriiformes", "Cetacea", "Sirenia", "Pinnipedia", "Desmostylia", "Ariidae", 
     "Plotosidae", "Archaeoceti", "Mysticeti", "Odontoceti", "Diploaspididae",
     "Mycteropidae", "Pterygotidae", "Woodwardopteridae", "Waeringopteroidea",
-    "Aglaspida", "Eurypterina", "Limulina", "Stylonurina")
+    "Aglaspidida", "Eurypterina", "Limulina", "Stylonurina")
 
 sq <- 1:nrow(x)
 # Extract the known marine taxa (in lineages that are typically non-marine):
