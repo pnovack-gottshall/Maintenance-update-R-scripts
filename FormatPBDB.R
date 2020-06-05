@@ -1,5 +1,5 @@
-## Format PBDB genus/subgenus occurrences into taxonomic structure of my data,
-## using a parallel computing environment
+## FORMAT PBDB GENUS/SUBGENUS OCCURRENCES INTO TAXONOMIC STRUCTURE OF MY DATA,
+## USING A PARALLEL-COMPUTING ENVIRONMENT
 
 # The serial version takes ~4.5 hours to process PBDB into a formatted taxonomic
 # dataframe structure. This code rewrites the algorithm as a function that can
@@ -64,7 +64,7 @@ prep.PBDB <- function(g = 1, gen.order, which.gsg, pbdb) {
       out[1, which(scales == parent$accepted_rank)] <-
         as.character(parent$accepted_name)
     parent <-
-      pbdb[which(pbdb$accepted_no == parent$parent_no),][1,]
+      pbdb[which(pbdb$accepted_no == parent$parent_no), ][1,]
     if (all(is.na(parent)))
       break
   }
@@ -209,10 +209,11 @@ head(x)
 # Remove terrestrial and non-marine taxa, but include marine tetrapods. List
 # modified from Bush and Bambach (2015) to explicitly include three cetacean
 # suborders (because Cetacea now listed within Order Artiodactyla in PBDB) and
-# known marine xiphosurans, and to exclude Myriapoda, Kannemeyeriiformes,
-# Pelycosauria, Theriodontia, Therocephalia, freshwater Branchiopoda (=
-# conchostrans, nNotostracans, cladocerans, etc.), and all known arachnid taxa (because many arachnids are
-# getting listed in the xiphosuran download).
+# known marine xiphosurans and eurypterids, and to exclude Myriapoda, 
+# Kannemeyeriiformes, Pelycosauria, Theriodontia, Therocephalia, 
+# freshwater Branchiopoda (= conchostrans, notostracans, cladocerans, etc.), and
+# all known arachnid taxa (because many arachnids are getting listed in the 
+# xiphosuran download).
 non.marine <- c("Arachnida", "Insecta", "Collembola", "Palaeophreatoicidae",
     "Limnocytheridae", "Darwinuloidea", "Cypridoidea", "Cytherideidae", "Assimineidae",
     "Stenothyridae", "Hydrobiidae", "Ampullariidae", "Cyclophoridae", "Diplommatinidae",
@@ -236,11 +237,11 @@ non.marine <- c("Arachnida", "Insecta", "Collembola", "Palaeophreatoicidae",
     "Kreischeriidae", "Lissomartidae", "Opiliotarbidae", "Palaeocharinidae", 
     "Palaeotrilineatidae", "Proscorpiidae", "Trigonotarbidae", "Cheiridioidea",
     "Cheliferoidea", "Chthonioidea", "Feaelloidea", "Garypoidea", "Neobisioidea",
-    "Sternophoroidea", "Bilobosternina", "Cyphophthalmi", "Dyspnoi", "Eupnoi",
-    "Holosternina", "Ixodida", "Laniatores", "Lobosternina", "Meristosternina",
-    "Mesostigmata", "Opilioacarida", "Orthosternina", "Posteriorricinulei",
-    "Primoricinulei", "Sarcoptiformes", "Tetrophthalmi", "Trombidiformes",
-    "Tetrapulmonata")
+    "Sternophoroidea", "Bellinuridae", "Bilobosternina", "Cyphophthalmi", 
+    "Dyspnoi", "Euproopidae", "Eupnoi", "Holosternina", "Ixodida", "Laniatores", 
+    "Lobosternina", "Meristosternina", "Mesostigmata", "Opilioacarida", 
+    "Orthosternina", "Posteriorricinulei", "Primoricinulei", "Sarcoptiformes", 
+    "Tetrophthalmi", "Trombidiformes", "Tetrapulmonata")
 # Most tetrapods are terrestrial, so remove by default:
 tetrapods <- c("Mammalia", "Reptilia")
 # Then add back in the known marine tetrapods (and some known marine xiphosurans,
@@ -252,7 +253,7 @@ marine.exceptions <- c("Chelonioidea", "Ophidiomorpha", "Mosasauroidea", "Mosasa
     "Charadriiformes", "Cetacea", "Sirenia", "Pinnipedia", "Desmostylia", "Ariidae", 
     "Plotosidae", "Archaeoceti", "Mysticeti", "Odontoceti", "Diploaspididae",
     "Mycteropidae", "Pterygotidae", "Woodwardopteridae", "Waeringopteroidea",
-    "Bellinurina", "Eurypterina", "Limulina", "Stylonurina")
+    "Aglaspida", "Eurypterina", "Limulina", "Stylonurina")
 
 sq <- 1:nrow(x)
 # Extract the known marine taxa (in lineages that are typically non-marine):
@@ -426,9 +427,13 @@ write.table(post, file = "PreSizes_Constant_withPBDB.tab", quote = FALSE,
 #     Use Subclass Testudinata for turtles. Use Subclass Aequorlitornithes 
 #     for most birds (within Class Aves).
 
-#  k. Treat Xiphosura as a subclass within Class Merostomata, similar to how 
-#     WoRMS ranks them. (And be aware that many PBDB xiphosurans are terrestrial 
-#     arachnids and not marine horseshoe crabs and the like.)
+#  k. Treat Xiphosura as a subclass within Class Merostomata, similar to how
+#     WoRMS ranks them. (Be aware that many PBDB "xiphosurans" are terrestrial
+#     arachnids and not marine horseshoe crabs and the like.) Because PBDB
+#     eurypterids are currently classified in PBDB in Order Eurypterida within
+#     Order Xiphosurida, their eurypterid affiliation will be over-ridden with the
+#     algorithm above. Assign members of suborders Eurypterina and Stylonurina to
+#     Order Eurypterida (in blank subclass).
 
 #  l. Given ongoing difficulty in classification of chaetetids (most are 
 #     demosponge form taxa with a few putative tabulates, c.f., Webby, et al. 

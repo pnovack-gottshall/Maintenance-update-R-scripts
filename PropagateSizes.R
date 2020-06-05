@@ -1,4 +1,4 @@
-## propagatE BODY SIZE CODINGS ACROSS ENTRIES, USING RELATIVES AS PROXIES
+## PROPAGATE BODY SIZE CODINGS ACROSS ENTRIES, USING RELATIVES AS PROXIES
 
 ## BASIC LOGIC -------------------------------------------------------------
 
@@ -16,10 +16,11 @@
 #
 # A. Find closest relative with ALL 3 ATD. 1) if multiple relatives exist, pick
 # the one (regardless of whether sp or genus) that is closest to the same age
-# (earlyRel - earlyEntry + lateR - lateE, and pick using absolute difference).
-# Why? Because size is known to change through time (although unclear if shape
-# does). Note that this means that taxa missing a range will not get an
-# estimated body size.
+# [(earlyRel - earlyEntry)^2 + (lateR - lateE)^2, and pick match with smallest
+# absolute difference). Why? Because size is known to change through time
+# (although unclear if shape does). Note that this means that taxa missing a
+# range will not get an estimated body size. (And no need to calculate square
+# root here, which saves computational time.)
 #
 # B. If all 3 lengths are missing (not possible if SizeScale = sp/g?), drop in all
 # 3 measurements from relative.
