@@ -1,4 +1,4 @@
-## PROPOGATE LIFE HABIT CODINGS ACROSS ENTRIES, USING RELATIVES AS PROXIES
+## PROPAGATE LIFE HABIT CODINGS ACROSS ENTRIES, USING RELATIVES AS PROXIES
 
 ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ##
 ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ##
@@ -10,7 +10,7 @@
 ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ##
 ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ##
 ##
-## FUTURE FEATURE REQUEST? Add AbsStratDist here instead, so that propogated
+## FUTURE FEATURE REQUEST? Add AbsStratDist here instead, so that propagated
 ## based not only on size, but also on life habit coding? Would require
 ## exporting canonical body size lengths!
 
@@ -28,9 +28,9 @@
 # (override) the pre-existing codings. If unchanged (identical to relative),
 # abort and go to the next entry, leaving the 'DateEntered_Ecology' and
 # 'EcoScale' fields unchanged. If multiple relatives exist, enter the value,
-# using the specified propogation method. In the 'constant' method, propogate
+# using the specified propagation method. In the 'constant' method, propagate
 # any state that is shared among all relatives, and 'NA' if the state varies. In
-# the 'mode' method, propogate states that are most frequently occuring for each
+# the 'mode' method, propagate states that are most frequently occurring for each
 # state. In both cases, record the relative as "Higher taxon indet." (NO LONGER
 # USED, as of July 2018): Use 'grep''s 'adist()' to approximate type taxon for
 # reference species when multiple relatives exist.) If any states remain
@@ -62,7 +62,7 @@
 
 ## IMPORT DATA -------------------------------------------------------------
 
-# Make sure the stratifications are updated from the size propogation
+# Make sure the stratifications are updated from the size propagation
 # (PropagateSizes.R) BEFORE running this algorithm! (The algorithm reverts to
 # original stratifications when size was coded as genus or species level, but
 # still adds a size "Check" to trigger a second look-over afterwards.)
@@ -230,7 +230,7 @@ consensus <- function(rels, cols, method = "constant", na.rm = TRUE) {
 #      finding type taxon using grep's 'adist' in case of ties)
 # (Consider altering in future: if multiple best matches (i.e., ties in min),
 # pick the one closest in time? or with the more similar body size? or the more
-# similar shape? Size is probably the easiest to code, but requires propogating
+# similar shape? Size is probably the easiest to code, but requires propagating
 # the body sizes first!)
 best.ref <- function(rels, cols, scale = NULL) {
   if (is.null(scale))
@@ -273,7 +273,7 @@ any.missing <- function(x, cols) {
 
 ## ARE ANY STATES ESTIMATED, AND WHICH?
 #  est.col = which columns contain the Est_X tags, used to identify life habit
-#     states to propogate.
+#     states to propagate.
 # Note that estimates are placed in the same order as est.col, so if need a
 #   particular sort order for est.col, sort PRIOR to running the code.
 any.est <- function(x, cols) {
@@ -354,9 +354,9 @@ rm(list = c("i", "r", "cols", "est.cols", "missings", "estimateds", "cs.c",
 
 
 
-## PROPOGATE LIFE HABIT CODINGS --------------------------------------------
+## PROPAGATE LIFE HABIT CODINGS --------------------------------------------
 
-# Go through each record and life-habit state one by one, propogating codings as
+# Go through each record and life-habit state one by one, propagating codings as
 # relevant.
 index <- seq(100, nrow(input), by = 100) # For keeping track
 today <- format(Sys.Date(), "%m/%d/%Y")
@@ -429,7 +429,7 @@ cbind(colnames(input[eco.col]), colnames(input[est.col])) # These should match
 colnames(input)[eco.col[size.col]]    #  Four size-related stratification states
 colnames(input)[-c(eco.col, est.col)] #      IDNumber   < ---- >  History_Ecology
 
-# Which consensus method ('constant' or 'mode' to use for propogating from relatives
+# Which consensus method ('constant' or 'mode' to use for propagating from relatives
 method <- "constant"
 # method <- "mode"
 interactive <- TRUE   # If want to watch updates in real time
@@ -529,7 +529,7 @@ for(i in 1:nrow(out)) {
 
   
   # Go through any remaining missing / unknowns / previously estimated, and
-  # propogate using higher taxa where at least 5 coded relatives exist, but
+  # propagate using higher taxa where at least 5 coded relatives exist, but
   # ignoring size-related characters if size was coded at species/genus. (not
   # recorded in history because constant across the higher taxon, but tagged in
   # "Est_X" fields)
@@ -591,7 +591,7 @@ for(i in 1:nrow(out)) {
         is.na(out[i, eco.col[changed.col]]) | out[i, eco.col[changed.col]] == ""
       if (any(dropped))
         out[i, est.col[changed.col[which(dropped)]]] <- ""
-      # Note: Those ":"entered" today will be propogated at a level > genus, and
+      # Note: Those ":"entered" today will be propagated at a level > genus, and
       # so there is no need to continue documenting previous history of life-habit
       # proxies. Remainder of changes (not tagged with updated date) are updating
       # empty cells using appropriate higher taxa, either for a genus/species
@@ -613,7 +613,7 @@ for(i in 1:nrow(out)) {
     
   }
   
-  # Interactive mode (to observe how states are being propogated)
+  # Interactive mode (to observe how states are being propagated)
   if (interactive) {
     same <- identical(input[i, ], out[i, ])
     if (!same) {
@@ -673,7 +673,7 @@ write.table(out, file = "PostLH_withPBDB_constant.tab", quote = FALSE, sep = "\t
 # (4) Refer to PropogateSizes.R for common troubleshooting corrections to run
 # through in case of manual overrides.
 
-# On the post-life-habit propogation, focus on the SizeChanged = Check tagged
+# On the post-life-habit propagation, focus on the SizeChanged = Check tagged
 # entries, but also check ALL entries using the specified criteria. (Can omit
 # those coded at EcoScale = Species/Genus.) MAKE SURE THAT IF ADD/CHANGE A STATE
 # FOR A EcoScale = SPECIES/GENUS, to tag as "Estimated" and to update the
