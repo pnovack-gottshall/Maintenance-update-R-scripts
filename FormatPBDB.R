@@ -253,7 +253,7 @@ marine.exceptions <- c("Chelonioidea", "Ophidiomorpha", "Mosasauroidea", "Mosasa
     "Charadriiformes", "Cetacea", "Sirenia", "Pinnipedia", "Desmostylia", "Ariidae", 
     "Plotosidae", "Archaeoceti", "Mysticeti", "Odontoceti", "Diploaspididae",
     "Mycteropidae", "Pterygotidae", "Woodwardopteridae", "Waeringopteroidea",
-    "Aglaspidida", "Eurypterina", "Limulina", "Stylonurina")
+    "Eurypterina", "Limulina", "Stylonurina")
 
 sq <- 1:nrow(x)
 # Extract the known marine taxa (in lineages that are typically non-marine):
@@ -554,6 +554,15 @@ write.table(post, file = "PreSizes_Constant_withPBDB.tab", quote = FALSE,
 #     Kirengellida (= senior to junior synonyms Hypseloconida and Romaniellida),
 #     and treating all as uncertain (possibly stem-group Craniiformea) members of
 #     Brachiopoda (class UNCERTAIN and subphylum blank).
+
+# aa. Based on results in Lerosey-Aubril, et al. (2017), replace subphylum 
+#     Trilobitomorpha with near-equivalent but better-defined subphylum Artiopoda, 
+#     including classes Trilobita, Nektaspidida, and Vicissicaudata. Modify class 
+#     Nektaspidida to include monotypic order Nektaspida. Treat Vicissicaudata 
+#     as a class instead of superclass, including subclasses Aglaspidida and 
+#     Cheloniellida and remaining unclassified genera in class UNCERTAIN. Treat 
+#     class Aglaspidida as a subclass with orders Aglaspidida (of same name) and
+#     Strabopida.
 
 # (6) Run code as usual in "PropogateSizes.R" or "PropogateLifeHabits.R", but
 # resaving as postX_withPBDB" file name. Make sure to add new IDNumbers to the

@@ -44,8 +44,8 @@ same.root
 #       subclass and superfamily.
 #    h. Stolonifera is valid as both a bryozoan suborder and a cnidarian order,
 #       and am allowing Phymosomatoida as both an echinoid order and suborder.
-#    c. Accept Aglaspidida as both subclass and order given recent practice 
-#       (e.g., by Ortega-Hernandez), although the subclass may become nullified.
+#    i. Accept Aglaspidida as both subclass and order given recent practice
+#       (e.g., Ortega-Hernandez, et al., 2013 and Lerosey-Aubril, et al, 2017).
 
 for (rank in 1:8) {
   for (subrank in (rank + 1):9) {
