@@ -560,8 +560,10 @@ write.table(post, file = "PreSizes_Constant_withPBDB.tab", quote = FALSE,
 #     including classes Trilobita, Nektaspidida, and Vicissicaudata. Modify class 
 #     Nektaspidida to include monotypic order Nektaspida. Treat Vicissicaudata 
 #     as a class instead of superclass, including subclasses Aglaspidida and 
-#     Cheloniellida and remaining unclassified genera in class UNCERTAIN. Treat 
-#     class Aglaspidida as a subclass with orders Aglaspidida (of same name) and
+#     Cheloniellida (and Merostomoidea) and remaining unclassified genera in 
+#     subclass UNCERTAIN. For those genera in class Merostomoidea, downgrade the
+#     name to subclass status, although likely not monophyletic. Treat class 
+#     Aglaspidida as a subclass with orders Aglaspidida (of same name) and
 #     Strabopida.
 
 # (6) Run code as usual in "PropogateSizes.R" or "PropogateLifeHabits.R", but
