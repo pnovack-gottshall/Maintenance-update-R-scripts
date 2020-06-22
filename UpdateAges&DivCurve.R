@@ -12,7 +12,7 @@ setwd("C:/Users/pnovack-gottshall/Desktop/Databases/Maintenance & update R scrip
 ## > 25 MB)
 
 ## Easier if paste link into URL and save manually
-# pbdb <- read.csv("https://www.paleobiodb.org/data1.2/taxa/list.csv?base_name=Metazoa&interval=Phanerozoic&show=app&show=acconly&vocab=pbdb")
+# pbdb.all <- read.csv("https://www.paleobiodb.org/data1.2/taxa/list.csv?base_name=Metazoa&interval=Phanerozoic&show=app&show=acconly&vocab=pbdb")
 # If want forams too, use base_name=Metazoa,Retaria
 pbdb.all <- read.csv("pbdb_data.csv")
 head(pbdb.all)
@@ -28,8 +28,7 @@ nrow(pbdb)
 ## following output.
 
 ## Use the following columns: IDNumber, Phylum, Class, Order, Superfamily,
-## Family, Genus, Subgenus, Species, early_period, early_age, late_period,
-## late_age
+## Family, Genus, Subgenus, Species, max_age, max_ma, min_age, min_ma
 occs <- read.csv("occs.csv", header = TRUE)
 ph.tbl <- table(occs$Phylum)
 sort(ph.tbl, decreasing = FALSE)
@@ -38,12 +37,12 @@ sort(cl.tbl, decreasing = FALSE)
 or.tbl <- table(occs$Order)
 sort(or.tbl, decreasing = FALSE)
 
-# Confirm that early_period and late_period are factors
+# Confirm that max_age and min_age are factors
 is.factor(occs$max_age)
 is.factor(occs$min_age)
 # If not, run following:
-# occs$max_age <- as.character(occs$max_age)
-# occs$min_age <- as.character(occs$min_age)
+# occs$max_age <- as.factor(as.character(occs$max_age))
+# occs$min_age <- as.factor(as.character(occs$min_age))
 head(occs)
 
 ## Any duplicated ID numbers?
