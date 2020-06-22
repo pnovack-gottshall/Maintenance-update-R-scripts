@@ -80,6 +80,8 @@ l4s <- strat_names[which(strat_names$scale_level == 4),]
 ## Add in Ediacaran, too:
 edia <- strat_names[which(strat_names$interval_name == "Ediacaran"),]
 l4s <- rbind(l4s, edia)
+## Series 3 now named Miaolingian (Zhao, et al. 2019, Episodes)
+l4s$interval_name[which(l4s$interval_name == "Series 3")] <- "Miaolingian"
 l4s[, 1:5]
 
 ## Are there any disallowed intervals in your database? (Allow blank ("") and
