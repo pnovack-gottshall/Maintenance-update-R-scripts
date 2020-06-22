@@ -12,7 +12,7 @@ setwd("C:/Users/pnovack-gottshall/Desktop/Databases/Maintenance & update R scrip
 ## > 25 MB)
 
 ## Easier if paste link into URL and save manually
-# pbdb <- read.csv("www.paleobiodb.org/data1.2/taxa/list.csv?base_name=Metazoa&interval=Phanerozoic&show=app&show=acconly&vocab=pbdb")
+# pbdb <- read.csv("https://www.paleobiodb.org/data1.2/taxa/list.csv?base_name=Metazoa&interval=Phanerozoic&show=app&show=acconly&vocab=pbdb")
 # If want forams too, use base_name=Metazoa,Retaria
 pbdb.all <- read.csv("pbdb_data.csv")
 head(pbdb.all)
