@@ -253,6 +253,17 @@ for (i in 1:length(Gen)) {
   occs$min_age[wh.occs.G] <- rep(Late, len.g)
 }
 
+# Confirm no dates are out of order (e.g., FAD younger than LAD). This is
+# because of manual entry errors by me in cases where a genus does not have
+# occurrences in the PBDB. Thanks for Dave Bapst for pointing out error, which
+# is triggered if try to build a time-tree.
+if (any(occs$max_ma < occs$min_ma)) {
+  cat(occs$Genus[which(occs$max_ma < occs$min_ma)])
+  stop("Prior genera have the FAD and LAD switched.)")
+}
+
+
+
 # write.csv(occs, file = "PBDBDates.csv", row.names = FALSE)
 
 # It is worthwhile to compare the original and updated ranges to troubleshoot
