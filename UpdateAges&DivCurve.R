@@ -289,7 +289,9 @@ if (any(occs$max_ma < occs$min_ma)) {
 
 ## CONSTRUCT DIVERSITY CURVES ##########################################
 ## (using 'Total Diversity' of Foote 2000)
-## X-FL, number of taxa w/ 1st and last appearance in interval (singletons),
+# X-FL, number of taxa w/ 1st and last appearance in interval (incl. singletons)
+#       [including those that range through the entire interval but do not pass 
+#       into adjacent intervals],
 ## X-bL, number of taxa crossing bottom boundary & last appear in interval,
 ## X-Ft, number of taxa crossing top boundary and first appear in interval,
 ## X-bt, number of taxa crossing both bottom and top interval boundaries,
@@ -312,16 +314,16 @@ divs <- data.frame(interval = l4s$interval_name, base = l4s$max_ma,
 
 # Genus-level diversity curve (using database occurrences above)
 for(t in 1:nrow(divs)) {
-  FL <- length(which(occs$max_ma > divs$base[t] &
-                       occs$min_ma < divs$top[t]))
+  FL <- length(which(occs$max_ma <= divs$base[t] &
+                       occs$min_ma >= divs$top[t]))
   bL <- length(which(occs$max_ma > divs$base[t] &
                        occs$min_ma < divs$base[t] &
                        occs$min_ma >= divs$top[t]))
   Ft <- length(which(occs$min_ma < divs$top[t] &
                        occs$max_ma <= divs$base[t] &
                        occs$max_ma > divs$top[t]))
-  bt <- length(which(occs$max_ma <= divs$base[t] &
-                       occs$min_ma >= divs$top[t]))
+  bt <- length(which(occs$max_ma > divs$base[t] &
+                       occs$min_ma < divs$top[t]))
   divs$div[t] <- FL + bL + Ft + bt
 }
 head(divs)
