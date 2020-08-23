@@ -33,7 +33,7 @@
 rm(list = ls())
 setwd("C:/Users/pnovack-gottshall/Desktop/Databases/Maintenance & update R scripts")
 # setwd("C:/Users/pnovack-gottshall/Documents/GSA (& NSF & NAPC)/2016GSA/GSA2016 analyses")
-input <- read.delim(file = "LHRefs.tab", header=TRUE, colClasses = "character")
+input <- read.delim(file = "LHRefs.tab", header = TRUE, colClasses = "character")
 head(input)
 str(input)
 
@@ -41,8 +41,12 @@ str(input)
 length(unique(input$EcologyReference))
 
 sort(table(input$EcologyReference), increasing = TRUE)
-plot(sort(table(input$EcologyReference), decreasing = TRUE), xlab = "References", 
-     ylab = "No. of entries per reference", main = "Distribution of references used")
+sorted.tab <- sort(table(input$EcologyReference), decreasing = TRUE)
+names(sorted.tab) <- 1:length(sorted.tab)
+plot(sorted.tab, xlab = "Life habit reference", 
+     ylab = "No. of entries per reference", 
+     main = "Distribution of life habit references used")
 summary(as.vector(table(input$EcologyReference)))
 
-
+# Save the list of unique references used
+write.csv(sort(unique(input$EcologyReference)), file = "LHrefs.csv")
