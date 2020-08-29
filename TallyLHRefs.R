@@ -30,6 +30,13 @@
 # references, one entry per line/row. Review and edit, if needed. Resave and
 # open here.
 
+# WARNING: THIS PROCESS AND SCRIPT WILL NOT BE ABLE TO DISTINGUISH DIFFERENT
+# REFERENCES WITH THE SAME CITATION FIELDS (e.g., Zamora, et al., 2012a and
+# Zamora, et al., 2012b) UNLESS SO IDENTIFIED IN THE DOWNLOADED DATABASE
+# ENTRIES, SO PRODUCES ONLY A CONSERVATIVE ESTIMATE OF THE NUMBER OF REFERENCES.
+# YOU WILL NEED TO COMPARE THE LIST TO YOUR BIBLIOGRAPHY TO IDENTIFY SUCH
+# INVISIBLE REFERENCES.
+
 rm(list = ls())
 setwd("C:/Users/pnovack-gottshall/Desktop/Databases/Maintenance & update R scripts")
 # setwd("C:/Users/pnovack-gottshall/Documents/GSA (& NSF & NAPC)/2016GSA/GSA2016 analyses")
