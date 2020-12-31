@@ -365,7 +365,7 @@ write.table(post, file = "PreSizes_Constant_withPBDB.tab", quote = FALSE,
 #       (iv)   sponge class Archeocyatha to Archaeocyatha
 #       (v)    fish order Birkeniida to Birkeniiformes
 #       (vi)   annelid subclass Aciculata to Errantia
-#       (vii)  starfish subclass Neoasteroidea to Ambuloasteroidea
+#       (vii)  starfish class (or infraclass) Neoasteroidea to Ambuloasteroidea
 #       (viii) bryozoan order Trepostomida to Trepostomata 
 #       (vix)  bryozoan order Cystoporida to Cystoporata 
 #       (x)    barnacle order Thoracica to Sessilia
@@ -515,42 +515,55 @@ write.table(post, file = "PreSizes_Constant_withPBDB.tab", quote = FALSE,
 #     default, for now, is to assume all diploporitans are within Diploporita
 #     unless explicitly known not to be.)
 
-#  y. Following Kroh and Smith (2010) for taxonomy of (primarily post-Paleozoic)
-#     echinoids and Blake (2018) for (primarily Paleozoic) echinoids (both sets 
-#     of opinions also entered into PBDB), but adding superfamily and/or suborder
-#     rankings (which they often avoided) in cases where an order is assigned and
-#     infraorder subclades are assigned. Reducing following order Camarodonta
-#     infraorders to suborders: Temnopleuridea (with families Temnopleuridae,
-#     Trigonocidaridae, Zeoglopleuridae, and Glyphocyphidae) and Echinidea (with
-#     superfamily Odontophora with families Toxopneustidae, Strongylocentrotidae,
-#     and Echinometridae, and superfamily UNCERTAIN with families Echinidae and
-#     Parechinidae) and suborder/superfamily UNCERTAIN (with family
-#     Parasaleniidae). For suborder Scutellina, reduce infraorders Laganiformes
-#     (including Fibulariidae = Echinocyamidae and Laganidae = Laganinae and
-#     Neolaganinae) and Scutelliformes (including Taiwanasteridae, Protoscutellidae
-#     [in stem group], Echinarachniidae, Dendrasteridae, Rotulidae, Scutellidae,
-#     Eoscutellidae, Scutasteridae, Abertellidae, Astriclypeidae,
-#     Monophorasteridae, and Mellitidae) to superfamily rank; family Scutellinidae
-#     is then in superfamily UNCERTAIN as stem Scutellina. Treat unranked clade
-#     Meridosternata as a suborder of Holasteroida and reduce infraorders
-#     Cardiasterina (= Stegasterina (including Stegasteridae and Cardiasteridae =
-#     Cardiotaxinae) and Urechinina (including echinoid homonym Corystidae replaced
-#     by Corystusidae, Calymnidae, Carnarechinidae, Urechinidae, Plexechinidae, and
-#     Pourtelasiidae) to superfamily rank [note that the corystusids and calymnids
-#     are not listed this way on page 173 but clearly an error based on cladogram
-#     in fig. 2]; families Echinocorythidae and Holasteridae are then in
-#     superfamily UNCERTAIN as stem Meridosternata and families Stenonasteridae,
-#     Hemipneustidae, and Pseudholasteridae are in superfamily and suborder
-#     UNCERTAIN as stem holasteroids. Because Blake (2018) disused previous 
-#     suborder names for Paleozoic echinoids, they are retained when restricted 
-#     to his new orders. Need to write out these exceptions when propagated later.
+#  y. Following Kroh and Smith (2010) for taxonomy of echinoids (opinions also
+#     entered into PBDB), but adding superfamily and/or suborder rankings (which
+#     they often avoided) in cases where an order is assigned and infraorder
+#     subclades are assigned. Reducing following order Camarodonta infraorders to
+#     suborders: Temnopleuridea (with families Temnopleuridae, Trigonocidaridae,
+#     Zeoglopleuridae, and Glyphocyphidae) and Echinidea (with superfamily
+#     Odontophora with families Toxopneustidae, Strongylocentrotidae, and
+#     Echinometridae, and superfamily UNCERTAIN with families Echinidae and
+#     Parechinidae) and suborder/superfamily UNCERTAIN (with family Parasaleniidae).
+#     For suborder Scutellina, reduce infraorders Laganiformes (including
+#     Fibulariidae = Echinocyamidae and Laganidae = Laganinae and Neolaganinae) and
+#     Scutelliformes (including Taiwanasteridae, Protoscutellidae [in stem group],
+#     Echinarachniidae, Dendrasteridae, Rotulidae, Scutellidae, Eoscutellidae,
+#     Scutasteridae, Abertellidae, Astriclypeidae, Monophorasteridae, and
+#     Mellitidae) to superfamily rank; family Scutellinidae is then in superfamily
+#     UNCERTAIN as stem Scutellina. Treat unranked clade Meridosternata as a
+#     suborder of Holasteroida and reduce infraorders Cardiasterina (= Stegasterina
+#     (including Stegasteridae and Cardiasteridae = Cardiotaxinae) and Urechinina
+#     (including echinoid homonym Corystidae replaced by Corystusidae, Calymnidae,
+#     Carnarechinidae, Urechinidae, Plexechinidae, and Pourtelasiidae) to
+#     superfamily rank [note that the corystusids and calymnids are not listed this
+#     way on page 173 but clearly an error based on cladogram in fig. 2]; families
+#     Echinocorythidae and Holasteridae are then in superfamily UNCERTAIN as stem
+#     Meridosternata and families Stenonasteridae, Hemipneustidae, and
+#     Pseudholasteridae are in superfamily and suborder UNCERTAIN as stem
+#     holasteroids.
 
-#  y. Following Parry, et al. (2019) that demonstrates machaeridians are
+#  y. Following Blake (2018) for (primarily Paleozoic) asteroids (and other
+#     asterozoans: somasteroids, stenuroids, and ophiuroids). (This set of 
+#     opinions has already been entered into PBDB.) Because Blake (2018) disused 
+#     previous suborder names (e.g., Diplozonina, Eugnathina, Hemizonina, 
+#     Platyasterida, Pustulosina, and Uractinina) for Paleozoic echinoids, they 
+#     are retained when restricted to his new orders. Need to write out these 
+#     exceptions when propagated later. Following Gale (2012) for (primarily 
+#     post-Paleozoic) asteroids, but treating unranked clades Forcipulatida,
+#     Hemizonida, Paxillosida, Spinulosida, and Valvatida as orders, and clades
+#     within them as suborders (either when monophyletic from this paper or as 
+#     applied from earlier Treatise usage). For example, for Asteriadina, 
+#     Brisingina, Cribellina, Diplozonina, Leptognathina, and Tumulosina, 
+#     although these are most likely irrelevant because they are now essentially 
+#     mono-familial. Treating unranked Neoasteroidea as a synonym of subclass 
+#     Ambuloasteroidea (which it very nearly is).
+
+#  z. Following Parry, et al. (2019) that demonstrates machaeridians are
 #     polychaetes in order Phyllodocida and suborder Aphroditiformia, downgrade
 #     machaeridian orders Lepidocoleomorpha, Hercolepadida, and Turrilepadomorpha
 #     as new superfamilies.
 
-#  z. Based on the affirmation of Lindberg and Ponder (2020) regarding
+# aa. Based on the affirmation of Lindberg and Ponder (2020) regarding
 #     conclusions of Dzik (2010), treating problematic tergomyan
 #     ("monoplacophoran") families Kirengellidae, Pygmaeoconidae = Pygmaeoconinae,
 #     Romaniellidae, and Scenellidae as synonyms of Hypseloconidae in Order
@@ -558,7 +571,7 @@ write.table(post, file = "PreSizes_Constant_withPBDB.tab", quote = FALSE,
 #     and treating all as uncertain (possibly stem-group Craniiformea) members of
 #     Brachiopoda (class UNCERTAIN and subphylum blank).
 
-# aa. Based on results in Lerosey-Aubril, et al. (2017), replace subphylum 
+# ab. Based on results in Lerosey-Aubril, et al. (2017), replace subphylum 
 #     Trilobitomorpha with near-equivalent but better-defined subphylum Artiopoda, 
 #     including classes Trilobita, Nektaspidida, and Vicissicaudata. Modify class 
 #     Nektaspidida to include monotypic order Nektaspida. Treat Vicissicaudata 
