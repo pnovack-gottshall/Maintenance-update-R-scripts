@@ -397,15 +397,16 @@ write.table(post, file = "PreSizes_Constant_withPBDB.tab", quote = FALSE,
 #     Opisthobranchia incertae sedis and his Order Cephalaspida as opisthobranch 
 #     Suborder Cephalaspidea. Treat Suborder Bellerophontina as Order Bellerophontida
 
-#  h. For certain vertebrate groups whose taxonomy is cladistically based on often 
-#     unranked, use the following ranks. Treat Order Ichthyosauria as suborder in 
-#     Order Ichthyopterygia, and large inclusive clades (e.g., Merriamosauria) 
-#     as superfamilies. Treat traditional orders Nothosauroidea, Placodontia, 
-#     and Plesiosauria as suborders within Order Sauropterygia. (For placodonts, 
-#     also place suborders Cyamodontoidea and Placodontoidea as superfamilies. 
-#     For nothosaurs, treat orders Nothosauria and Pachypleurosauroidea the 
-#     major nothosaur subgroups used in PBDB as superfamilies.) But maintain 
-#     superfamily Pistosauroidea as a valid superfamily in unnamed suborder.
+#  h. For certain vertebrate groups whose taxonomy is often cladistically based
+#     on unranked taxa, use the following ranks. Treat Order Ichthyosauria as
+#     suborder in Order Ichthyopterygia, and large inclusive clades (e.g.,
+#     Merriamosauria) as superfamilies. Treat traditional orders Nothosauroidea,
+#     Placodontia, and Plesiosauria as suborders within Order Sauropterygia. (For
+#     placodonts, also place suborders Cyamodontoidea and Placodontoidea as
+#     superfamilies. For nothosaurs, treat orders Nothosauria and
+#     Pachypleurosauroidea the major nothosaur subgroups used in PBDB as
+#     superfamilies.) But maintain superfamily Pistosauroidea as a valid
+#     superfamily in unnamed suborder.
 
 #  i. Use (only) the following subphylum names for (primarily marine)
 #     arthropods: Arachnomorpha, Chelicerata, Crustacea, and Trilobitomorpha. Use
