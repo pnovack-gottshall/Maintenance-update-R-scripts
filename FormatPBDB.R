@@ -428,13 +428,17 @@ write.table(post, file = "PreSizes_Constant_withPBDB.tab", quote = FALSE,
 #     Use Subclass Testudinata for turtles. Use Subclass Aequorlitornithes 
 #     for most birds (within Class Aves).
 
-#  k. Treat Xiphosura as a subclass within Class Merostomata, similar to how
-#     WoRMS ranks them. (Be aware that many PBDB "xiphosurans" are terrestrial
-#     arachnids and not marine horseshoe crabs and the like.) Because PBDB
-#     eurypterids are currently classified in PBDB in Order Eurypterida within
+#  k. Treat Xiphosura as a class that is a synonym with prior Class Merostomata,
+#     despite how WoRMS ranks them. (Be aware that many PBDB "xiphosurans" are
+#     terrestrial arachnids and not marine horseshoe crabs and the like.) Because
+#     PBDB eurypterids are currently classified in PBDB in Order Eurypterida within
 #     Order Xiphosurida, their eurypterid affiliation will be over-ridden with the
 #     algorithm above. Assign members of suborders Eurypterina and Stylonurina to
-#     Order Eurypterida (in blank subclass).
+#     Order Eurypterida (in blank subclass). Following Lamsdell (2013), place 
+#     Order Eurypterida and Order Chasmataspidida (although a polyphyletic basal 
+#     member closely related to eurypterids), (and Class Arachnida) in unranked 
+#     taxon Dekatriata, elevated to class status for now, until a replacement 
+#     class name is proposed.
 
 #  l. Given ongoing difficulty in classification of chaetetids (most are 
 #     demosponge form taxa with a few putative tabulates, c.f., Webby, et al. 
