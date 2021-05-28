@@ -33,7 +33,7 @@
 # instead of geometric mean to best estimate an isometric shape; use of geomean,
 # in trials, does not produce equivalently shaped estimates.)
 #
-# E. Update "estimate" check boxes and metadata accordinging, for each if ()
+# E. Update "estimate" check boxes and metadata accordingly, for each if ()
 # step above.
 #
 # 3. If entry is not at genus or better level (i.e., subfamily or greater), find
