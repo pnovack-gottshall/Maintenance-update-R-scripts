@@ -833,9 +833,9 @@ write.table(out, file = "PostSizes.tab", quote = FALSE, sep = "\t", row.names = 
 # (8) Confirm RelFoodStrat for filter feeders, sorting by phyla and then either
 # AbsStratDist or AP length. For ambient filter feeders (PORIFERA and
 # suspension-feeding ECHINODERMATA and CNIDARIA and CIRRIPEDIA) where flow rate
-# depends on distance from sea floor, confirm those ~15-200 mm tall are 0.5;
+# depends on distance from sea floor, confirm those ~14-191 mm tall are 0.5;
 # refer to LifeHabitNotes.docs for additional categorizations. But note that for
-# sponges, if just at or slightly above 200 mm, downcoding to 0.5 because
+# sponges, if just at or slightly above 190 mm, downcoding to 0.5 because
 # incurrent flow occurs in lower ostia. For active filter feeders, the coding
 # depends on the size of the pumping organ. All BRYOZOANS, GRAPTOLITES,
 # PTEROBRANCHS, and CEPHALOCHORDATA should be 0.25. Filter-feeding
