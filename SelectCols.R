@@ -85,9 +85,9 @@ selected <- all[, wh.cols]
 head(selected)
 if (!identical(cols, colnames(selected)))
   stop("column names are not as specified!")
-write.table(selected, file="PreSizes.tab", row.names = FALSE, sep = "\t", quote = FALSE)
-# write.table(selected, file="PreSizes_Constant_withPBDB.tab", row.names = FALSE, sep = "\t", quote = FALSE)
-# write.table(selected, file="PreSizes_Mode_withPBDB.tab", row.names = FALSE, sep = "\t", quote = FALSE)
+write.table(selected, file = "PreSizes.tab", row.names = FALSE, sep = "\t", quote = FALSE)
+# write.table(selected, file = "PreSizes_Constant_withPBDB.tab", row.names = FALSE, sep = "\t", quote = FALSE)
+# write.table(selected, file = "PreSizes_Mode_withPBDB.tab", row.names = FALSE, sep = "\t", quote = FALSE)
 
 
 
@@ -124,7 +124,31 @@ selected <- all[, wh.cols]
 head(selected)
 if (!identical(cols, colnames(selected)))
   stop("column names are not as specified!")
-# write.table(selected, file="PreLH_constant.tab", row.names = FALSE, sep = "\t", quote = FALSE)
-# write.table(selected, file="PreLH_mode.tab", row.names = FALSE, sep = "\t", quote = FALSE)
-# write.table(selected, file="PreLH_constant_PBDB.tab", row.names = FALSE, sep = "\t", quote = FALSE)
-# write.table(selected, file="PreLH_mode_PBDB.tab", row.names = FALSE, sep = "\t", quote = FALSE)
+# write.table(selected, file = "PreLH_constant.tab", row.names = FALSE, sep = "\t", quote = FALSE)
+# write.table(selected, file = "PreLH_mode.tab", row.names = FALSE, sep = "\t", quote = FALSE)
+# write.table(selected, file = "PreLH_constant_PBDB.tab", row.names = FALSE, sep = "\t", quote = FALSE)
+# write.table(selected, file = "PreLH_mode_PBDB.tab", row.names = FALSE, sep = "\t", quote = FALSE)
+
+
+# Per-character sorting for downstream analyses:     ----------------------------------------------------
+cols <- c("IDNumber", "Phylum", "Subphylum", "Class", "Subclass", "Order", 
+          "Suborder", "Superfamily", "Family", "Subfamily", "Genus", "Subgenus", 
+          "Species", "max_ma",	"min_ma", "EcologyScale", "BodySizeScale",
+          "AbsStratDistance", "BodyVolume", "BodyVolumeCode", "AbsStratification", 
+          "RelStratification", "AbsFoodStratification", "RelFoodStratification", 
+          "Mobility", "Sexual", "Asexual", "Biotic", "Lithic", "Fluidic", 
+          "HardSubstratum", "SoftSubstratum", "Insubstantial", "Attached", 
+          "FreeLiving", "AbovePrimary", "WithinPrimary", "AboveImmediate", 
+          "WithinImmediate", "SelfSupport", "Supported", "FeedingAbovePrimary", 
+          "FeedingWithinPrimary", "FeedingAboveImm", "FeedingWithinImm", 
+          "AmbientFeeder", "FilterFeeder", "FilterDensity", "AttachmentFeeder", 
+          "MassFeeder", "RaptorFeeder", "Autotroph", "Microbivore", "Herbivore", 
+          "Carnivore", "Incorporeal", "SolutionFeeder", "ParticleFeeder", 
+          "BulkFeeder")
+wh.cols <- match(cols, colnames(all))
+selected <- all[, wh.cols]
+head(selected)
+if (!identical(cols, colnames(selected)))
+  stop("column names are not as specified!")
+write.table(selected, file = "Taxa_Mode.tab", row.names = FALSE, sep = "\t", 
+            quote = FALSE)
