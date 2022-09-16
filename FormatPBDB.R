@@ -547,7 +547,7 @@ write.table(post, file = "PreSizes_Constant_withPBDB.tab", quote = FALSE,
 #     Pseudholasteridae are in superfamily and suborder UNCERTAIN as stem
 #     holasteroids.
 
-#  y. Following Blake (2018) for (primarily Paleozoic) asteroids (and other
+#  z. Following Blake (2018) for (primarily Paleozoic) asteroids (and other
 #     asterozoans: somasteroids, stenuroids, and ophiuroids). (This set of 
 #     opinions has already been entered into PBDB.) Because Blake (2018) disused 
 #     previous suborder names (e.g., Diplozonina, Eugnathina, Hemizonina, 
@@ -563,12 +563,12 @@ write.table(post, file = "PreSizes_Constant_withPBDB.tab", quote = FALSE,
 #     mono-familial. Treating unranked Neoasteroidea as a synonym of subclass 
 #     Ambuloasteroidea (which it very nearly is).
 
-#  z. Following Parry, et al. (2019) that demonstrates machaeridians are
+# aa. Following Parry, et al. (2019) that demonstrates machaeridians are
 #     polychaetes in order Phyllodocida and suborder Aphroditiformia, downgrade
 #     machaeridian orders Lepidocoleomorpha, Hercolepadida, and Turrilepadomorpha
 #     as new superfamilies.
 
-# aa. Based on the affirmation of Lindberg and Ponder (2020) regarding
+# ab. Based on the affirmation of Lindberg and Ponder (2020) regarding
 #     conclusions of Dzik (2010), treating problematic tergomyan
 #     ("monoplacophoran") families Kirengellidae, Pygmaeoconidae = Pygmaeoconinae,
 #     Romaniellidae, and Scenellidae as synonyms of Hypseloconidae in Order
@@ -576,7 +576,7 @@ write.table(post, file = "PreSizes_Constant_withPBDB.tab", quote = FALSE,
 #     and treating all as uncertain (possibly stem-group Craniiformea) members of
 #     Brachiopoda (class UNCERTAIN and subphylum blank).
 
-# ab. Based on results in Lerosey-Aubril, et al. (2017), replace subphylum 
+# ac. Based on results in Lerosey-Aubril, et al. (2017), replace subphylum 
 #     Trilobitomorpha with near-equivalent but better-defined subphylum Artiopoda, 
 #     including classes Trilobita, Nektaspidida, and Vicissicaudata. Modify class 
 #     Nektaspidida to include monotypic order Nektaspida. Treat Vicissicaudata 
@@ -586,6 +586,9 @@ write.table(post, file = "PreSizes_Constant_withPBDB.tab", quote = FALSE,
 #     name to subclass status, although likely not monophyletic. Treat class 
 #     Aglaspidida as a subclass with orders Aglaspidida (of same name) and
 #     Strabopida.
+
+# ad. Treat Order Bradoriida as a non-ostracod member of the stem Crustacean,
+#     following consensus in Álvarez, et al. (2008) and Siveter, et al., (2014).
 
 # (6) Run code as usual in "PropogateSizes.R" or "PropogateLifeHabits.R", but
 # resaving as postX_withPBDB" file name. Make sure to add new IDNumbers to the
