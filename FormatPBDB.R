@@ -1,22 +1,143 @@
 ## FORMAT PBDB GENUS/SUBGENUS OCCURRENCES INTO TAXONOMIC STRUCTURE OF MY DATA,
 ## USING A PARALLEL-COMPUTING ENVIRONMENT
 
-# The serial version takes ~4.5 hours to process PBDB into a formatted taxonomic
-# dataframe structure. This code rewrites the algorithm as a function that can
-# be implemented in parallel and is much faster.
+# The serial version of the main parenting algorithm below takes ~4.5 hours to
+# process PBDB into a formatted taxonomic dataframe structure. This code embeds
+# the algorithm as a function that can be implemented in parallel and is much
+# faster.
 
 ## Download data directly from PaleobioDB and save to working directory (will be
-## > 40 MB) (DO NOT RESTRICT TO PHANEROZOIC! Restricting only includes taxa with
-## fossil occurrences. Here we want ALL taxa!)
+## > 20 MB)
 
 setwd("C:/Users/pnovack-gottshall/Desktop/Databases/Maintenance & update R scripts")
 
 rm(list = ls())
-## Easier if paste link into URL and save manually 
-# pbdb <- read.csv("www.paleobiodb.org/data1.2/taxa/list.csv?base_name=Metazoa&show=app&vocab=pbdb")
+
+# Libraries
+library(data.table)  # v. 1.14.4
+library(snowfall)    # v. 1.84-6.2
+library(beepr)       # v. 1.3
+library(parallel)    # v. 4.2.2
+
+
+## RATIONALE -------------------------------------------------------------------
+
+# It is better to propagate the life habit of every current genus (subgenus) in
+# PBDB now and then remove invalid ones from analyses downstream than to decide
+# later they should have been added.
+
+# Include "all" taxonomic ranks at and above subgenus so that can properly
+# parent taxa.
+
+# Do not restrict to Phanerozoic. Restricting only includes taxa with fossil
+# occurrences. We also want to include genera without current PBDB occurrences
+# (such as those found in Sepkoski's Compendium).
+
+# Do not restrict to marine environments. Likely non-marine (terrestrial and
+# freshwater) taxa are manually removed downstream.
+
+# Because taxa may be incorrectly tagged, download "all" preservation categories
+# (body, trace, form), including "obsolete name variants"; then secondarily
+# (=manually, via code) remove the ichnofossils (tagged with flags = "I" or
+# "IF"). Include form taxa in life-habit database for now, as many are actually
+# "regular" taxa improperly flagged by data enterers as "form" taxa.
+
+# Make sure to include "all" names (including synonyms, misspellings, and other
+# invalid names), as these can be found in Sepkoski Compendium and other
+# databases. Include "obsolete name variants" but only propagate (sub)genera
+# that are tagged in the following categories: "nomen dubium" (because status
+# deserves further study rather than confirmed lack of validity) and "subjective
+# synonym of" because these opinions are subjective and may change in the
+# future.
+
+# Manually exclude (sub)genera that are currently coded in the other
+# "difference" categories: "corrected to", "invalid subgroup of", "misspelling
+# of", "nomen nudum", "nomen oblitum", "nomen vanum", "objective synonym of",
+# "obsolete variant of", "reassigned as", and "replaced by". These are genuine
+# errors or objectively invalid (sub)genera that are unlikely to be reversed by
+# future opinions. However, these names should be included in downstream
+# analyses (such as adding stratigraphic ranges from Sepkoski's Compendium), as
+# other data bases may include such obsolete names. "obsolete variant of" and
+# "reassigned as" are excluded because they are usually (always?) only used when
+# a subgenus is re-ranked as a genus or vice versa; these variants should
+# already be included above, and so including them here would simply add
+# duplicate entries.
+
+# Because the 'parent' of subjective synonyms and nomen dubia is their
+# accepted_name (and not a higher taxon), need to hold these genera until
+# everything else is propagated. To maintain consistency in the PBDB
+# "namespace," these names are set aside here. They will be added back in (1)
+# after updating the stratigraphic ranges (including with WoRMS for adding
+# extant ranges and with the Sepkoski Compendium), (2) after propagating the
+# body sizes (which rely on the stratigraphic ranges), and (3) after propagating
+# the life habits. Only then will we (4) copy the taxonomic classification of
+# their accepted parent, and (5) add a tag to the TaxonomyReference field that
+# copies the invalid opinion (i.e., "Possibly invalid (sub)genus.
+# Paratoernquistia may be a subjective synonym of Toernquistia.").
+
+# However, to avoid "parenting" issues (such as when a legitimate genus is
+# parented in a family tagged as an ichnofamily or in an obsolete naming
+# varient), include all taxa in the parenting algorithm.
+
+
+
+
+## DOWNLOAD FROM PBDB ----------------------------------------------------------
+
+# Easier if paste link into URL and save manually 
+
+# https://paleobiodb.org/data1.2/taxa/list.csv?base_name=Metazoa&rank=min_subgenus&variant=all&show=app
+# pbdb <- read.csv("https://paleobiodb.org/data1.2/taxa/list.csv?base_name=Metazoa&rank=min_subgenus&variant=all&show=app")
 # If want forams too, use base_name=Metazoa,Retaria
-pbdb <- read.csv("pbdb_data.csv")
+pbdb <- read.csv("pbdb_data_AllMetazoaTaxa.csv")
 head(pbdb)
+nrow(pbdb)
+
+# See https://paleobiodb.org/data1.2/taxa/list_doc.html for description of API
+# fields.
+
+# Confirm flags
+table(pbdb$flags)
+# B = base taxon downloaded (here, Metazoa, which redirects to Animalia)
+# V = invalid taxon variants (replacements, misspellings, synonyms, etc)
+# I = ichnotaxa
+# F = form taxa (ignore here given many user errors in classifying these, and
+#     they represent a small number of taxa)
+
+
+## Extract out trace fossils and invalid names, for (sub)genera only (keeping
+## all taxon types for higher taxa to allow proper parenting).
+valid.gsgs <- 
+  which((pbdb$accepted_rank == "genus" | pbdb$accepted_rank == "subgenus")
+        & pbdb$difference == "")
+traces <- grep("I", pbdb$flags)
+# Not worth indexing on "V" because not all taxa with a "difference" is tagged
+# with "V". Following is more efficient.
+which.gsg <- setdiff(valid.gsgs, traces)
+
+# Valid (sub)genera now all forms or regular taxa, with no 'differences'
+table(pbdb[which.gsg, c("accepted_rank", "flags", "difference")])
+
+# Invalid (sub)genera are traces or differenced, but other taxa include everything
+table(pbdb[-which.gsg, c("accepted_rank", "flags", "difference")])[c(3, 12, 2, 8, 1), , ]
+
+# Save the allowed invalids (subjective synonyms and nomen dubia) for later use
+# (to maintain a consistent namespace during propagations).
+allowed_invalids <-
+  which((pbdb$accepted_rank == "genus" |
+           pbdb$accepted_rank == "subgenus")
+        & (pbdb$difference == "nomen dubium" |
+            pbdb$difference == "subjective synonym of"))
+pbdb_add_synonyms <- pbdb[setdiff(allowed_invalids, traces), ]
+nrow(pbdb_add_synonyms)
+table(pbdb_add_synonyms$flags) # form, variants, and form-variants
+
+# Confirm no duplicates with 'pbdb'
+table(duplicated(rownames(pbdb), rownames(pbdb_add_synonyms)))
+
+# Save for later
+# write.csv(pbdb_add_synonyms, file = "PBDB_synonyms_and_dubia.csv", row.names = FALSE)
+
 
 
 ## FUNCTIONS -------------------------------------------------------------------
@@ -59,12 +180,37 @@ prep.PBDB <- function(g = 1, gen.order, which.gsg, pbdb) {
     out$Subgenus <- as.character(gsub("[()]", "", split.subgenus[2]))
   }
   parent <- pbdb[which(pbdb$accepted_no == pbdb$parent_no[wh]), ][1, ]
+  child_rank <- pbdb$accepted_rank[wh]
+  # In cases where the priority opinion involves BOTH a correction AND elevation
+  # of a subgenus to genus rank, the genus is orphaned (placed within a higher
+  # taxon but not assigned a genus.) Examples include Erioptera (Hoplolabis) and
+  # Otolithus (Chrysophris). The following corrects for these rare cases. It is
+  # placed within the repeat loop to allow for the rare instance where the
+  # reassignment of a subgenus in another genus results in its being parented in
+  # a subgenus (which can sometimes happen when genera are later reranked as a
+  # subgenus; E.g., Amphistrophiella (Amphistrophiella) parented as
+  # Amphistrophia (Amphistrophiella)).
   repeat {
+    # i.e., if parent is above genus and child is below genus (and there is no
+    # genus), elevate the subgenus name to genus rank:
+    if ((parent$accepted_rank != "genus" & parent$accepted_rank != "subgenus") &
+        child_rank == "subgenus") {
+      out$Genus <- out$Subgenus
+      out$Subgenus <- ""
+      }
     if (parent$accepted_rank %in% scales)
       out[1, which(scales == parent$accepted_rank)] <-
         as.character(parent$accepted_name)
+    # Override subgenus treatment if parent's rank is also subgenus
+    if (parent$accepted_rank == "subgenus") {
+      split.subgenus <- strsplit(parent$accepted_name, " ")[[1]]
+      out$Genus <- as.character(split.subgenus[1])
+      out$Subgenus <- as.character(gsub("[()]", "", split.subgenus[2]))
+    }
+    # update for new parenting
     parent <-
-      pbdb[which(pbdb$accepted_no == parent$parent_no), ][1,]
+      pbdb[which(pbdb$accepted_no == parent$parent_no), ][1, ]
+    child_rank <- parent$accepted_rank
     if (all(is.na(parent)))
       break
   }
@@ -74,10 +220,9 @@ prep.PBDB <- function(g = 1, gen.order, which.gsg, pbdb) {
 
 
 # Identify possibly problematic homonym genera
-which.gsg <- 
-  which((pbdb$accepted_rank == "genus" | pbdb$accepted_rank == "subgenus") 
-        & pbdb$difference == "")
 sort(table(pbdb$accepted_name[which.gsg]), decreasing = TRUE)[1:30]
+
+# Note different parents (one is a brachiopod and one is a gastropod)
 pbdb[which(pbdb$accepted_name == "Lowenstamia"), ]
 
 
@@ -85,35 +230,51 @@ pbdb[which(pbdb$accepted_name == "Lowenstamia"), ]
 ## Format the PBDB data using a parallel-computing environment ---------------
 
 # Version using parallel computing:
-library(data.table) # Required below for merging parallel lists into dataframe
-library(snowfall)
+require(data.table) # Required below for merging parallel lists into dataframe
+require(snowfall)
 (t.start0 <- Sys.time())
+
 # Initialize
-which.gsg <- 
-  which((pbdb$accepted_rank == "genus" | pbdb$accepted_rank == "subgenus") 
+valid.gsgs <- 
+  which((pbdb$accepted_rank == "genus" | pbdb$accepted_rank == "subgenus")
         & pbdb$difference == "")
+traces <- grep("I", pbdb$flags)
+which.gsg <- setdiff(valid.gsgs, traces)
+cat("Processing", length(which.gsg), "(sub)genera\n")
 gen.order <- order(pbdb$accepted_name[which.gsg])
 gen.seq <- seq_along(gen.order)
+# Fast test batch:
 # gen.seq <- 1:1000
+
 # Set up computer cluster
-library(parallel)
+require(parallel)
 cpus <- parallel::detectCores() # Number of CPUs to cluster together
 # sfSetMaxCPUs(cpus)			      # Use if plan more than 32 CPUs
 sfInit(parallel = TRUE, cpus = cpus, slaveOutfile = "initfile") # Initialize cluster
 stopifnot(sfCpus() == cpus)		    # Confirm set up CPUs properly
 stopifnot(sfParallel() == TRUE)		# Confirm now running in parallel
 sfExportAll()				            # Export all libraries, files, & objects
+
 # Execute the function
 prep <- NA
 prep <- sfLapply(x = gen.seq, fun = prep.PBDB, gen.order = gen.order, 
                  which.gsg = which.gsg, pbdb = pbdb) # Version without load-balancing
 sfStop()
 output <- data.table::rbindlist(prep)
-(Sys.time() - t.start0)
+(Sys.time() - t.start0)  # ~ 12 minutes with 8 CPUs
 head(output)
+beepr::beep(3)
 
 
-## Add named geological intervals to stratigraphic ranges
+                
+
+## Add named geological intervals to stratigraphic ranges ----------------------
+
+# This is just a temporary algorithm. Run UpdateAges&DivCurve.R for more
+# comprehensive code, which additionally (1) adds ranges for taxa in Sepkoski
+# Compendium, (2) interfaces with WoRMS to confirm extinct/extant status (and
+# setting min_ma to 0), and (3) updates the dates to the Gradstein (2020)
+# Geologic Time Scale.
 strat_names <-
   read.csv("https://www.paleobiodb.org/data1.2/intervals/list.csv?all_records&vocab=pbdb")
 # 1 = eons, 2 = eras, 3 = periods, 4 (the default) = subperiods, and 5 = epochs.
@@ -121,6 +282,10 @@ scale_level <- 4
 ages <- strat_names[which(strat_names$scale_level == scale_level),]
 edia <- strat_names[which(strat_names$interval_name == "Ediacaran"), ]
 ages <- rbind(ages, edia)
+# Replace outdated Series 3 with Miaolingian (if using epochs)
+ages$interval_name <-
+  replace(ages$interval_name, which(ages$interval_name == "Series 3"), 
+          "Miaolingian")
 tail(ages[, 1:5])
 output$max_age <- character(1)
 output$min_age <- character(1)
@@ -165,7 +330,7 @@ mults <- sort(table(output$Genus), decreasing = TRUE)
 mults <- mults[mults >= 2]
 head(mults, 20)
 file.name <- "multiGenera.txt"
-sq <- 1:19     # Higher taxonomy columns
+sq <- 1:14     # Higher taxonomy columns (Phylum <---> Genus)
 cat("The presence of subgenera, homonyms, and possible duplicates equals", 
     round(100 * length(mults) / nrow(output), 1), "% of the database\n", 
     file = file.name)
@@ -178,13 +343,13 @@ for(d in 1:length(mults)) {
   if (length(classes) == 1L)
     # Identify likely subgenera:
     if (return.subgenera & all(sapply(sq, function(sq)
-      length(unique(suspicious[[sq]])) == 1)) &
+      nrow(unique(suspicious[, Phylum:Genus])) == 1)) &
       suspicious$Subgenus[1] == "" & all(suspicious$Subgenus[-1] != ""))
       cat("OK: Genus", names(mults[d]), "has", nrow(suspicious) - 1, 
           "subgenera.\n", file = file.name, append = TRUE)
   # Identify likely problematic duplicated entries:
   if (any(sapply(sq, function(sq) 
-    length(unique(suspicious[[sq]])) != 1)) & length(classes) == 1L)
+    nrow(unique(suspicious[, Phylum:Genus])) != 1)) & length(classes) == 1L)
     cat("WARNING: Genus", names(mults[d]), 
         "may be a duplicate genus entry. Investigate and override in PBDB if true.\n", 
         file = file.name, append = TRUE)
@@ -194,9 +359,11 @@ for(d in 1:length(mults)) {
         "is a homonym for genera in difference classes:", classes, "\n", 
         file = file.name, append = TRUE)
 }
+beepr::beep()
 
-# For any genera tagged as "WARNING", the best-practice is to add a new taxon to
-# the PBDB that overrides the duplicate (and to re-classify their occurrences).
+# For any genera tagged as "WARNING" that represent duplicate entries of the
+# same name, the best-practice is to add a new taxon to the PBDB that overrides
+# the duplicate (and to re-classify their occurrences).
 
 
 
@@ -255,20 +422,23 @@ marine.exceptions <- c("Chelonioidea", "Ophidiomorpha", "Mosasauroidea", "Mosasa
     "Mycteropidae", "Pterygotidae", "Woodwardopteridae", "Waeringopteroidea",
     "Eurypterina", "Limulina", "Stylonurina")
 
-sq <- 1:nrow(x)
 # Extract the known marine taxa (in lineages that are typically non-marine):
+sq <- 1:nrow(x)
 marine.vert.exceptions <- x[sapply(sq, function(sq) any(marine.exceptions %in% x[sq, ])), ]
+
 # Remove the non-marine taxa, and all tetrapopds, including marine tetrapods (in
 # case of tetrapods that were not coded as members of Tetrapoda in the PBDB):
 marine.typical <- x[!sapply(sq, function(sq) any(c(non.marine, tetrapods, 
                                                    marine.exceptions) %in% x[sq, ])), ]
+
 # Combine the typical marine taxa plus the known marine tetrapods, etc.:
 marine.taxa <- rbind(marine.typical, marine.vert.exceptions)
 table(marine.taxa$Class)
 nrow(x)
 nrow(marine.taxa)
 
-write.csv(marine.taxa, file = "PBDBformatted_NoTerr.csv", row.names = FALSE)
+# Save object
+# write.csv(marine.taxa, file = "PBDBformatted_NoTerr.csv", row.names = FALSE)
 # x <- read.csv(file = "PBDBformatted_NoTerr.csv", header = TRUE, stringsAsFactors = FALSE)
 
 
