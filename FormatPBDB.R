@@ -261,7 +261,7 @@ prep <- sfLapply(x = gen.seq, fun = prep.PBDB, gen.order = gen.order,
                  which.gsg = which.gsg, pbdb = pbdb) # Version without load-balancing
 sfStop()
 output <- data.table::rbindlist(prep)
-(Sys.time() - t.start0)  # ~ 12 minutes with 8 CPUs
+(Sys.time() - t.start0)  # ~ 13 minutes with 8 CPUs
 head(output)
 beepr::beep(3)
 
@@ -363,7 +363,28 @@ beepr::beep()
 
 # For any genera tagged as "WARNING" that represent duplicate entries of the
 # same name, the best-practice is to add a new taxon to the PBDB that overrides
-# the duplicate (and to re-classify their occurrences).
+# the duplicate (and to re-classify their occurrences). But confirm first that
+# the genus isn't listed twice in Sepkoski's Compendium, in which case we should
+# keep both entries in the PBDB for legacy purposes. In these cases, change one
+# of Sepkoski's opinions to "objective synonym" of and add a note in the
+# Comments field to let future users understand why the opinion was changed.
+# (Ideally, make the entry with zero occurrences and no other parenting opinions
+# be the one to point to the more completely fleshed out genus.)
+
+# All likely duplicates have been corrected (as of Nov. 21, 2022). The following
+# are confirmed (or very likely) homonyms (occurring within the same class):
+# Strophomena, Desmoceras, Aspidocrinus, Bicarinella, Billingsites,
+# Brachyrhizodus, Coronopsis, Curculionites, Didymoceras, EolampraStrophomena,
+# Desmoceras, Aspidocrinus, Bicarinella, Billingsites, Brachyrhizodus,
+# Coronopsis, Curculionites, Didymoceras, Eolampra, Geometra, Glypta,
+# Hoffeinsia, Hysteroceras, Longhuaia, Mesocorixa, Mesodiadema, Mesorthophlebia,
+# Microcorystes, Noctua, Onychoceras, Pamirophyllum, Parachorista, Pternodus,
+# Pyralis, Rhectomyax, Saurornithoides, Sharovia, Sinoperla, Solenochilus,
+# Sutherlandia, Tinea, Tinosaurus, Tortrix, Treptoceras, Geometra, Glypta,
+# Hoffeinsia, Hysteroceras, Longhuaia, Mesocorixa, Mesodiadema, Mesorthophlebia,
+# Microcorystes, Noctua, Onychoceras, Pamirophyllum, Parachorista, Pternodus,
+# Pyralis, Rhectomyax, Saurornithoides, Sharovia, Sinoperla, Solenochilus,
+# Sutherlandia, Tinea, Tinosaurus, Tortrix, and Treptoceras.
 
 
 
@@ -436,6 +457,8 @@ marine.taxa <- rbind(marine.typical, marine.vert.exceptions)
 table(marine.taxa$Class)
 nrow(x)
 nrow(marine.taxa)
+beepr::beep()
+
 
 # Save object
 # write.csv(marine.taxa, file = "PBDBformatted_NoTerr.csv", row.names = FALSE)
