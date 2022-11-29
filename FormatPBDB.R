@@ -9,7 +9,7 @@
 ## Download data directly from PaleobioDB and save to working directory (will be
 ## > 20 MB)
 
-setwd("C:/Users/pnovack-gottshall/Desktop/Databases/Maintenance & update R scripts")
+setwd("C:/Users/pnovack-gottshall/OneDrive - Benedictine University/Desktop/Databases/Maintenance & update R scripts")
 
 rm(list = ls())
 
