@@ -274,7 +274,7 @@ beepr::beep(3)
 # comprehensive code, which additionally (1) adds ranges for taxa in Sepkoski
 # Compendium, (2) interfaces with WoRMS to confirm extinct/extant status (and
 # setting min_ma to 0), and (3) updates the dates to the Gradstein (2020)
-# Geologic Time Scale.
+# Geologic Time Scale (using lookup table of Peter Wagner).
 strat_names <-
   read.csv("https://www.paleobiodb.org/data1.2/intervals/list.csv?all_records&vocab=pbdb")
 # 1 = eons, 2 = eras, 3 = periods, 4 (the default) = subperiods, and 5 = epochs.
@@ -429,7 +429,8 @@ non.marine <- c("Arachnida", "Insecta", "Collembola", "Palaeophreatoicidae",
     "Dyspnoi", "Euproopidae", "Eupnoi", "Holosternina", "Ixodida", "Laniatores", 
     "Lobosternina", "Meristosternina", "Mesostigmata", "Opilioacarida", 
     "Orthosternina", "Posteriorricinulei", "Primoricinulei", "Sarcoptiformes", 
-    "Tetrophthalmi", "Trombidiformes", "Tetrapulmonata", "Diplura")
+    "Tetrophthalmi", "Trombidiformes", "Tetrapulmonata", "Diplura", 
+    "Phylactolaemata")
 # Most tetrapods are terrestrial, so remove by default:
 tetrapods <- c("Mammalia", "Reptilia")
 # Then add back in the known marine tetrapods (and some known marine xiphosurans,
@@ -459,6 +460,37 @@ nrow(x)
 nrow(marine.taxa)
 beepr::beep()
 
+# Remove confirmed form taxa (ammonoid aptychi and dissociated crinoid
+# columnals, holdfasts, and anal sacs). Including these "genera" would
+# artificially inflate standing genus richness.
+known.forms <- c("Aptychus", "Cornaptychus", "Crassaptychus", "Granulaptychus", 
+                 "Laevaptychus", "Laevicornaptychus", "Laevilamellaptychus", 
+                 "Lamellaptychus", "Lissaptychus", "Praestriaptychus", 
+                 "Pseudostriaptychus", "Pteraptychus", "Punctaptychus", 
+                 "Rugaptychus", "Sidetes", "Spinaptychus", "Striaptychus", 
+                 "Aspidocrinus", "Babanicrinus", "Calleocrinus", "Cyclocaudex", 
+                 "Cyclocaudiculus", "Cyclocharax", "Cyclocrista", 
+                 "Cyclocyclicus", "Cycloscapus", "Dulanocrinus", 
+                 "Dwortsowaecrinus", "Exaesiodiscus", "Flexicrinus", 
+                 "Floripila", "Flucticharax", "Glyphidocrinus", 
+                 "Heterostelechus", "Jonkerocrinus", "Kstutocrinus", 
+                 "Lamprosterigma", "Laudonomphalus", "Lichenocrinus", 
+                 "Malovicrinus", "Mooreanteris", "Pandocrinus", 
+                 "Pentagonocyclicus", "Pentaridica", "Preptopremnum", 
+                 "Salairocrinus", "Schyschcatocrinus", "Stenocrinus", 
+                 "Tetragonocyclicus", "Tetralobocrinus", "Tjeecrinus", 
+                 "Zeravschanocrinus")
+wh.forms <- which(marine.taxa$Genus %in% known.forms | 
+                    marine.taxa$Subgenus %in% known.forms)
+marine.taxa <- marine.taxa[-wh.forms, ]
+
+# Special rule for Anaptychus, which is a junior subjective synonym of Sidetes
+# and a homonym of a decapod (which is j.s.s. of Ala, so neither should be
+# present)
+wh.anaptychus <- which(marine.taxa$Genus == "Anaptychus" &
+                         marine.taxa$Class == "Cephalopoda")
+if (length(wh.anaptychus) > 0L)
+  marine.taxa <- marine.taxa[-wh.anaptychus,]
 
 # Save object
 # write.csv(marine.taxa, file = "PBDBformatted_NoTerr.csv", row.names = FALSE)
