@@ -815,6 +815,14 @@ write.table(post, file = "PreSizes_Constant_withPBDB.tab", quote = FALSE,
 # ad. Treat Order Bradoriida as a non-ostracod member of the stem Crustacean,
 #     following consensus in Álvarez, et al. (2008) and Siveter, et al., (2014).
 
+# ae. The affinity of radiocyaths is uncertain (Treatise: Kruse, et al., 2015),
+#     with most considering them either allied to archaeocyath or heteractine
+#     sponges or receptaculacean (dasyclad) algae. Although most recent research
+#     supports an algal affinity, re-ranking class Radiocyatha as distinct 
+#     subclass of class Archaeocyatha so that life habit propagates as a sponge 
+#     model. (Easier to assume an animal now and secondarily remove than to 
+#     ignore and add in later, if future consensus emerges.) subclass
+
 # (6) Run code as usual in "PropogateSizes.R" or "PropogateLifeHabits.R", but
 # resaving as postX_withPBDB" file name. Make sure to add new IDNumbers to the
 # new PBDB entries!
