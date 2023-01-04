@@ -111,15 +111,16 @@ valid.gsgs <-
   which((pbdb$accepted_rank == "genus" | pbdb$accepted_rank == "subgenus")
         & pbdb$difference == "")
 traces <- grep("I", pbdb$flags)
-# Not worth indexing on "V" because not all taxa with a "difference" is tagged
-# with "V". Following is more efficient.
+# Not worth indexing on "V" because not all taxa with a "difference" are tagged
+# with "V". The following treatment is more efficient.
 which.gsg <- setdiff(valid.gsgs, traces)
 
 # Valid (sub)genera now all forms or regular taxa, with no 'differences'
 table(pbdb[which.gsg, c("accepted_rank", "flags", "difference")])
 
 # Invalid (sub)genera are traces or differenced, but other taxa include everything
-table(pbdb[-which.gsg, c("accepted_rank", "flags", "difference")])[c(3, 12, 2, 8, 1), , ]
+table(pbdb[-which.gsg, c("accepted_rank", "flags", "difference")])[c(3, 12, 2, 8, 1), , 1]
+table(pbdb[-which.gsg, c("accepted_rank", "flags", "difference")])[c(3, 12, 2, 8, 1), , -1]
 
 # Save the allowed invalids (subjective synonyms and nomen dubia) for later use
 # (to maintain a consistent namespace during propagations).
@@ -266,7 +267,7 @@ head(output)
 beepr::beep(3)
 
 
-                
+
 
 ## Add named geological intervals to stratigraphic ranges ----------------------
 
@@ -374,17 +375,12 @@ beepr::beep()
 # All likely duplicates have been corrected (as of Nov. 21, 2022). The following
 # are confirmed (or very likely) homonyms (occurring within the same class):
 # Strophomena, Desmoceras, Aspidocrinus, Bicarinella, Billingsites,
-# Brachyrhizodus, Coronopsis, Curculionites, Didymoceras, EolampraStrophomena,
-# Desmoceras, Aspidocrinus, Bicarinella, Billingsites, Brachyrhizodus,
-# Coronopsis, Curculionites, Didymoceras, Eolampra, Geometra, Glypta,
-# Hoffeinsia, Hysteroceras, Longhuaia, Mesocorixa, Mesodiadema, Mesorthophlebia,
-# Microcorystes, Noctua, Onychoceras, Pamirophyllum, Parachorista, Pternodus,
-# Pyralis, Rhectomyax, Saurornithoides, Sharovia, Sinoperla, Solenochilus,
-# Sutherlandia, Tinea, Tinosaurus, Tortrix, Treptoceras, Geometra, Glypta,
-# Hoffeinsia, Hysteroceras, Longhuaia, Mesocorixa, Mesodiadema, Mesorthophlebia,
-# Microcorystes, Noctua, Onychoceras, Pamirophyllum, Parachorista, Pternodus,
-# Pyralis, Rhectomyax, Saurornithoides, Sharovia, Sinoperla, Solenochilus,
-# Sutherlandia, Tinea, Tinosaurus, Tortrix, and Treptoceras.
+# Brachyrhizodus, Coronopsis, Curculionites, Didymoceras, Eolampra, Geometra,
+# Glypta, Hoffeinsia, Hysteroceras, Longhuaia, Mesocorixa, Mesodiadema,
+# Mesorthophlebia, Microcorystes, Nectosaurus, Noctua, Onychoceras,
+# Pamirophyllum, Parachorista, Pternodus, Pyralis, Rhectomyax, Rhytidoceras,
+# Saurornithoides, Sharovia, Sinoperla, Solenochilus, Sutherlandia, Tinea,
+# Tinosaurus, Tortrix, Treptoceras.
 
 
 
@@ -455,7 +451,7 @@ marine.typical <- x[!sapply(sq, function(sq) any(c(non.marine, tetrapods,
 
 # Combine the typical marine taxa plus the known marine tetrapods, etc.:
 marine.taxa <- rbind(marine.typical, marine.vert.exceptions)
-table(marine.taxa$Class)
+sort(table(marine.taxa$Class))
 nrow(x)
 nrow(marine.taxa)
 beepr::beep()
