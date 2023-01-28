@@ -679,3 +679,25 @@ write.table(out, file = "PostLH_withPBDB_constant.tab", quote = FALSE, sep = "\t
 # FOR A EcoScale = SPECIES/GENUS, to tag as "Estimated" and to update the
 # History accordingly.
 
+## ADD SUBJECTIVE SYNONYMS AND NOMEN DUBIA
+
+# Because the 'parent' of subjective synonyms and nomen dubia is their
+# accepted_name (and not a higher taxon), need to hold these genera until
+# everything else (i.e., body sizes and life habits) is propagated. To maintain
+# consistency in the PBDB "namespace," these names were set aside before
+# propagating. Add them back in (1) after updating the stratigraphic ranges
+# (including with WoRMS for adding extant ranges and with the Sepkoski
+# Compendium), (2) after propagating the body sizes (which rely on the
+# stratigraphic ranges), and (3) after propagating the life habits. Only then
+# will we (4) copy the taxonomic classification of their accepted parent, and
+# (5) add one of the following tags to the TaxonomyReference field (inserting
+# the correct parent name:
+
+# Subjective synonym: "Possibly invalid taxon. PBDB treats Stellaria as a
+# subjective synonym of Chancelloria.".
+
+# Nomen dubium: "Possibly invalid taxon. PBDB treats Protosphaerites as a
+# subjective synonym of Archaeooides.".
+
+# Form taxon: "Possibly invalid taxon. PBDB treats Choiaella as a form taxon.".
+# Note that this tag would require going back to the main PBDB genus list file.
