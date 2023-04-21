@@ -1,6 +1,20 @@
 ## FORMAT PBDB GENUS/SUBGENUS OCCURRENCES INTO TAXONOMIC STRUCTURE OF MY DATA,
 ## USING A PARALLEL-COMPUTING ENVIRONMENT
 
+## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+## ISSUE TO RESOLVE LATER: Because of weird parenting, some tetrapods (e.g.,
+## mammalian Sirenia and cynodonts and Eupelycosauria) are parented to subclass
+## Sarcopterygii instead of Tetrapoda. Some of these are terrestrial but not
+## removed by the code below. Not sure if the solution is (1) to fix the
+## vertebrate taxonomy in the PBDB (unrealistic), (2) add additional steps in
+## the marine/non-marine post-processing to pick and choose which to
+## keep/remove, or (3) add new code to the prep.pbdb() function to ignore cases
+## when a name is parented to a "higher" rank that is actually "lower" (e.g., in
+## the case of order Sirenia when class Mammalia is parented to infraorder
+## Eucynodontia).
+## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
 # The serial version of the main parenting algorithm below takes ~4.5 hours to
 # process PBDB into a formatted taxonomic dataframe structure. This code embeds
 # the algorithm as a function that can be implemented in parallel and is much
@@ -77,7 +91,8 @@ library(parallel)    # v. 4.2.2
 
 # However, to avoid "parenting" issues (such as when a legitimate genus is
 # parented in a family tagged as an ichnofamily or in an obsolete naming
-# varient), include all taxa in the parenting algorithm.
+# varient, or when a subgenus is parented into a nomen nudum genus), include all
+# taxa in the parenting algorithm.
 
 
 
@@ -154,7 +169,7 @@ table(duplicated(rownames(pbdb), rownames(pbdb_add_synonyms)))
 # Output is a list, with each item the taxonomy for a single genus. Extends LAD
 # to 'Recent' if genus is extant and splits subgenus names into genus and
 # subgenus components.
-prep.PBDB <- function(g = 1, gen.order, which.gsg, pbdb) {
+prep.PBDB <- function(g = 1, gen.order = NULL, which.gsg = NULL, pbdb = NULL) {
   scales <- c("phylum", "subphylum", "superclass", "class", "subclass", 
               "infraclass", "superorder", "order", "suborder", "infraorder", 
               "superfamily", "family", "subfamily", "genus", "subgenus")
@@ -182,39 +197,58 @@ prep.PBDB <- function(g = 1, gen.order, which.gsg, pbdb) {
   }
   parent <- pbdb[which(pbdb$accepted_no == pbdb$parent_no[wh]), ][1, ]
   child_rank <- pbdb$accepted_rank[wh]
+
+  # In rare cases (e.g., Devonocoryphe (Devonocoryphe)), a subgenus is parented
+  # to a nomen nudum genus. This creates a blank parent (all NAs). Here, we
+  # identify these cases and treat them separately.
+  alt.parent <- pbdb[which(pbdb$taxon_no == pbdb$parent_no[wh]), ][1, ]
+  ignore_this <- FALSE
+  if (all(is.na(parent)) & alt.parent$difference == "nomen nudum")
+    ignore_this <- TRUE
+
   # In cases where the priority opinion involves BOTH a correction AND elevation
   # of a subgenus to genus rank, the genus is orphaned (placed within a higher
-  # taxon but not assigned a genus.) Examples include Erioptera (Hoplolabis) and
+  # taxon but not assigned a genus). Examples include Erioptera (Hoplolabis) and
   # Otolithus (Chrysophris). The following corrects for these rare cases. It is
   # placed within the repeat loop to allow for the rare instance where the
   # reassignment of a subgenus in another genus results in its being parented in
   # a subgenus (which can sometimes happen when genera are later reranked as a
   # subgenus; E.g., Amphistrophiella (Amphistrophiella) parented as
   # Amphistrophia (Amphistrophiella)).
-  repeat {
+  if (!ignore_this) {
+    # The all is.na occurs in rare cases (e.g., Devonocoryphe (Devonocoryphe)),
+    # when a subgenus is parented to a nomen nudum genus. In this case, we skip
+    # the repeat loop below and remove the subgenus from the list of genera.
+    repeat {
     # i.e., if parent is above genus and child is below genus (and there is no
     # genus), elevate the subgenus name to genus rank:
-    if ((parent$accepted_rank != "genus" & parent$accepted_rank != "subgenus") &
-        child_rank == "subgenus") {
-      out$Genus <- out$Subgenus
-      out$Subgenus <- ""
-      }
-    if (parent$accepted_rank %in% scales)
-      out[1, which(scales == parent$accepted_rank)] <-
-        as.character(parent$accepted_name)
-    # Override subgenus treatment if parent's rank is also subgenus
-    if (parent$accepted_rank == "subgenus") {
-      split.subgenus <- strsplit(parent$accepted_name, " ")[[1]]
-      out$Genus <- as.character(split.subgenus[1])
-      out$Subgenus <- as.character(gsub("[()]", "", split.subgenus[2]))
+      if ((parent$accepted_rank != "genus" & parent$accepted_rank != "subgenus") &
+          child_rank == "subgenus") {
+        out$Genus <- out$Subgenus
+        out$Subgenus <- ""
+        }
+      if (parent$accepted_rank %in% scales)
+        out[1, which(scales == parent$accepted_rank)] <-
+          as.character(parent$accepted_name)
+      # Override subgenus treatment if parent's rank is also subgenus
+      if (parent$accepted_rank == "subgenus") {
+        split.subgenus <- strsplit(parent$accepted_name, " ")[[1]]
+        out$Genus <- as.character(split.subgenus[1])
+        out$Subgenus <- as.character(gsub("[()]", "", split.subgenus[2]))
+        }
+      # update for new parenting
+      parent <-
+        pbdb[which(pbdb$accepted_no == parent$parent_no), ][1, ]
+      child_rank <- parent$accepted_rank
+      if (all(is.na(parent)))
+        break
     }
-    # update for new parenting
-    parent <-
-      pbdb[which(pbdb$accepted_no == parent$parent_no), ][1, ]
-    child_rank <- parent$accepted_rank
-    if (all(is.na(parent)))
-      break
   }
+  
+  # Manually delete if parent is nomum nudum
+  if (ignore_this)
+    out[1, ] <- NA
+  
   return(out)
 }
 
@@ -266,7 +300,11 @@ output <- data.table::rbindlist(prep)
 head(output)
 beepr::beep(3)
 
-
+# Remove subgenera parented to nomen nudum genus parents
+nrow(output)
+wh.remove <- sapply(gen.seq, function(gen.seq) all(is.na(output[gen.seq, 1:18])))
+output <- output[-wh.remove, ]
+nrow(output)
 
 
 ## Add named geological intervals to stratigraphic ranges ----------------------
