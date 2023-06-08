@@ -857,6 +857,12 @@ write.table(post, file = "PreSizes_Constant_withPBDB.tab", quote = FALSE,
 #     model. (Easier to assume an animal now and secondarily remove than to 
 #     ignore and add in later, if future consensus emerges.) subclass
 
+# af. For phosphatocopines, follow Zhang, et al. (2010) and Siveter, et al.
+#     (2003) in treating Euphosphatocopida (=original Phosphatocopina) as a 
+#     subclade within Phosphatocopida. Given the lack of consistency in what 
+#     rank these names apply, treat Euphosphatocopida as an order and 
+#     Phosphatocopida as a class.
+
 # (6) Run code as usual in "PropogateSizes.R" or "PropogateLifeHabits.R", but
 # resaving as postX_withPBDB" file name. Make sure to add new IDNumbers to the
 # new PBDB entries!
