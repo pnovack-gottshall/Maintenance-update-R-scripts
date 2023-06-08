@@ -464,7 +464,7 @@ non.marine <- c("Arachnida", "Insecta", "Collembola", "Palaeophreatoicidae",
     "Lobosternina", "Meristosternina", "Mesostigmata", "Opilioacarida", 
     "Orthosternina", "Posteriorricinulei", "Primoricinulei", "Sarcoptiformes", 
     "Tetrophthalmi", "Trombidiformes", "Tetrapulmonata", "Diplura", 
-    "Phylactolaemata", "Spongillidae", "Opolanka")
+    "Phylactolaemata", "Spongillidae", "Opolanka", "Pygocephalomorpha")
 # Most tetrapods are terrestrial, so remove by default:
 tetrapods <- c("Mammalia", "Reptilia")
 # Then add back in the known marine tetrapods (and some known marine xiphosurans,
