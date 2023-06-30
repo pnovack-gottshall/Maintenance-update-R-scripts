@@ -572,9 +572,10 @@ write.table(post, file = "PreSizes_Constant_withPBDB.tab", quote = FALSE,
 #     IDBadHigherTaxa.R for a function to automate. Known instances include:
 
 #   - CHANGE the following subclass ranks to rank class:
-#       (i) arthropods Malacostraca and Cirripedia (and set in Subphylum Crustacea), 
-#       (ii) echinoderms Blastoidea and Parablastoidea
-#       (iii) vertebrates Placodermi and Thelodonti.
+#       (i)   arthropods Malacostraca (and set in Subphylum Crustacea)
+#       (ii)  echinoderms Blastoidea and Parablastoidea
+#       (iii) vertebrates Placodermi and Thelodonti
+#       (ix)  confirm barnacles in subclass Cirripedia in class Thecostraca
 
 #   - CHANGE Class Opisthobranchs down a rank to subclass (and placing them in
 #     Class Heterobranchia) such that Opisthobranchia is a Subclass and their 
@@ -599,6 +600,13 @@ write.table(post, file = "PreSizes_Constant_withPBDB.tab", quote = FALSE,
 
 #   - Treat Phymosomatoida as an echinoid suborder (not also as an order), 
 #     leaving the order UNCERTAIN.
+
+#   - Elevate suborder Pygocephalomorpha to order rank (so order rank is not 
+#     left blank).
+
+#   - Elevate infraclass Hoplocarida to order subclass (in accordance to how 
+#     treated in WoRMS). Orders within Hoplocarida include Stomatopoda, 
+#     Aeschronectida, and Palaeostomatopoda.
 
 #  c. CHANGE rank names for Order Rhombifera (Subphylum Pelmatozoa, Class
 #     Cystoidea, Subclass Hydrophoridea) to Class Rhombifera (Subphylum 
