@@ -575,7 +575,15 @@ write.table(post, file = "PreSizes_Constant_withPBDB.tab", quote = FALSE,
 #       (i)   arthropods Malacostraca (and set in Subphylum Crustacea)
 #       (ii)  echinoderms Blastoidea and Parablastoidea
 #       (iii) vertebrates Placodermi and Thelodonti
-#       (ix)  confirm barnacles in subclass Cirripedia in class Thecostraca
+
+#   - Elevate subclasses Cirripedia and Ascothoracida to class rank and elevate 
+#     the cirriped infraclasses Afrothoracica, Rhizocephala, and Thoracica to 
+#     subclass. Although not consistent with PBDB and WoRMS (which treat as 
+#     subclasses within class Thecostraca), I am choosing this option because (1)
+#     ascothoracids are ecologically quite distinct from typical cirripeds (and 
+#     essentially lack a fossil record) and (2) I do not include the rank of
+#     infraclass in my core database. In other words, when dealing fossils, the 
+#     cirripeds are practically synonymous with thecostracans.
 
 #   - CHANGE Class Opisthobranchs down a rank to subclass (and placing them in
 #     Class Heterobranchia) such that Opisthobranchia is a Subclass and their 
