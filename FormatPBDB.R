@@ -616,6 +616,8 @@ write.table(post, file = "PreSizes_Constant_withPBDB.tab", quote = FALSE,
 #     treated in WoRMS). Orders within Hoplocarida include Stomatopoda, 
 #     Aeschronectida, and Palaeostomatopoda.
 
+#   - Treat unranked, informal priapulid group Archaeopriapulida as an order.
+
 #  c. CHANGE rank names for Order Rhombifera (Subphylum Pelmatozoa, Class
 #     Cystoidea, Subclass Hydrophoridea) to Class Rhombifera (Subphylum 
 #     Blastozoa, Order UNCERTAIN), and CHANGE Subphylum Pelmatozoa to Blastozoa.
