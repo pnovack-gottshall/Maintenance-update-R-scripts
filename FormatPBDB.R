@@ -618,6 +618,11 @@ write.table(post, file = "PreSizes_Constant_withPBDB.tab", quote = FALSE,
 
 #   - Treat unranked, informal priapulid group Archaeopriapulida as an order.
 
+#   - Current consensus (Smith and Reich, 2013; Rahman, et al., 2019) considers 
+#     the ophiocistioids as a branch of very early stem holothuroids. To 
+#     maintain them as a distinct group, reduce class Ophiocistioidea to order 
+#     rank (as ophiocistioids currently lack order names).
+
 #  c. CHANGE rank names for Order Rhombifera (Subphylum Pelmatozoa, Class
 #     Cystoidea, Subclass Hydrophoridea) to Class Rhombifera (Subphylum 
 #     Blastozoa, Order UNCERTAIN), and CHANGE Subphylum Pelmatozoa to Blastozoa.
@@ -880,6 +885,9 @@ write.table(post, file = "PreSizes_Constant_withPBDB.tab", quote = FALSE,
 #     subclade within Phosphatocopida. Given the lack of consistency in what 
 #     rank these names apply, treat Euphosphatocopida as an order and 
 #     Phosphatocopida as a class.
+
+# ag. Confirm that subphylum Urochordata is replaced with synonym Tunicata (per 
+#     WoRMS and most recent usages).
 
 # (6) Run code as usual in "PropogateSizes.R" or "PropogateLifeHabits.R", but
 # resaving as postX_withPBDB" file name. Make sure to add new IDNumbers to the
