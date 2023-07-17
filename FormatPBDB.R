@@ -513,7 +513,7 @@ known.forms <- c("Aptychus", "Cornaptychus", "Crassaptychus", "Granulaptychus",
                  "Pentagonocyclicus", "Pentaridica", "Preptopremnum", 
                  "Salairocrinus", "Schyschcatocrinus", "Stenocrinus", 
                  "Tetragonocyclicus", "Tetralobocrinus", "Tjeecrinus", 
-                 "Zeravschanocrinus")
+                 "Zeravschanocrinus", "Entrochus")
 wh.forms <- which(marine.taxa$Genus %in% known.forms | 
                     marine.taxa$Subgenus %in% known.forms)
 marine.taxa <- marine.taxa[-wh.forms, ]
