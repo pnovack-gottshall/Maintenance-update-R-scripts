@@ -33,7 +33,7 @@
 ## IMPORT ALL-COLUMNS DATA FILE ---------------------------------------------------
 
 rm(list = ls())
-setwd("C:/Users/pnovack-gottshall/Desktop/Databases/Maintenance & update R scripts")
+setwd("C:/Users/pnovack-gottshall/OneDrive - Benedictine University/Desktop/Databases/Maintenance & update R scripts")
 # setwd("C:/Users/pnovack-gottshall/Documents/GSA (& NSF & NAPC)/2016GSA/GSA2016 analyses")
 all <- read.delim(file = "AllCols.tab", stringsAsFactors = FALSE)
 # all <- read.delim(file = "AllCols_Mode.tab", stringsAsFactors = FALSE)
