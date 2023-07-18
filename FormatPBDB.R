@@ -889,6 +889,25 @@ write.table(post, file = "PreSizes_Constant_withPBDB.tab", quote = FALSE,
 # ag. Confirm that subphylum Urochordata is replaced with synonym Tunicata (per 
 #     WoRMS and most recent usages).
 
+# ah. Use class Cincta instead of outdated class Homostelea. Note cinctans 
+#     currently lack names for orders.
+
+# ai. Subphyla for echinoderms are largely informal, often paraphyletic, and an 
+#     area of much debate. For consistency, using following until better 
+#     resolved, which elevates unranked clades Asterozoa, Echinozoa, Blastozoa 
+#     (including Crinozoa) to subphylum status, and elevates Eleutherozoa and 
+#     Pelmatozoa to unranked clades. (1) subphylum Asterozoa (classes 
+#     Asteroidea, Ophiuroidea, Somasteroidea, and Stenuroidea), (2) Echinozoa 
+#     (classes Echinoidea, Holothuroidea, and Ophiocistioidea). (3) Blastozoa 
+#     (classes Blastoidea, Parablastoidea, Paracrinoidea, Soluta, and Crinoidea 
+#     plus paraphyletic-to-polyphyletic informal classes 'diploporita', 
+#     'eocrinoidea', 'rhombifera' and treating class Coronoidea as subclass 
+#     Coronata within blastoids). (4) Remaining classes (non-radials Stylophora, 
+#     Cincta, Ctenocystoidea and radials Helicoplacoidea, Helicocystoids 
+#     [Helicocystis], Edrioasteroidea, and stem echinoderm Ctenoimbricata) are 
+#     placed in informal subphylum 'stem echinoderms'. Cyclocystoidea are 
+#     placed in subphylum UNCERTAIN.
+
 # (6) Run code as usual in "PropogateSizes.R" or "PropogateLifeHabits.R", but
 # resaving as postX_withPBDB" file name. Make sure to add new IDNumbers to the
 # new PBDB entries!
