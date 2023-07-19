@@ -2,11 +2,18 @@
 ## Check for missing ID numbers. Check that extant/extincts are correct (but
 ## note false flag if a subgenus is extinct within a still-extant genus).
 
+## ISSUES ######################################################################
+## 1. Add routines that add in Sepkoski Genus Compendium ages.
+## 2. Add routine that confirms extant status with WoRMS.
+## 3. Silence the errors (and convert to warnings) so that doesn't die when trips.
+################################################################################
+
+
 
 ## IMPORT AND PROCESS FILES ############################################
 
 rm(list = ls())
-setwd("C:/Users/pnovack-gottshall/Desktop/Databases/Maintenance & update R scripts")
+setwd("C:/Users/pnovack-gottshall/OneDrive - Benedictine University/Desktop/Databases/Maintenance & update R scripts")
 
 ## Download data directly from PaleobioDB and save to working directory (will be
 ## > 25 MB)
@@ -17,8 +24,8 @@ setwd("C:/Users/pnovack-gottshall/Desktop/Databases/Maintenance & update R scrip
 pbdb.all <- read.csv("pbdb_data.csv")
 head(pbdb.all)
 
-# Extract only genera (to ensure only searching for genus ranges sometimes a
-# genus, like Nuculoidea, has same name as a higher taxon)
+# Extract only genera (to ensure only searching for sub/genus ranges; sometimes
+# a genus, like Nuculoidea, has same name as a higher taxon)
 pbdb <- pbdb.all[which(pbdb.all$taxon_rank == "genus" | 
                          pbdb.all$taxon_rank == "subgenus"), ]
 nrow(pbdb)
