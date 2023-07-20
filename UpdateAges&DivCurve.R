@@ -382,8 +382,14 @@ for (r in 1:length(ranks)) {
     }
     # Update with PBDB (if extends range):
     wh.pbdb.taxon <- which(pbdb$taxon_name == taxon)
-    if (length(wh.pbdb.taxon) == 0L) next
-    taxon.pbdb <- pbdb[wh.pbdb.taxon, ]
+    # Note sometimes higher taxa have homonyms. Use most frequently used name as
+    # the likely correct one. (Not not a perfect guarantee.)
+    n.matches <- length(wh.pbdb.taxon)
+    if (n.matches == 0L)
+      next
+    if (n.matches > 1L)
+      best.match <- which.max(pbdb$n_occs[wh.pbdb.taxon])
+    taxon.pbdb <- pbdb[wh.pbdb.taxon[best.match],]
     if (is.na(taxon.pbdb$firstapp_max_ma) &
         is.na(taxon.pbdb$lastapp_min_ma)) next
     max.ma <- max(taxon.pbdb$firstapp_max_ma, na.rm = TRUE)
@@ -445,7 +451,7 @@ for (r in 1:length(ranks)) {
 
 
 ## COMPARE TO PBDB TALLIES #############################################
-# Get current numbers from PBDB, and compare to life habit database Note is
+# Get current numbers from PBDB, and compare to life habit database. Note is
 # comparing a marine & invertebrate-only life habit database to the entire PBDB
 pbdb$taxon_name[which(pbdb$taxon_rank == "phylum")]
 (l.pbdb <- length(pbdb$taxon_name[which(pbdb$taxon_rank == "phylum")]))
