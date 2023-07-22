@@ -46,22 +46,35 @@
 
 ## EXPORT DATA -------------------------------------------------------------
 
-# (0) Not required (because the code algorithmically updates), but if want a
-# "fresh" propagation, consider first deleting all body size data for any
-# estimates (EstAP, EstT, EstDV or non-species/subgenus/genus). (This is
-# recommended if, for example, a species/subgenus/genus A entry has at least one
-# estimated size measurement, and it might be used to estimate a missing size
-# for species B, which was originally used to estimate the missing size for A.)
-# IF DO THIS, PERFORM THE DELETIONS ON A COPY OF THE DATABASE RATHER THAN THE
-# MASTER DATABASE ITSELF!
+# (0) Not recommended (because the code algorithmically updates and gives
+# priority to species/genera with complete measurements), but if want a "fresh"
+# propagation, consider first deleting all body size data for any estimates
+# (EstAP, EstT, EstDV or non-species/subgenus/genus). (This is recommended if,
+# for example, a species/subgenus/genus A entry has at least one estimated size
+# measurement, and it might be used to estimate a missing size for species B,
+# which was originally used to estimate the missing size for A.) IF DO THIS,
+# PERFORM THE DELETIONS ON A COPY OF THE DATABASE RATHER THAN THE MASTER
+# DATABASE ITSELF! If go this route, note that the History_Size output will be
+# slightly off, because will imply there were prior estimates. It is easiest to
+# clean the data set during step 5 (when it would be easiest to add a row number
+# column so you can sort as needed, then return to the original row order.)
+# However, be aware that removing estimated values has the negative side effect
+# of meaning that AbsStratDist estimates are not likely to be propagated
+# (because the get.strat() function matches the current AbsStratDist values
+# against canonical values, and deleting estimated lengths means it may not find
+# relevant matches.)
 
-# (1) Before exporting, sort the entries so that BodySizeScale = Species is first,
-# followed by Subgenus, Genus, etc., and second by AbsStratDistance (in
-# descending order, with largest first), and third BodyVolume (with largest
-# first). (This sort order means taxa with AbsStratDistances and all three
-# measurements are placed before those missing one or more sizes.)
+# (1) To save time, you only need to export one dataset. The "constant" database
+# is recommended, although both data sets should have identical body size
+# estimates (although there will be variation in the estimates for
+# AbsStratDist). Before exporting, sort the entries so that (i) BodySizeScale =
+# Species is first, followed by Subgenus, Genus, etc., (ii) second by
+# AbsStratDistance (in descending order, with largest first), and (iii) third
+# BodyVolume (with largest first). (This sort order means taxa with
+# AbsStratDistances and all three measurements are placed before those missing
+# one or more sizes.)
 
-# (2) Run relevant code in SelectCols.R for propagateSizes.R to obtain following
+# (2) Run relevant code in SelectCols.R for PropagateSizes.R to obtain following
 # output. Then continue with step 3.
 
 # IDNumber
@@ -101,19 +114,20 @@
 # largest available pool of relatives. (2) Second, sort item by AbsStratDist,
 # with largest values first (so those with estimated AbsStratDists are
 # considered first to propagate to those lacking them). (3) Third, sort by Body
-# Size, with largest values first. (You can use the product of remaining values
-# as a proxy.)
+# Size, with largest values first. (You can add a column and use the product of
+# remaining values as a proxy.)
 
-# (7) Delete the added 'PhotoX' and Size columns and resave.
+# (7) Delete the added 'PhotoX' (and volume, if used) column and resave.
 
 
 
 ## READ AND PROCESS DATA ---------------------------------------------------
 rm(list = ls())
-setwd("C:/Users/pnovack-gottshall/Desktop/Databases/Maintenance & update R scripts")
+setwd("C:/Users/pnovack-gottshall/OneDrive - Benedictine University/Desktop/Databases/Maintenance & update R scripts")
 # setwd("C:/Users/pnovack-gottshall/Documents/GSA (& NSF & NAPC)/2016GSA/GSA2016 analyses")
 
 pre.input <- read.delim(file = "preSizes.tab", stringsAsFactors = FALSE)
+# pre.input <- read.delim(file = "PreSizes_Bradoriida&Aster&Echino.tab", stringsAsFactors = FALSE)
 # pre.input <- read.delim(file = "PreSizes_Constant_withPBDB.tab", stringsAsFactors = FALSE)
 # pre.input <- read.delim(file = "EchinoPreSizes_withPBDB.tab", stringsAsFactors = FALSE)
 
@@ -128,6 +142,7 @@ colCl[est.cols] <- "character"
 rm(pre.input)
 
 input <- read.delim(file = "preSizes.tab", stringsAsFactors = FALSE, colClasses = colCl)
+# input <- read.delim(file = "PreSizes_Bradoriida&Aster&Echino.tab", stringsAsFactors = FALSE)
 # input <- read.delim(file = "PreSizes_Constant_withPBDB.tab", stringsAsFactors = FALSE)
 # input <- read.delim(file = "EchinoPreSizes_withPBDB.tab", stringsAsFactors = FALSE)
 scales <- c("Species", "Subgenus", "Genus", "Subfamily", "Family", "Superfamily",
@@ -147,23 +162,38 @@ T.cols <- which(colnames(input) == "TransverseLength" | colnames(input) ==
 DV.cols <- which(colnames(input) == "DVLength" | colnames(input) == "PhotoDV" |
     colnames(input) == "DVScale")
 AbsStratDist.col <- which(colnames(input) == "AbsStratDistance")
-out <- input                    # Work with 'out', saving 'input' for reference
-colnames(out[photo.cols])       # "PhotoAP", "PhotoTransverse", "PhotoDV"
-colnames(out[est.cols])         # "Est_AP", "Est_T", "Est_DV"
-colnames(out[AP.cols])          # "APLength", "PhotoAP", "APScale"
-colnames(out[T.cols])           # "TrLength", "PhotoTr", "TrScale"
-colnames(out[DV.cols])          # "DVLength", "PhotoDV", "DVScale"
 str(input)
 
-# TROUBLESHOOT: Make sure the 4 "SizeChanged" and "Est_X" columns are input as
-# characters. If a column is blank, it is classed by default as a logical (which
-# causes errors below). If needed (such as when there are no "check"ed entries,
-# use next lines to force to proper class.)
+# TROUBLESHOOT: Make sure the "SizeChanged" and 4 "Est_X" (including
+# Est_AbsStratDistance) columns are input as characters and not logicals or all
+# NAs. If a column is blank, it is classed by default as a logical (which causes
+# errors below) and replaced with NA. If needed (such as when there are no
+# "check"ed entries; i.e., when did a clean propagation), use next lines to
+# force to proper class. Note that it is fine for AbsStratDist to have NAs for
+# missing values (so long as the column is treated as a numeric).
 
+## Following usually required:
 # input$SizeChanged <- replace(input$SizeChanged, which(is.na(input$SizeChanged)), "")
 
-head(input)
-tail(input)
+## Rest only if did a fresh propagation (lacking any estimates - not recommended!)
+# input$Est_AP <- replace(input$Est_AP, which(is.na(input$Est_AP)), "")
+# input$Est_T <- replace(input$Est_T, which(is.na(input$Est_T)), "")
+# input$Est_DV <- replace(input$Est_DV, which(is.na(input$Est_DV)), "")
+# input$Est_AbsStratDistance <- replace(input$Est_AbsStratDistance, which(is.na(input$Est_AbsStratDistance)), "")
+# str(input)
+
+out <- input                    # Work with 'out', saving 'input' for reference
+colnames(input[photo.cols])       # "PhotoAP", "PhotoTransverse", "PhotoDV"
+colnames(input[est.cols])         # "Est_AP", "Est_T", "Est_DV"
+colnames(input[AP.cols])          # "APLength", "PhotoAP", "APScale"
+colnames(input[T.cols])           # "TrLength", "PhotoTr", "TrScale"
+colnames(input[DV.cols])          # "DVLength", "PhotoDV", "DVScale"
+
+head(out)
+tail(out)
+
+# Current taxonomic resolution of data set. Compare to out below to see if there
+# has been improvement.
 table(input$BodySizeScale)
 
 # Troubleshooting
@@ -208,6 +238,7 @@ find.rel <- function(x, i, start = 4, end = 12, photo.cols = NULL,
   scales <- factor(scales, levels = scales, ordered = TRUE)
   others <- x[-i, ] # Entry cannot be its own relative
   for (e in start:end) {
+    nr <- 0
     # Identify correct column for taxonomic scale being considered
     sc.col <- which(colnames(others) == scales[e])
     # Ignore if unassigned taxa
@@ -235,8 +266,6 @@ find.rel <- function(x, i, start = 4, end = 12, photo.cols = NULL,
       rels <- poss.rels[part.complete,]
       nr <- nrow(rels)
     }
-    # Next line sets 'rels' to be NULL rather than blank matrix (which is a
-    # better behavior for below)
     if (nr > 0L) break
   }
   size.sc <- as.character(scales[e])
@@ -311,8 +340,8 @@ better.all.equal <- function(a, b, sig.digits = 2, nums = sort(c(AP.cols, T.cols
 }
 
 
-## IDENTIFY HOW ABSOLUTE STRAT DISTANCE WAS CALCULATED, AND propagatE USING SAME
-## CALCULATION. CALCULATIONS USED INCLUDE 30, 45, & 60 DEGREES, and 25%, 33%, 
+## IDENTIFY HOW ABSOLUTE STRAT DISTANCE WAS CALCULATED, AND PROPAGATE USING SAME
+## CALCULATION. CALCULATIONS USED INCLUDE 30, 45, & 60 DEGREES, and 25%, 33%,
 ## 50%, 67%, 75%, 90%, 200%, and 400%. NOTE USES 3 SIGNIFICANT DIGITS FOR
 ## IDENTIFYING MATCHES (IN CASE OF INEXACT EQUALITY), BUT OUTPUTS ALL DIGITS,
 ## AND 'NA' IF NO MATCH)
@@ -341,19 +370,28 @@ get.strat <- function(target, ref) {
 # i <- which(out$Genus == "Isogramma")      # brachiopod Isogramma
 # i <- which(out$Genus == "Rhytimya")       # bivalve Rhytimya
 # i <- which(out$Genus == "Bighornia")      # rugose coral Bighornia
-i <- which(out$Genus == "Caturus")          # fish Caturus
+# i <- which(out$Genus == "Caturus")        # fish Caturus
+i <- which(out$Genus == "Schuchertia")      # sea star Schuchertia 
 out[i, c(1:16, 24:32, 36)]
+# Identify missing measurements
 any.missing(out[i, ], photo.cols, est.cols)
-rel <- find.rel(out, i, photo.cols = photo.cols, est.cols = est.cols, all.3 = TRUE)
+# Find completely measured relative of the closest stratigraphic age
+rel <- find.rel(out, i, photo.cols = photo.cols, est.cols = est.cols, 
+                sim.time = TRUE, all.3 = TRUE)
 rel$size.sc
 rel$rel[c(1:16, 24:32, 36)]
-get.strat(target = out[i, ], ref = rel$rel) # Only works if all 3 measures are in target
+get.strat(target = out[i, ], ref = rel$rel)
+# Prior line only works if all 3 measures are in the target
+
+# Find ALL completely measured relatives (regardless of age)
 rels <- find.rel(out, i, photo.cols = photo.cols, est.cols = est.cols, 
                  sim.time = FALSE, all.3 = TRUE)$rel
+rels[, 2:11]
 nr <- 1:nrow(rels)
 sapply(nr, function(nr) get.strat(out[i,], rels[nr, ]))
+# Prior line only works if all 3 measures are in the target
 
-rm(list = c("i", "rel"))
+rm(list = c("i", "nr", "rel", "rels"))
 
 
 
@@ -389,6 +427,7 @@ seq.AbsStratDist <- rep(seq.int(AbsStratDist.text), 2)
 interactive <- TRUE   # If want to watch updates in real time
 # interactive <- FALSE
 if (interactive) par("ask" = TRUE) else par("ask" = FALSE)
+# log actions so can trace changes
 record.log <- TRUE
 record.file <- "SizeLog.txt"
 if (record.log) cat("Changes made to body sizes on", today, ":\n\n", file = record.file, append = FALSE)
@@ -412,6 +451,8 @@ for (i in 1:nrow(out)) {
   if (!missing$any & !missing.strat & (this.scale == "Species" | 
       this.scale == "Subgenus" | this.scale == "Genus")) next
   
+  # Next line sets 'rels' to be NULL rather than blank matrix (which is a
+  # better behavior for below)
   rel <- rels <- NULL
   change <- input$SizeChanged[i]
   
@@ -536,13 +577,14 @@ for (i in 1:nrow(out)) {
   out$TransverseLength[i] <- out$PhotoTransverse[i] / out$TransverseScale[i]
   out$DVLength[i] <- out$PhotoDV[i] / out$DVScale[i]
 
-  # propagate AbsStratDist (using closest relatives, regardless of whether
-  # geologically contemporaneous or with missing some size measures)
+  # Propagate AbsStratDist (using closest relatives, regardless of whether
+  # geologically contemporaneous or whether missing some size measures)
   if (missing.strat) {
     # ... if missing AbsStratDist but available via ALL best relatives (that are
     # within same suborder [end = 7] or lower resolution)
-    rels <- find.rel(x = out, i = i, end = 7, photo.cols = photo.cols, 
-                     est.cols = est.cols, sim.time = FALSE, all.3 = FALSE)$rel
+    rels <- find.rel(x = out, i = i, start = 4, end = 7, 
+                     photo.cols = photo.cols, est.cols = est.cols, 
+                     sim.time = FALSE, all.3 = FALSE)$rel
     rels.with.strats <- 0L
     if (!is.null(rels))
       rels.with.strats <- length(na.omit(rels$AbsStratDistance))
@@ -622,13 +664,14 @@ for (i in 1:nrow(out)) {
 }
 (Sys.time() - start.t)
 library(beepr)
-beep(3)
+beepr::beep(3)
 
 # Note that occasionally a rounding error [caused by minor differences between
-# the better.all.equal(sig.digits = 3) amd better.all.equal(sig.digits = 2)] occurs
-# that triggers a false positive change. This results in a 'data frame with 0
-# columns and 2 rows' result. You can ignore these results.
+# the better.all.equal(sig.digits = 3) and better.all.equal(sig.digits = 2)]
+# occurs that triggers a false positive change. This results in a 'data frame
+# with 0 columns and 2 rows' result. You can ignore these results.
 
+# Has been an improvement in taxonomic resolution?
 round(table(input$BodySizeScale) * 100 / nrow(input), 1)
 round(table(out$BodySizeScale) * 100 / nrow(out), 1)
 round(cumsum(table(out$BodySizeScale) * 100 / nrow(out)), 1)
@@ -656,11 +699,12 @@ if (any(table(input$IDNumber) > 1)) {
 
 ## EXPORT DATA -------------------------------------------------------------
 write.table(out, file = "PostSizes.tab", quote = FALSE, sep = "\t", row.names = FALSE)
+# write.table(out, file = "PostSizes_Bradoriida&Aster&Echino.tab", quote = FALSE, sep = "\t", row.names = FALSE)
 # write.table(out, file = "PostSizes_Constant_withPBDB.tab", quote = FALSE, sep = "\t", row.names = FALSE)
 
 # (1) Open in Excel to confirm looks acceptable. Replace (with Options = Match
-# entire cell contents) "NA"s in taxonomic names, body size data, strat ranges,
-# and AbsStratDist with blank cells. (Essentially the entire output.)
+# entire cell contents) "NA"s in taxonomic names, body size data, stratigraphic
+# ranges, and AbsStratDist with blank cells. (Essentially the entire output.)
 
 # (2) Open in Word to remove quotation marks around the text entries [UNLESS THE
 # QUOTATION MARK IS CORRECTLY AT THE END OF A TEXT FIELD], (replacing "^t with
@@ -709,13 +753,13 @@ write.table(out, file = "PostSizes.tab", quote = FALSE, sep = "\t", row.names = 
 # state instead.
 
 # If error-checking both 'mode' and 'constant' propagations, it is more
-# efficient to run through the 'mode' data set first because it' typic's greater
-# proportion of filled-in states makes it easier to identify the taxon-specific
-# rules.
+# efficient to run through the 'mode' data set first because it' typically
+# greater proportion of filled-in states makes it easier to identify the
+# taxon-specific rules.
 
 # NOTE: When error-checking for a PBDB propagation, preferable to start with no.
-# 7 (run through AbsStratDist to make sure AbsStrat, and sometimes RelStrat, is
-# correct) and then no. 6 (RelStrat based on major body axes) because they could
+# 1 (run through AbsStratDist to make sure AbsStrat, and sometimes RelStrat, is
+# correct) and then no. 2 (RelStrat based on major body axes) because they could
 # un-do other error-check changes. Similarly, because the combination of
 # different life habit and body size can create novel body orientations, a
 # useful convention is to only change RelStrat if it is not sensible with some
@@ -730,67 +774,20 @@ write.table(out, file = "PostSizes.tab", quote = FALSE, sep = "\t", row.names = 
 # committed), best to leave the state uncoded. This is also common with bivalves
 # and some brachiopods where the orientation depends on many factors.
 
-# (0) Are there any entries where, through process of elimination, the life
-# habit states can be coded? For example, search for any entries that are Biotic
-# = 0 + Lithic = 0 but omit Fluidic = 1; if so, then fluidic should be coded as
-# 1. Run this check across all 5 such characters (substrate composition,
-# substrate consistency, diet, physical condition of food, and foraging habit)
-# BEFORE running subsequent checks, because it can introduce new life habit
-# codings. If adding a state to a Sp/Gen-level entry, make sure to "Check" that
-# the added state is "Estimated."
+# (1) Confirm that taxa with AbsStratDist = ">-100000" values [ANY] match the
+# correct AbsStrat coding. (Sort by AbsStratDist when checking manually.) When
+# checking this, also worth checking the RelStrat and AbsFoodStrat codings. In
+# general, if animal is epibenthic, self-supported, and filter-feeder, the
+# AbsFoodStrat will be same as AbsStrat; if surficial mass-feeder, AbsFoodStrat
+# will be 0; and if raptorial, AbsFoodStrat will be where food is located (often
+# 0.25 coding if epibenthic prey). For RelStrat, useful to sort by Phylum >
+# Class > DV or AP length. For RelStrat, recall that for semi-infaunals RelStrat
+# will correspond to the animal's major axis and not the distance from sea
+# floor. If states are inconsistent, usually give primacy to the AbsStratDist,
+# which is based on an actual specimen. Check LifeHabitNotes.docx for
+# taxon-specific conventions.
 
-# (1) Pelagic taxa given benthic AbsStratDists: Find Fluidic = 1 & Insubstantial
-# = 1 & AbsStratDist = ">-10000" [ANY] & SizeChanged = CHECK and delete
-# AbsStratDist (if needs correcting).
-
-# (2) "Supported" taxa given self-supported (i.e., benthic) AbsStratDists: Find
-# SupportedByOthers = 1 & AbsStratDist = ">-10000" [ANY] & SizeChanged = CHECK
-# and delete AbsStratDist (if needs correcting). (The valid exceptions will
-# typically have AbsStratDist values that do NOT correspond to the organism's
-# major axes, or are semi-infaunal in which case the AbsStrat and RelStrat may
-# differ, or have a typically known raised distance [such as encrusters of known
-# hosts]. Easiest to confirm if sort by History_Size.)
-
-# (3) Confirm that epifaunal "Self-supported" taxa have the same tier for
-# AbsStrat and RelStrat. (And that "supported" taxa have different values.)
-# (Note this only applies to epifaunal taxa because pelagic and infaunal
-# organisms can be self-supported despite having different absolute and
-# immediate stratifications.) Set fluidic = 0, above primary = 1, within primary
-# = 0, and supported/self-supported as either 0/1 or 1/0. Then sort by AbsStrat
-# > RelStrat > AbsStratDist. In many cases, the AbsStrat and AbsFoodStrat should
-# also match, but confirm that any propagated AbsStratDist values are also
-# sensible. Be aware that there will be a few exceptions (e.g., very long
-# CRINOIDS Traumatocrinus that is attached to floating logs and
-# Paracatillocrinus that has an unusual means of "wrapped" attachment that
-# warrants being "attached" despite not being raised significantly higher into
-# water column). During post-life-habit-propagation processing, add back in
-# appropriate "self-supported" AbsStrat, and AbsFoodStrat (if filter-feeding)
-# and AbsStratDist (if obvious), BUT ONLY FOR TAXA SCALED AT > GENUS/SPECIES! Be
-# reminded that stemmed echinoderms (CRINOIDS, BLASTOIDS, etc.) will frequently
-# lack AbsStrat and AbsFoodStrat because of unknown stem lengths. If need to
-# change, use the bulk of the evidence to find the parsimonious solution. (E.g.,
-# if AbsStrat and AbsFoodStrat and RelStrat and AbsStratDistance are all
-# consistent, it is more parsimonious to change a "self-supported" coding to
-# "supported" than to change the size-related categories. Usually give primacy
-# to the AbsStratDist, which is based on an actual specimen.)
-
-# (4) Epibiotic (but barely raised, so should be coded as "self-supported") taxa
-# given incorrect benthic (as if not epibiotic) AbsStratDists: Find Biotic = 1 &
-# SupportedByOthers = 0 & AbsStratDist = ">-10000" [ANY] & SizeChanged = CHECK &
-# EstAbsStratDistance = Estimated and delete AbsStratDist (if needs correcting).
-# (AbsStrat should be same as RelStrat.) (The valid exceptions will typically
-# have AbsStratDist values that do NOT correspond to the organism's major axes.
-# Easiest to confirm if sort by History_Size.)
-
-# (5) Confirm all exclusively infaunal taxa have negative AbsStratDists and
-# exclusively epifaunal taxa have positive values. (But don't be surprised by
-# semi-infaunal taxa that are simultaneously epifaunal and infaunal.) Test that
-# all above = 1/in = 0 have positive AbsStratDists and all above = 0/in = 1 have
-# negative ones. Conversely, confirm that all with negative AbsStratDists have
-# WithinAbsStrat = 1 and that all with positive AbsStratDists have AboveAbsStrat
-# = 1.
-
-# (6) Confirm that RelStrat corresponds to appropriate body axis. Best to sort
+# (2) Confirm that RelStrat corresponds to appropriate body axis. Best to sort
 # by Phylum > Class (and for some groups, like brachiopods, subclass/order) > DV
 # / AP because different taxa have different living orientations. If list is too
 # long to run through, can limit to Sizechanged = "checked". (Alternatively, can
@@ -817,20 +814,67 @@ write.table(out, file = "PostSizes.tab", quote = FALSE, sep = "\t", row.names = 
 # substantially larger colony. (8) Sessile polychaetes (i.e., SEDENTARIA) that
 # present many different orientations, even within individual families.
 
-# (7) Confirm that taxa with AbsStratDist = ">-100000" values [ANY] match the
-# correct AbsStrat coding. (Sort by AbsStratDist when checking manually.) When
-# checking this, also worth checking the RelStrat and AbsFoodStrat codings. In
-# general, if animal is epibenthic, self-supported, and filter-feeder, the
-# AbsFoodStrat will be same as AbsStrat; if surficial mass-feeder, AbsFoodStrat
-# will be 0; and if raptorial, AbsFoodStrat will be where food is located (often
-# 0.25 coding if epibenthic prey). For RelStrat, useful to sort by Phylum >
-# Class > DV or AP length. For RelStrat, recall that for semi-infaunals RelStrat
-# will correspond to the animal's major axis and not the distance from sea
-# floor. If states are inconsistent, usually give primacy to the AbsStratDist,
-# which is based on an actual specimen. Check LifeHabitNotes.docx for
-# taxon-specific conventions.
+# (3) Are there any entries where, through process of elimination, the life
+# habit states can be coded? For example, search for any entries that are Biotic
+# = 0 + Lithic = 0 but omit Fluidic = 1; if so, then fluidic should be coded as
+# 1. Run this check across all 5 such characters (substrate composition,
+# substrate consistency, diet, physical condition of food, and foraging habit)
+# BEFORE running subsequent checks, because it can introduce new life habit
+# codings. If adding a state to a Sp/Gen-level entry, make sure to "Check" that
+# the added state is "Estimated."
 
-# (8) Confirm RelFoodStrat for filter feeders, sorting by phyla and then either
+# (4) Pelagic taxa given benthic AbsStratDists: Find Fluidic = 1 & Insubstantial
+# = 1 & AbsStratDist = ">-10000" [ANY] & SizeChanged = CHECK and delete
+# AbsStratDist (if needs correcting).
+
+# (5) "Supported" taxa given self-supported (i.e., benthic) AbsStratDists: Find
+# SupportedByOthers = 1 & AbsStratDist = ">-10000" [ANY] & SizeChanged = CHECK
+# and delete AbsStratDist (if needs correcting). (The valid exceptions will
+# typically have AbsStratDist values that do NOT correspond to the organism's
+# major axes, or are semi-infaunal in which case the AbsStrat and RelStrat may
+# differ, or have a typically known raised distance [such as encrusters of known
+# hosts]. Easiest to confirm if sort by History_Size.)
+
+# (6) Confirm that epifaunal "Self-supported" taxa have the same tier for
+# AbsStrat and RelStrat. (And that "supported" taxa have different values.)
+# (Note this only applies to epifaunal taxa because pelagic and infaunal
+# organisms can be self-supported despite having different absolute and
+# immediate stratifications.) Set fluidic = 0, above primary = 1, within primary
+# = 0, and supported/self-supported as either 0/1 or 1/0. Then sort by AbsStrat
+# > RelStrat > AbsStratDist. In many cases, the AbsStrat and AbsFoodStrat should
+# also match, but confirm that any propagated AbsStratDist values are also
+# sensible. Be aware that there will be a few exceptions (e.g., very long
+# CRINOIDS Traumatocrinus that is attached to floating logs and
+# Paracatillocrinus that has an unusual means of "wrapped" attachment that
+# warrants being "attached" despite not being raised significantly higher into
+# water column). During post-life-habit-propagation processing, add back in
+# appropriate "self-supported" AbsStrat, and AbsFoodStrat (if filter-feeding)
+# and AbsStratDist (if obvious), BUT ONLY FOR TAXA SCALED AT > GENUS/SPECIES! Be
+# reminded that stemmed echinoderms (CRINOIDS, BLASTOIDS, etc.) will frequently
+# lack AbsStrat and AbsFoodStrat because of unknown stem lengths. If need to
+# change, use the bulk of the evidence to find the parsimonious solution. (E.g.,
+# if AbsStrat and AbsFoodStrat and RelStrat and AbsStratDistance are all
+# consistent, it is more parsimonious to change a "self-supported" coding to
+# "supported" than to change the size-related categories. Usually give primacy
+# to the AbsStratDist, which is based on an actual specimen.)
+
+# (7) Epibiotic (but barely raised, so should be coded as "self-supported") taxa
+# given incorrect benthic (as if not epibiotic) AbsStratDists: Find Biotic = 1 &
+# SupportedByOthers = 0 & AbsStratDist = ">-10000" [ANY] & SizeChanged = CHECK &
+# EstAbsStratDistance = Estimated and delete AbsStratDist (if needs correcting).
+# (AbsStrat should be same as RelStrat.) (The valid exceptions will typically
+# have AbsStratDist values that do NOT correspond to the organism's major axes.
+# Easiest to confirm if sort by History_Size.)
+
+# (8) Confirm all exclusively infaunal taxa have negative AbsStratDists and
+# exclusively epifaunal taxa have positive values. (But don't be surprised by
+# semi-infaunal taxa that are simultaneously epifaunal and infaunal.) Test that
+# all above = 1/in = 0 have positive AbsStratDists and all above = 0/in = 1 have
+# negative ones. Conversely, confirm that all with negative AbsStratDists have
+# WithinAbsStrat = 1 and that all with positive AbsStratDists have AboveAbsStrat
+# = 1.
+
+# (9) Confirm RelFoodStrat for filter feeders, sorting by phyla and then either
 # AbsStratDist or AP length. For ambient filter feeders (PORIFERA and
 # suspension-feeding ECHINODERMATA and CNIDARIA and CIRRIPEDIA) where flow rate
 # depends on distance from sea floor, confirm those ~14-191 mm tall are 0.5;
@@ -852,7 +896,7 @@ write.table(out, file = "PostSizes.tab", quote = FALSE, sep = "\t", row.names = 
 # but are typically approximated by the AP conch length. (Exceptions typically
 # have the same scale for both life habit and size.)
 
-# (9) Confirm that wholly infaunal filter-feeders (AboveAbsStrat = 0, WithinAbs
+# (10) Confirm that wholly infaunal filter-feeders (AboveAbsStrat = 0, WithinAbs
 # = 1, Filter = 1 [rest 0]) have AbsFoodStrat at 0.25 (typically) and that
 # AbsFood is "Above" the seafloor (with exceptions, like CALLIANASSOIDS that
 # also ingest sediment from burrow wall, or [Cenozoic] cave-dwelling
@@ -860,7 +904,7 @@ write.table(out, file = "PostSizes.tab", quote = FALSE, sep = "\t", row.names = 
 # seafloor, or ECHINOIDS like clypeasteroid mellitid Encope that emerge at
 # surface to filter feed, or interstitial meiofauna).
 
-# (10) Confirm that filter feeders (whether infaunal or epifaunal) that extend
+# (11) Confirm that filter feeders (whether infaunal or epifaunal) that extend
 # body above sea floor (AboveAbsStrat = 1 & FeedAbovePrimary = 1 & Filter = 1
 # [rest = 0]) have AbsFoodStrat at level to which body extends (and that food is
 # also "Above" the seafloor). Easiest to sort by AbsStrat > AbsFoodStrat >
@@ -870,11 +914,11 @@ write.table(out, file = "PostSizes.tab", quote = FALSE, sep = "\t", row.names = 
 # closer to sediment, and some echinoderms (such as OPHIUROIDS and STYLOPHORANS)
 # that raise their filter-feeding arms into the water column when feeding.
 
-# (11) Make sure that all "above primary" [large epifauna and demersal/nektonic]
+# (12) Make sure that all "above primary" [large epifauna and demersal/nektonic]
 # organisms (AbovePrimary = 1, WithinPrimary = 0) that have RelStrat = 1 also
 # have AbsStrat = 1.
 
-# (12) Confirm that entries that are definitely benthic (whether infaunal or
+# (13) Confirm that entries that are definitely benthic (whether infaunal or
 # epifaunal) are not listed as fluidic or insubstantial. Search for AbsStratDist
 # = ">-100000" values [ANY], omitting those with Fluidic = 0 or Insubstantial =
 # 0. Sort by AbovePrimary > Phylum > Class. If warranted, set Fluidic = 0 and
@@ -887,7 +931,7 @@ write.table(out, file = "PostSizes.tab", quote = FALSE, sep = "\t", row.names = 
 # the correct state combinations. If only a single substrate type of blank, that
 # state can be added as the likely substrate type.
 
-# (13) For filter-feeding ECHINODERMS, clear the FilterDensity field if the
+# (14) For filter-feeding ECHINODERMS, clear the FilterDensity field if the
 # entry is NOT a filter-feeder. Check FilterDensity = High/Medium/Low and
 # FilterFeeder != 1. (If FilterFeeder is blank in the Constant data set, check
 # the Mode propagation; if a FilterDensity coding was propagated in the Constant
@@ -895,7 +939,7 @@ write.table(out, file = "PostSizes.tab", quote = FALSE, sep = "\t", row.names = 
 # FilterDensity and propagate its dependent FilterFeeder = 1 and check the
 # Estimated box.)
 
-# (14) Confirm AbsFoodStrat and RelFoodStrat for "predators" (really, all
+# (15A) Confirm AbsFoodStrat and RelFoodStrat for "predators" (really, all
 # raptorial feeders, including scavengers). Search for Raptor = 1 only and sort
 # by Fluidic > Microbivore > Phylum > Class > AP / DV. Be aware the same higher
 # taxon can have widely varying codings among its genera, depending on many
@@ -949,43 +993,17 @@ write.table(out, file = "PostSizes.tab", quote = FALSE, sep = "\t", row.names = 
 # use 1 X T as an estimate of tentacle length. For (swimming) non-shelled
 # COLEOIDS (except shelled spirulids), use 2 X AP.
 
-# (14B) Run separate check on scan-and-trap "raptorial" plankton (Search for
+# (15B) Run separate check on scan-and-trap "raptorial" plankton (Search for
 # Order = AGNOSTIDA, Order = EODISCIDA, Subclass = DIPLOSTRACA, Class =
 # OSTRACODA, Class = COPEPODA and smallest subfamily = LEPTOPLASTINAE) without
 # any life habit codings and sort by DV): RelFoodStrat ~ 1 X DV.
 
-# (15) Confirm AbsFoodStrat and RelFoodStrat for mass feeders (both detritus
+# (16) Confirm AbsFoodStrat and RelFoodStrat for mass feeders (both detritus
 # feeders, algae scrapers, and some scavengers). Search for Mass = 1 and rest
 # 0s, and sort by FoodAbovePrimary > Carnivore > Phylum > Class > DV/T to
-# distinguish epifaunal from infaunal foods. (15A) Surficial mass (typically
-# algal) feeders (including those that use body mucus to capture seston):
-# Animals scraping or eating algal films / detritus ON/ABOVE substrate (e.g.,
-# SNAILS, MONOPLACOPHORANS, CHITONS, a few infaunal TELLINID BIVALVES, JAWLESS
-# and EARLY FISHES, and some POLYCHAETES, ECHINOIDS, ASTEROIDS, and OPHIUROIDS),
-# typically are coded as AbsFoodStrat = 0. (Note macroalgae feeders are excluded
-# here because they are bulk feeders and often raptorial.) RelFoodStrat depends
-# on where the feeding organ is located: If the mouth is emplaced against
-# sediment in resting (non-feeding) position, RelFoodStrat = 0. If the head is
-# raised substantially and a proboscis is used for feeding (or the animal
-# swims), then the distance will correspond to the distance from the organism to
-# the food. Similar logic is used if the animal is infaunal (TELLINIDS,
-# POLYCHAETES) and feed using extensible feeding organs like palps or siphons or
-# introverts. RelFoodAbove/Within coding depends on whether the organism
-# considers the food above or below their level. For most animals, the surficial
-# film with be "above" their immediate microhabitat, but animals with long
-# feeding organs or demersal animals may be coded as below their immediate
-# microhabitat. For mass-feeding OSTRACODES and similar animals using appendages
-# to collect food particles (usually within sediment, but sometimes above it),
-# RelFoodStrat will generally correspond with appendage length, approximated by
-# D/V, a minimal modification (because of lateral compression) from the logic
-# used for trilobites. Surficial mass-feeding, carnivorous (or macro-algal)
-# scavengers (e.g., ASTEROIDS, OPHIUROIDS, STENUROIDS and some ECHINOIDS) are
-# typically coded as RelFoodStrat = 0.25 because of presumably larger food.
-# Animals that ingest bodily-secreted mucus ensnared with seston (e.g., a few
-# ASTEROIDS) are coded AbsFoodStrat as the uppermost body surface and
-# RelFoodStrat = 0.
-#
-# (15B) "Deposit" and detritus feeders eating WITHIN sediment: AbsFoodStrat
+# distinguish epifaunal from infaunal foods:
+
+# (16A) "Deposit" and detritus feeders eating WITHIN sediment: AbsFoodStrat
 # based on location of food, typically corresponding to burial depth. For
 # surficial "deposit-feeding" TRILOBITES, use 1/2 X transverse width (or 1 X D/V
 # depth, if smaller value) as proxy for depth of sediment churned. Code
@@ -1002,26 +1020,53 @@ write.table(out, file = "PostSizes.tab", quote = FALSE, sep = "\t", row.names = 
 # of NUCULID and NUCULANID (only) PROTOBRANCHS, RelFoodStrat = 0.25
 # (technically, 25% X D/V).
 
-# (16) Confirm RelFoodStrat and AbsFoodStrat are correct for absorptive feeders,
+# (16B) Surficial mass (typically algal) feeders (including those that use body
+# mucus to capture seston): Animals scraping or eating algal films / detritus
+# ON/ABOVE substrate (e.g., SNAILS, MONOPLACOPHORANS, CHITONS, a few infaunal
+# TELLINID BIVALVES, JAWLESS and EARLY FISHES, and some POLYCHAETES, ECHINOIDS,
+# ASTEROIDS, and OPHIUROIDS), typically are coded as AbsFoodStrat = 0. (Note
+# macroalgae feeders are excluded here because they are bulk feeders and often
+# raptorial.) RelFoodStrat depends on where the feeding organ is located: If the
+# mouth is emplaced against sediment in resting (non-feeding) position,
+# RelFoodStrat = 0. If the head is raised substantially and a proboscis is used
+# for feeding (or the animal swims), then the distance will correspond to the
+# distance from the organism to the food. Similar logic is used if the animal is
+# infaunal (TELLINIDS, POLYCHAETES) and feed using extensible feeding organs
+# like palps or siphons or introverts. RelFoodAbove/Within coding depends on
+# whether the organism considers the food above or below their level. For most
+# animals, the surficial film with be "above" their immediate microhabitat, but
+# animals with long feeding organs or demersal animals may be coded as below
+# their immediate microhabitat. For mass-feeding OSTRACODES and similar animals
+# using appendages to collect food particles (usually within sediment, but
+# sometimes above it), RelFoodStrat will generally correspond with appendage
+# length, approximated by D/V, a minimal modification (because of lateral
+# compression) from the logic used for trilobites. Surficial mass-feeding,
+# carnivorous (or macro-algal) scavengers (e.g., ASTEROIDS, OPHIUROIDS,
+# STENUROIDS and some ECHINOIDS) are typically coded as RelFoodStrat = 0.25
+# because of presumably larger food. Animals that ingest bodily-secreted mucus
+# ensnared with seston (e.g., a few ASTEROIDS) are coded AbsFoodStrat as the
+# uppermost body surface and RelFoodStrat = 0.
+#
+# (17) Confirm RelFoodStrat and AbsFoodStrat are correct for absorptive feeders,
 # incorporeal feeders, and autotrophs, running each separately (the state = 1,
 # rest = 0). Sort by RelFoodStrat > AbsStrat > RelStrat > Phylum > Class.
 # Ambient and incorporeal feeders should have RelFoodStrat = 0 and AbsStrat =
 # RelStrat, and no animals should be listed as an autotroph (but animals can be
 # ambient- and/or incorporeal-feeders).
 
-# (17) Confirm RelFoodStrat and AbsFoodStrat are correct for attachment feeders
+# (18) Confirm RelFoodStrat and AbsFoodStrat are correct for attachment feeders
 # and solution feeders, running each separately (the state = 1, rest = 0). For
 # attachment feeders, RelFoodStrat will depend on depth of penetration. Best
 # strategy is to review propagated values and use logic from relatives to fill
 # in blank states.
 
-# (18) Go through each character and confirm no "all-zeros" (i.e., if all
+# (19) Go through each character and confirm no "all-zeros" (i.e., if all
 # dietary states are 0, etc.), removing some estimates as needed. All 1s are
 # acceptable. If not sure which to delete, consult the alternative propagation
 # method data set for a reference. (Do this check BEFORE subsequent ones because
 # it can lead to new entries with a particular feeding mode.)
 
-# (19) Once these checks are run, re-run them (except no. 6 that checks every
+# (20) Once these checks are run, re-run them (except no. 6 that checks every
 # one) and clear the SizeChanged = Check tags. Then do a final search for any
 # that are still checked, focusing on the size-related characters, to confirm
 # sensibility, clearing them at end.
