@@ -937,7 +937,8 @@ write.table(out, file = "PostSizes.tab", quote = FALSE, sep = "\t", row.names = 
 # the Mode propagation; if a FilterDensity coding was propagated in the Constant
 # data set and the Mode data set has FilterFeeder = 1, then keep the
 # FilterDensity and propagate its dependent FilterFeeder = 1 and check the
-# Estimated box.)
+# Estimated box. But if the Mode data set has FilterFeeder = 0, then remove the
+# FilterDensity state in the Constant data set.)
 
 # (15A) Confirm AbsFoodStrat and RelFoodStrat for "predators" (really, all
 # raptorial feeders, including scavengers). Search for Raptor = 1 only and sort
