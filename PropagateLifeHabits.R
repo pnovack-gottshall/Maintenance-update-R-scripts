@@ -30,12 +30,10 @@
 # 'EcoScale' fields unchanged. If multiple relatives exist, enter the value,
 # using the specified propagation method. In the 'constant' method, propagate
 # any state that is shared among all relatives, and 'NA' if the state varies. In
-# the 'mode' method, propagate states that are most frequently occurring for each
-# state. In both cases, record the relative as "Higher taxon indet." (NO LONGER
-# USED, as of July 2018): Use 'grep''s 'adist()' to approximate type taxon for
-# reference species when multiple relatives exist.) If any states remain
-# uncoded, go to the next inclusive higher taxa in case they have codings for
-# these states, using the same logic as step 1.
+# the 'mode' method, propagate states that are most frequently occurring for
+# each state. In both cases, record the relative as "Higher taxon indet." If any
+# states remain uncoded, go to the next inclusive higher taxa in case they have
+# codings for these states, using the same logic as step 1.
 
 # The four body-size-related states (AbsStrat, RelStrat, AbsFoodStrat, and
 # RelFoodStrat) are only over-written when the states are missing or when
@@ -64,8 +62,27 @@
 
 # Make sure the stratifications are updated from the size propagation
 # (PropagateSizes.R) BEFORE running this algorithm! (The algorithm reverts to
-# original stratifications when size was coded as genus or species level, but
+# original stratifications when size was coded at genus or species level, but
 # still adds a size "Check" to trigger a second look-over afterwards.)
+
+# If updating both previously propagated "Mode" and "Constant" datasets, then
+# should run each separately, as the reference population for each algorithm
+# will have different life-habit states for varying taxa.
+
+# (0) Not recommended (because the code algorithmically updates and gives
+# priority to species/genera with complete codings), but if want a "fresh"
+# propagation, consider first deleting all life-habit codings for any estimates
+# (EstLithic, EstBiotic, or all codings for non-species/subgenus/genus). (This
+# is recommended if, for example, a species/subgenus/genus A entry has at least
+# one estimated life-habit state, and it might be used to estimate a missing
+# state for species B, which was originally used to estimate the missing state
+# for A.) IF DO THIS, PERFORM THE DELETIONS ON A COPY OF THE DATABASE RATHER
+# THAN THE MASTER DATABASE ITSELF! If do this, it is most efficient to export
+# the "constant" database entries, which have fewer estimated states (i.e.,
+# there will be less to delete). If go this route, note that the History_Eco
+# output will be slightly off, because will imply there were prior estimates.
+# (It is easiest to clean the data set by adding a row number column so you can
+# sort as needed, then return to the original row order.)
 
 # (1) Before exporting, sort the entries so that EcoScale = Species is first,
 # followed by Subgenus, Genus, etc. That way those with best scales are checked
@@ -93,18 +110,21 @@
 # SelfSupport, Sexual, SoftSubstratum, SolutionFeeder, Supported,
 # WithinImmediate, WithinPrimary
 
-# The same characters, with in Est_X form (excluding Est_AbsStratDist, Est_AP,
-# Est_DV, and EstT).
+# The same characters, in Est_X form (excluding Est_AbsStratDist, Est_AP,
+# Est_DV, and EstT, which were propagated in PropagateSizes.R).
 
 # (3) Open in MSWord and delete all quotation marks (replacing "^t with ^t, ^t"
-# with ^t, and "" with ").
+# with ^t, and "" with "). If a column (such as Est_FilterDensity) is all NAs,
+# then delete the NAs.
 
 
 
 rm(list = ls())
-setwd("C:/Users/pnovack-gottshall/Desktop/Databases/Maintenance & update R scripts")
+setwd("C:/Users/pnovack-gottshall/OneDrive - Benedictine University/Desktop/Databases/Maintenance & update R scripts")
 # setwd("C:/Users/pnovack-gottshall/Documents/GSA (& NSF & NAPC)/2016GSA/GSA2016 analyses")
-input <- read.delim(file = "preLH_constant.tab", colClasses = "character")
+# input <- read.delim(file = "PreLH_constant_Bradoriida&Aster&Echino.tab", colClasses = "character")
+# input <- read.delim(file = "preLH_mode_Bradoriida&Aster&Echino.tab", colClasses = "character")
+# input <- read.delim(file = "preLH_constant.tab", colClasses = "character")
 # input <- read.delim(file = "preLH_mode.tab", colClasses = "character")
 # input <- read.delim(file = "preLH_mode_PBDB.tab", colClasses = "character")
 # input <- read.delim(file = "preLH_constant_PBDB.tab", colClasses = "character")
@@ -152,6 +172,7 @@ find.rels <- function(x, i, min.rels = 1, start = 4, end = 12, ref.g.col = 15,
   low.res <- NA
   rels <- array(NA, dim = 0)
   for (e in start:end) {
+    nr <- 0
     # Identify correct column for taxonomic scale being considered
     sc.col <- which(colnames(others) == scales[e])
     # Ignore if unassigned taxa 
@@ -218,44 +239,6 @@ consensus <- function(rels, cols, method = "constant", na.rm = TRUE) {
 }
 
 
-## WITH NEW CODING PHILOSOPHY, THE FOLLOWING FUNCTION HAS BEEN DEPRECATED:
-
-## FIND THE MOST SIMILAR REFERENCE TAXON TO TYPICAL STATES, WHERE 'MOST SIMILAR'
-## IS CALCULATED USING EUCLIDEAN DISTANCE TO THE MODAL STATES
-# (Unclear how mobility is treated, but doesn't really matter)
-# rels = the data frame containing identified relatives. Make sure that the columns
-#      match those in cs.
-# cols  = identifies which columns to check across.
-# scale  = which column has the ecological scale? (so that has best chance of
-#      finding type taxon using grep's 'adist' in case of ties)
-# (Consider altering in future: if multiple best matches (i.e., ties in min),
-# pick the one closest in time? or with the more similar body size? or the more
-# similar shape? Size is probably the easiest to code, but requires propagating
-# the body sizes first!)
-best.ref <- function(rels, cols, scale = NULL) {
-  if (is.null(scale))
-    stop("scale not specified, with no default\n")
-  scales <- c("Species", "Subgenus", "Genus", "Subfamily", "Family", "Superfamily", 
-    "Suborder", "Order", "Subclass", "Class", "Subphylum", "Phylum")
-  wh.min <- 1
-  if (nrow(rels) > 1L) {
-    csm <- consensus(rels = rels, cols = cols, method = "mode", na.rm = TRUE)
-    d <- dist(rbind(csm, rels[, cols]))
-    dm <- as.matrix(d)[-1, 1]
-    # If multiple best matches, use text matching to identify most likely type 
-    # taxon (where deletions are penalized less than insertions, both of which
-    # are penalized much less than substitutions)
-    if (length(dm == min(dm)) > 1) {
-      higher.taxon <-
-        rels[1, which(colnames(rels) == scales[which(scales == scale)])]
-      wh.min <- which.min(adist(rels$Genus, higher.taxon, 
-        cost = list(ins = 2, del = 1, sub = 10)))
-    } else
-      wh.min <- which.min(dm)
-  }
-  return(as.integer(row.names(rels)[wh.min]))
-}
-
 
 ## ARE ANY STATES NA OR ABSENT, AND WHICH?
 # cols  = identifies which columns to check across.
@@ -315,10 +298,18 @@ better.all.equal <- function(a, b) {
 
 
 
+
+
+
+
+
+
+
 ## Examples --------------------------------------------------------------------
 cols <- 21:59 # LH cols
 est.cols <- 60:98 # Est_X cols
-i <- which(out$Genus == "Stylophyllum")[1] # Coral Stylophyllum, brachiopods Dallithyris and Murravia
+# Coral Stylophyllum, brachiopods Dallithyris and Murravia, asteroid Schuchertia
+i <- which(out$Genus == "Schuchertia")[1] 
 out[i, cols]
 (missings <- any.missing(out[i, ], cols))
 (estimateds <- any.est(out[i,], est.cols))
@@ -327,9 +318,7 @@ combined.any.missing(missings, estimateds)
 rels <- r$rels
 (cs.c <- consensus(rels = rels, cols = cols, method = "constant"))
 (cs.m <- consensus(rels = rels, cols = cols, method = "mode"))
-best <- best.ref(rels = rels, cols = cols, scale = r$eco.sc)
-input[best, ] # Notice the proper type taxon chosen that is in same higher taxon
-rbind(out[i, cols], cs.c, cs.m, input[best, cols])
+rbind(out[i, cols], cs.c, cs.m)
 r$eco.sc
 
 # Compare proxy methods:
@@ -342,15 +331,18 @@ rel.5 <- find.rels(input, i, min.rels = 5)
 rel.10 <- find.rels(input, i, min.rels = 10)
 rel.20 <- find.rels(input, i, min.rels = 20)
 rel.50 <- find.rels(input, i, min.rels = 50)
-rel.1$rels[ ,5:14]; rel.1$eco.sc; nrow(rel.1$rels)
-rel.5$rels[ ,5:14]; rel.5$eco.sc; nrow(rel.5$rels)
-rel.10$rels[ ,5:14]; rel.10$eco.sc; nrow(rel.10$rels)
-rel.20$rels[ ,5:14]; rel.20$eco.sc; nrow(rel.20$rels)
-rel.50$rels[ ,5:14]; rel.50$eco.sc; nrow(rel.50$rels)
+rel.1$rels[ ,4:14]; rel.1$eco.sc; nrow(rel.1$rels)
+rel.5$rels[ ,4:14]; rel.5$eco.sc; nrow(rel.5$rels)
+rel.10$rels[ ,4:14]; rel.10$eco.sc; nrow(rel.10$rels)
+rel.20$rels[ ,4:14]; rel.20$eco.sc; nrow(rel.20$rels)
+rel.50$rels[ ,4:14]; rel.50$eco.sc; nrow(rel.50$rels)
 
 rm(list = c("i", "r", "cols", "est.cols", "missings", "estimateds", "cs.c", 
-            "cs.m", "best", "proxy1", "proxy2", "rels", "rel.1", "rel.5", 
-            "rel.10", "rel.20", "rel.50"))
+            "cs.m", "proxy1", "proxy2", "rels", "rel.1", "rel.5", "rel.10", 
+            "rel.20", "rel.50"))
+
+
+
 
 
 
@@ -456,7 +448,7 @@ for(i in 1:nrow(out)) {
   higher.rels <- list(rels = NULL, eco.sc = "Species")
   wh.changed <- FALSE
 
-  # Propogate (and update, if needed) life habit codings if higher taxon
+  # Propogate (and update, if needed) life habit codings, if higher taxon
   if (this.scale > "Genus") {
     
     rels <- find.rels(x = input, i = i, eco.col = eco.col, start = 4, 
@@ -530,7 +522,7 @@ for(i in 1:nrow(out)) {
   
   # Go through any remaining missing / unknowns / previously estimated, and
   # propagate using higher taxa where at least 5 coded relatives exist, but
-  # ignoring size-related characters if size was coded at species/genus. (not
+  # ignoring size-related characters if size was coded at species/genus. (Not
   # recorded in history because constant across the higher taxon, but tagged in
   # "Est_X" fields)
 
@@ -555,7 +547,23 @@ for(i in 1:nrow(out)) {
     # exhausted all possible 'higher' relatives:
     if (!still.missing$any | higher.rels$eco.sc == "Phylum")
       break
+
+    # Remove FilterDensity (column 37) from propagation if definitively known to
+    # NOT be a filter feeder (but allow to be propagated if unknown whether
+    # might be)
+    if (37 %in% still.missing$which & out$FilterFeeder[i] == "0" & 
+        !is.na(out$FilterFeeder[i])) {
+      still.missing$which <-
+        still.missing$which[-which(still.missing$which == "37")]
+      if (length(still.missing$which) < 1L)
+        still.missing$any <- FALSE
+    }
     
+    # If FilterDensity was the only missing state (and not relevant from prior
+    # check), then 'break'
+    if (!still.missing$any)
+      break
+      
     # Identify consensus states among higher taxa:
     if (still.missing$any) {
       start.scale <- max(which(scales == as.character(out$EcologyScale[i])), 
@@ -564,13 +572,16 @@ for(i in 1:nrow(out)) {
                                start = start.scale, end = 12)
       higher.cs <- consensus(rels = higher.rels$rels, cols = still.missing$which, 
                              method = method, na.rm = TRUE)
-      # Drop size columns, if 'reverted' above
-      # (Ignore if consensus is missing or NA): 
+
+      # Ignore if the consensus is missing or NA: 
       l.cs <- seq_along(still.missing$which)
       wh.changed <- !sapply(l.cs, function(l.cs) is.na(higher.cs[l.cs]) | 
                       higher.cs[l.cs] == "")
+      
+      # Fill in consensus states
       if (any(wh.changed))
         out[i, still.missing$which[wh.changed]] <- higher.cs[wh.changed]
+      
     }
     
     # 'Check' whether the size-related characters were changed:
@@ -596,7 +607,7 @@ for(i in 1:nrow(out)) {
       # proxies. Remainder of changes (not tagged with updated date) are updating
       # empty cells using appropriate higher taxa, either for a genus/species
       # entry or for higher taxon proxy. In these cases, it is valuable to record
-      # the history of estimatations.
+      # the history of estimations.
       if (out$DateEntered_Ecology[i] != today) {
         out$History_Ecology[i] <- paste0(length(which(wh.changed)), 
                             " additional states updated ", today,
@@ -643,6 +654,7 @@ warnings()
 
 round(table(input$EcologyScale) * 100 / nrow(input), 1)
 round(table(out$EcologyScale) * 100 / nrow(out), 1)
+round(cumsum(table(input$EcologyScale) * 100 / nrow(input)), 1)
 round(cumsum(table(out$EcologyScale) * 100 / nrow(out)), 1)
 table(input$EcologyScale)
 table(out$EcologyScale)
@@ -655,12 +667,14 @@ if (any(table(input$IDNumber) > 1)) {
 }
 
 ## EXPORT DATA -------------------------------------------------------------
+# write.table(out, file = "PostLH_constant_Bradoriida&Aster&Echino.tab", quote = FALSE, sep = "\t", row.names = FALSE)
+# write.table(out, file = "PostLH_mode_Bradoriida&Aster&Echino.tab", quote = FALSE, sep = "\t", row.names = FALSE)
 # write.table(out, file = "PostLH_constant.tab", quote = FALSE, sep = "\t", row.names = FALSE)
 # write.table(out, file = "PostLH_mode.tab", quote = FALSE, sep = "\t", row.names = FALSE)
 # write.table(out, file = "PostLH_withPBDB_mode.tab", quote = FALSE, sep = "\t", row.names = FALSE)
-write.table(out, file = "PostLH_withPBDB_constant.tab", quote = FALSE, sep = "\t", row.names = FALSE)
+# write.table(out, file = "PostLH_withPBDB_constant.tab", quote = FALSE, sep = "\t", row.names = FALSE)
 
-# (1) Open in Excel to confirm looks acceptable. Replace (matching entire cell
+# (1) Open in Excel to confirm looks acceptable. Delete (matching entire cell
 # contents) "NA"s in life habit data.
 
 # (2) Open in Word to remove quotation marks around the text entries, (replacing
@@ -678,6 +692,13 @@ write.table(out, file = "PostLH_withPBDB_constant.tab", quote = FALSE, sep = "\t
 # those coded at EcoScale = Species/Genus.) MAKE SURE THAT IF ADD/CHANGE A STATE
 # FOR A EcoScale = SPECIES/GENUS, to tag as "Estimated" and to update the
 # History accordingly.
+
+
+
+
+
+## When run for all PBDB genera, need to add a new script that adds notes for
+## subjective synonyms, nomen dubia, and form taxa
 
 ## ADD SUBJECTIVE SYNONYMS AND NOMEN DUBIA
 
