@@ -38,6 +38,7 @@ setwd("C:/Users/pnovack-gottshall/OneDrive - Benedictine University/Desktop/Data
 all <- read.delim(file = "AllCols.tab", stringsAsFactors = FALSE)
 # all <- read.delim(file = "AllCols_Bradoriida&Aster&Echino.tab", stringsAsFactors = FALSE)
 # all <- read.delim(file = "AllCols_Mode.tab", stringsAsFactors = FALSE)
+# all <- read.delim(file = "AllCols_Constant.tab", stringsAsFactors = FALSE)
 # all <- read.delim(file = "AllCols_Constant_PBDB.tab", stringsAsFactors = FALSE)
 # all <- read.delim(file = "AllCols_Mode_PBDB.tab", stringsAsFactors = FALSE)
 head(all)
@@ -72,7 +73,7 @@ write.csv(selected, file = "occs.csv", row.names = FALSE)
 
 
 
-# PropogateSizes columns:     ----------------------------------------------------
+# PropogateSizes.R columns:     ----------------------------------------------------
 cols <- c("IDNumber", "Phylum", "Subphylum", "Class", "Subclass", "Order", 
           "Suborder", "Superfamily", "Family", "Subfamily", "Genus", "Subgenus", 
           "Species", "max_ma", "min_ma", "BodySizeScale", "RefGenusSize", 
@@ -94,7 +95,7 @@ if (!identical(cols, colnames(selected)))
 
 
 
-# PropogateLH columns:     ----------------------------------------------------
+# PropogateLifeHabits.R columns:     ----------------------------------------------------
 cols <- c("IDNumber", "Phylum", "Subphylum", "Class", "Subclass", "Order", 
           "Suborder", "Superfamily", "Family", "Subfamily", "Genus", "Subgenus", 
           "Species", "EcologyScale", "RefGenusEco", "RefSpeciesEco", 
@@ -128,7 +129,8 @@ if (!identical(cols, colnames(selected)))
   stop("column names are not as specified!")
 # write.table(selected, file = "PreLH_Constant_Bradoriida&Aster&Echino.tab", row.names = FALSE, sep = "\t", quote = FALSE)
 # write.table(selected, file = "PreLH_constant.tab", row.names = FALSE, sep = "\t", quote = FALSE)
-# write.table(selected, file = "PreLH_mode.tab", row.names = FALSE, sep = "\t", quote = FALSE)
+# write.table(selected, file = "PreLH_constant_Bradoriida&Aster&Echino.tab", row.names = FALSE, sep = "\t", quote = FALSE)
+# write.table(selected, file = "PreLH_mode_Bradoriida&Aster&Echino.tab", row.names = FALSE, sep = "\t", quote = FALSE)
 # write.table(selected, file = "PreLH_constant_PBDB.tab", row.names = FALSE, sep = "\t", quote = FALSE)
 # write.table(selected, file = "PreLH_mode_PBDB.tab", row.names = FALSE, sep = "\t", quote = FALSE)
 
