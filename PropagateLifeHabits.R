@@ -510,9 +510,10 @@ for(i in 1:nrow(out)) {
           out$History_Ecology[i] <- ""
         } else {
           out$History_Ecology[i] <- paste0(num.changed, " states updated ",
-              today, " to ", rels$eco.sc, " ", out[i, which(colnames(out) == rels$eco.sc)],
-              " from ", input$RefGenusEco[i], " ", input$RefSpeciesEco[i], 
-              " in same ", tolower(this.scale), ", last updated on ", 
+              today, " to ", tolower(rels$eco.sc), " ", 
+              out[i, which(colnames(out) == rels$eco.sc)], " from ", 
+              input$RefGenusEco[i], " ", input$RefSpeciesEco[i], " in same ", 
+              tolower(this.scale), ", last updated on ", 
               input$DateEntered_Ecology[i], ".")
         }
       }
@@ -611,13 +612,15 @@ for(i in 1:nrow(out)) {
       if (out$DateEntered_Ecology[i] != today) {
         out$History_Ecology[i] <- paste0(length(which(wh.changed)), 
                             " additional states updated ", today,
-                            " based on consensus of ", higher.rels$eco.sc, " ", 
+                            " based on consensus of ", 
+                            tolower(higher.rels$eco.sc), " ", 
                             out[i, which(colnames(out) == higher.rels$eco.sc)], 
                             ". ", out$History_Ecology[i])
       } else {
         out$History_Ecology[i] <- paste0(length(which(wh.changed)), 
                             " additional states updated ", today,
-                            " based on consensus of ", higher.rels$eco.sc, " ", 
+                            " based on consensus of ", 
+                            tolower(higher.rels$eco.sc), " ", 
                             out[i, which(colnames(out) == higher.rels$eco.sc)], ".")
       }
     }

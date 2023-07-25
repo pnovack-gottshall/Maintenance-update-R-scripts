@@ -173,7 +173,7 @@ str(input)
 # missing values (so long as the column is treated as a numeric).
 
 ## Following usually required:
-# input$SizeChanged <- replace(input$SizeChanged, which(is.na(input$SizeChanged)), "")
+input$SizeChanged <- replace(input$SizeChanged, which(is.na(input$SizeChanged)), "")
 
 ## Rest only if did a fresh propagation (lacking any estimates - not recommended!)
 # input$Est_AP <- replace(input$Est_AP, which(is.na(input$Est_AP)), "")
@@ -534,9 +534,9 @@ for (i in 1:nrow(out)) {
     }
     
     change <- "maybe"
-    out$History_Size[i] <- paste("On", today, pre.text(missing), "in same", rel$size.sc,
-      as.character(rel$rel[which(colnames(rel$rel) == rel$size.sc)]), "of",
-      rel$rel$BodyMeasureReference)
+    out$History_Size[i] <- paste("On", today, pre.text(missing), "in same", 
+      tolower(rel$size.sc), as.character(rel$rel[which(colnames(rel$rel) == 
+      rel$size.sc)]), "of", rel$rel$BodyMeasureReference)
   }
 
   
