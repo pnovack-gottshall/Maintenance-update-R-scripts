@@ -4,14 +4,17 @@
 ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 ## ISSUE TO RESOLVE LATER: Because of weird parenting, some tetrapods (e.g.,
 ## mammalian Sirenia and cynodonts and Eupelycosauria) are parented to subclass
-## Sarcopterygii instead of Tetrapoda. Some of these are terrestrial but not
-## removed by the code below. Not sure if the solution is (1) to fix the
-## vertebrate taxonomy in the PBDB (unrealistic), (2) add additional steps in
-## the marine/non-marine post-processing to pick and choose which to
-## keep/remove, or (3) add new code to the prep.pbdb() function to ignore cases
-## when a name is parented to a "higher" rank that is actually "lower" (e.g., in
-## the case of order Sirenia when class Mammalia is parented to infraorder
-## Eucynodontia).
+## Sarcopterygii instead of Tetrapoda, and pinnipeds and desmostylians parented
+## to Perissodactyla. Some of these are terrestrial but not removed by the code
+## below. Not sure if the solution is (1) to fix the vertebrate taxonomy in the
+## PBDB (unrealistic), (2) add additional steps in the marine/non-marine
+## post-processing to pick and choose which to keep/remove, or (3) add new code
+## to the prep.pbdb() function to ignore cases when a name is parented to a
+## "higher" rank that is actually "lower" (e.g., in the case of order Sirenia
+## when class Mammalia is parented to infraorder Eucynodontia). With the new
+## beta fix for the "original name" issue, I'm hoping this issue soon becomes
+## moot. (Preliminary testing on the training site shows it won't.) But
+## something to be aware of until know how will behave.
 ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
@@ -303,7 +306,7 @@ beepr::beep(3)
 # Remove subgenera parented to nomen nudum genus parents
 nrow(output)
 wh.remove <- sapply(gen.seq, function(gen.seq) all(is.na(output[gen.seq, 1:18])))
-output <- output[-wh.remove, ]
+output <- output[!wh.remove, ]
 nrow(output)
 
 
@@ -464,11 +467,12 @@ non.marine <- c("Arachnida", "Insecta", "Collembola", "Palaeophreatoicidae",
     "Lobosternina", "Meristosternina", "Mesostigmata", "Opilioacarida", 
     "Orthosternina", "Posteriorricinulei", "Primoricinulei", "Sarcoptiformes", 
     "Tetrophthalmi", "Trombidiformes", "Tetrapulmonata", "Diplura", 
-    "Phylactolaemata", "Spongillidae", "Opolanka")
+    "Phylactolaemata", "Spongillidae", "Opolanka", "Anomodontia", "Dicynodonta",
+    "Anthracosauromorpha")
 # Most tetrapods are terrestrial, so remove by default:
-tetrapods <- c("Mammalia", "Reptilia")
-# Then add back in the known marine tetrapods (and some known marine xiphosurans,
-# etc.):
+tetrapods <- c("Mammalia", "Reptilia", "Amphibia")
+# Then add back in the known marine tetrapods (and the sole marine amphibian
+# [Trematosauridae] and some known marine xiphosurans, etc.):
 marine.exceptions <- c("Chelonioidea", "Ophidiomorpha", "Mosasauroidea", "Mosasauria",
     "Thalattosauria", "Sauropterygia", "Ichthyopterygia", "Mesoeucrocodylia",
     "Pterosauria", "Hesperornithiformes", "Ichthyornithiformes", "Sphenisciformes",
@@ -476,7 +480,7 @@ marine.exceptions <- c("Chelonioidea", "Ophidiomorpha", "Mosasauroidea", "Mosasa
     "Charadriiformes", "Cetacea", "Sirenia", "Pinnipedia", "Desmostylia", "Ariidae", 
     "Plotosidae", "Archaeoceti", "Mysticeti", "Odontoceti", "Diploaspididae",
     "Mycteropidae", "Pterygotidae", "Woodwardopteridae", "Waeringopteroidea",
-    "Eurypterina", "Limulina", "Stylonurina")
+    "Eurypterina", "Limulina", "Stylonurina", "Trematosauridae")
 
 # Extract the known marine taxa (in lineages that are typically non-marine):
 sq <- 1:nrow(x)
@@ -629,15 +633,18 @@ write.table(post, file = "PreSizes_Constant_withPBDB.tab", quote = FALSE,
 
 #  d. ADD new taxonomic names for following:
 
-#       (i)   Class Hyolitha (in Phylum Hyolitha) for Orders Hyolithida and
-#               Orthothecida.
-#       (ii)  Class Dipnomorpha for orders Dipnoi and Dipnotetrapodomorpha.
-#       (iii) Class Tentaculitita / Phylum Mollusca for Order Tentaculitida.
-#       (iv)  Phylum Annelida for Class Palaeoscolecida.
-#       (v)   Phylum Agmata for Order Volborthellida.
-#       (vi)  Add name UNCERTAIN for any phylum, class, order, or family that is 
-#               blank.
-#       (vii) Change phylum Problematica to UNCERTAIN.
+#       (i)    Class Hyolitha (in Phylum Hyolitha) for Orders Hyolithida and
+#                Orthothecida.
+#       (ii)   Class Dipnomorpha for orders Dipnoi and Dipnotetrapodomorpha.
+#       (iii)  Class Tentaculitita / Phylum Mollusca for Order Tentaculitida.
+#       (iv)   Phylum Annelida for Class Palaeoscolecida.
+#       (v)    Phylum Agmata for Order Volborthellida.
+#       (vi)   Add name UNCERTAIN for any phylum, class, order, or family that is 
+#                blank.
+#       (vii)  Change phylum Problematica to UNCERTAIN.
+#       (viii) Assign order Sachitida to class Diplacophora (following Vinther 
+#                and Nielsen 2005 and Parkhaev and Demidenko, 2010), although 
+#                their current status is in some unknown molluscan class.
 
 #  e. CHANGE the following names (typically alternative spellings or 
 #     archaic synonyms):
@@ -739,7 +746,7 @@ write.table(post, file = "PreSizes_Constant_withPBDB.tab", quote = FALSE,
 #     as holocephalans.) And treat the Batoidea as a superorder (and thus 
 #     unranked here) of elasmobranch.
 
-#  o. Follow Maletz (2014, basis of forthcoming Treatse revision) in treating
+#  o. Follow Maletz (2014, basis of forthcoming Treatise revision) in treating
 #     Graptolithina as a subclass in Class Pterobranchia (with Cephalodiscida 
 #     as other subclass).
 
@@ -877,8 +884,8 @@ write.table(post, file = "PreSizes_Constant_withPBDB.tab", quote = FALSE,
 #     sponges or receptaculacean (dasyclad) algae. Although most recent research
 #     supports an algal affinity, re-ranking class Radiocyatha as distinct 
 #     subclass of class Archaeocyatha so that life habit propagates as a sponge 
-#     model. (Easier to assume an animal now and secondarily remove than to 
-#     ignore and add in later, if future consensus emerges.) subclass
+#     model. (Easier to assume an animal now and secondarily remove, than to 
+#     ignore and add in later, if future consensus emerges.)
 
 # af. For phosphatocopines, follow Zhang, et al. (2010) and Siveter, et al.
 #     (2003) in treating Euphosphatocopida (=original Phosphatocopina) as a 

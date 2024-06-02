@@ -1026,15 +1026,15 @@ write.table(out, file = "PostSizes.tab", quote = FALSE, sep = "\t", row.names = 
 #     SPIRULIDA), use 1 X T as an estimate of tentacle length. For (swimming) 
 #     non-shelled COLEOIDS (except shelled spirulids), use 2 X AP.
 
-# (15B) Run separate check on scan-and-trap "raptorial" plankton (Search for
-# Order = AGNOSTIDA, Order = EODISCIDA, Subclass = DIPLOSTRACA, Class =
-# OSTRACODA, Class = COPEPODA and tiny trilobite subfamily = LEPTOPLASTINAE)
-# without any life habit codings and sort by DV): RelFoodStrat ~ 1 X DV.
+#     (15B) Run separate check on scan-and-trap "raptorial" plankton (Search for
+#     Order = AGNOSTIDA, Order = EODISCIDA, Subclass = DIPLOSTRACA, Class =
+#     OSTRACODA, Class = COPEPODA and tiny trilobite subfamily = LEPTOPLASTINAE)
+#     without any life habit codings and sort by DV): RelFoodStrat ~ 1 X DV.
 
-# (16) Confirm AbsFoodStrat and RelFoodStrat for mass feeders (both detritus
-# feeders, algae scrapers, and some scavengers). Search for Mass = 1 and rest
-# 0s, and sort by FoodAbovePrimary > Carnivore > Phylum > Class > DV/T to
-# distinguish epifaunal from infaunal foods:
+#     (16) Confirm AbsFoodStrat and RelFoodStrat for mass feeders (both detritus
+#     feeders, algae scrapers, and some scavengers). Search for Mass = 1 and rest
+#     0s, and sort by FoodAbovePrimary > Carnivore > Phylum > Class > DV/T to
+#     distinguish epifaunal from infaunal foods:
 
 #     (16A) "Deposit" and detritus feeders eating WITHIN sediment: AbsFoodStrat
 #     based on location of food, typically corresponding to burial depth. For

@@ -1,6 +1,43 @@
 ## RECREATE DIGITAL SEPKOSKI COMPENDIUM FROM FOSSILBRUSH WITH INTERVAL NAMES ###
 ## INSTEAD OF FOSSILBRUSH AGES #################################################
 
+
+## Peter Wagner's version (shared by email Dec. 6, 2023)
+
+setwd("C:/Users/pnovack-gottshall/OneDrive - Benedictine University/Documents/SepkoskiCompendium")
+load("Sepkoski_Genus_Compendium.RData")
+head(sepkoski_compendium)
+
+# This version sets Sepkoski's original taxonomy in columns marked "98" and 2023
+# PBDB reassignments and taxonomy for other columns.
+
+# Note Skwia was corrected to Sekwia
+sepkoski_compendium[which(sepkoski_compendium$Class_98=="Cyclozoa"), ]
+
+# But Cályxhydra was treated differently:
+sepkoski_compendium[grep("xhydra", sepkoski_compendium$Genus), ]
+
+# Let's see if Peter's version pre-dates Shanan's website version (or whatever
+# was the source for Lewis Jones' digital version)
+sepkoski_compendium[which(sepkoski_compendium$Order_98 == "Foraminiferida"), ][168:169, ]
+
+# Yes! Shanan's version has Auroria (Sepkoski mis-spelling of Auroriina)
+# followed by weird Cályxhydra instead of Austrocolomiá (Sepkoski typo for
+# Austrocolomia). But seems the non-Latin letters have been replaced with · in
+# Peter's version. Most (but not all) of these are the known errors in my
+# version.
+
+# Peter thinks that "he" originated the non-Latin errors when converting Jack's
+# DOS files to Mac Excel format in early/mid 1990s.
+
+
+
+sepkoski_compendium[grep("á", sepkoski_compendium$Genus), ]
+sepkoski_compendium[grep("·", sepkoski_compendium$Genus), ]
+
+
+
+
 op <- par()
 rm(list = ls())
 
@@ -157,30 +194,72 @@ head(sepkoski, 10)
 ## Include rownames so can return to original order
 # write.csv(sepkoski, file = "Sepkoski_Compendium.csv", row.names = TRUE)
 
-## Manually change the following genera with non-Latin letters:
-# PHYLUM        CLASS	         GENUS	            CORRECT
-# Arthropoda	  Thylacocephala Atropicarió	      Atropicaris
-# Brachiopoda	  Inarticulata	 Ernogiá	          Ernogia
-# Brachiopoda	  Lingulata	     Dysoristuó	        Dysoristus
-# Brachiopoda	  Lingulata	     Prototretá	        Prototreta
-# Cnidaria	    Anthozoa	     Holocùsôió	        Holocoenia
-# Cnidaria	    Anthozoa	     Kángilacùathus	    Kangiliacyathus
-# Cnidaria	    Anthozoa	     Káratchasôraea	    Karatchastraea
-# Cnidaria	    Anthozoa	     Oppelisíilia	      Oppelismilia
-# Cnidaria	    Anthozoa	     Parapleurosmélia	  Parapleurosmilia
-# Cnidaria	    Anthozoa	     Parasôraeopora	    Parastraeopora
-# Cnidaria	    Anthozoa	     Parastraeoíorpha	  Parastraeomorpha
-# Cnidaria	    Anthozoa	     Sïlenocoenia	      Solenocoenia
-# Cnidaria	    Hydrozoa	     Cályxhydra	        Calyxhydra
-# Cnidaria	    Hydrozoa	     Drevoôella	        Drevotella
-# Cnidaria	    Hydrozoa	     Veluíbrella	      Velumbrella
-# Cnidaria	    Medusae	       Jyxiålla	          Jyxialla
-# Cnidaria	    NA	           Såkwia	            Sekwia
-# Echinodermata	Echinoidea	   Mikrocidarió	      Mikrocidaris
-# Mollusca	    Monoplacophora Truncátoconus	    Truncatoconus
-# Porifera	    Regulares	     Còyptoporocyathus	Cryptoporocyathus
+## Non-Latin letters in the Compendium include the following:
+## á, ã, å, é, í, ï, ó, ò, ô, Š, and ù
 
-# And also made write-protected to archive the file.
+
+## Manually change the following genera with non-Latin letters:
+# PHYLUM        CLASS	         ORDER              COMPEND. SPELLING PBDB ENTERED AS
+# Rhizopodea    Rhizopodea     Foraminiferida     Austrocolomiá     Austrocolomia
+# Porifera	    Regulares	     Capsulocyathida    Còyptoporocyathus	Cyptoporocyathus
+#                                                     =misspelling of Cryptoporocyathus
+# Cnidaria	    Hydrozoa	     Hydroida           Cályxhydra	      Calyxhydra
+# Cnidaria	    Hydrozoa	     Hydroida           Drevoôella	      Drevoella
+#                                                     =misspelling of Drevotella
+# Cnidaria	    Hydrozoa	     Hydroida           Veluíbrella	      Velumbrella
+# Cnidaria	    Anthozoa	     Scleractina        Hindeastraeá      Hindeastraea
+# Cnidaria	    Anthozoa	     Scleractina        Heliocïenia       Heliocenia
+#                                                     =misspelling of Heliocoenia
+# Cnidaria	    Anthozoa	     Scleractina        Hexaheliocïenia   Hexaheliocenia
+#                                                     =misspelling of Hexaheliocoenia
+# Cnidaria	    Anthozoa	     Scleractina        Holocùsôió        Holocsi
+#                                                     =misspelling of Holocoenia
+# Cnidaria	    Anthozoa	     Scleractina        Hydnophorareá     Hydnophorarea
+#                                                     =misspelling of Hydnophorarea
+# Cnidaria	    Anthozoa	     Scleractina        Isástraea         Isastraea
+# Cnidaria	    Anthozoa	     Scleractina        Isïphyllastrea    Isphyllastrea
+#                                                   =misspelling of Isophyllastrea
+# Cnidaria	    Anthozoa	     Scleractina        Kángilacùathus	  Kangiliacyathus
+# Cnidaria	    Anthozoa	     Scleractina        Káratchasôraea	  Karatchastraea
+# Cnidaria	    Anthozoa	     Scleractina        Mussisíilia       Mussisiilia
+#                                                   =misspelling of Mussismilia
+# Cnidaria	    Anthozoa	     Scleractina        Oppelisíilia	      Oppelisilia
+#                                                   =misspelling of Oppelismilia
+# Cnidaria	    Anthozoa	     Scleractina        Paãhythecalis     Pachythecalis
+# Cnidaria	    Anthozoa	     Scleractina        Parapleurosmélia  Parapleurosmilia
+# Cnidaria	    Anthozoa	     Scleractina        Parastraeoíorpha	Parastraeoorpha
+#                                                   =misspelling of Parastraeomorpha
+# Cnidaria	    Anthozoa	     Scleractina        Parasôraeopora	  Parastraeopora
+# Cnidaria	    Anthozoa	     Scleractina        Sïlenocoenia      Slenocoenia
+#                                                   =misspelling of Solenocoenia
+# Cnidaria	    Anthozoa	     Scleractina        Smiloôrochus      Smilorochus
+#                                                   =misspelling of Smilotrochus
+# Cnidaria	    Anthozoa	     Scleractina        Stephanasôrea     Stephanasrea
+#                                                   =misspelling of Stephanastrea
+# Cnidaria	    Anthozoa	     Scleractina        Stenocùathus      Stenocathus
+#                                                   =misspelling of Stenocyathus
+# Cnidaria	    Cyclozoa	     UNCERTAIN          Såkwia	          Sekwia
+# Cnidaria	    Medusae	       Incertae sedis     Jyxiålla	        Jyxialla
+# Brachiopoda	  Inarticulata	 UNCERTAIN          Ernogiá	          Ernogia
+#                                        note prior was corrected in 'sepkoski'
+# Brachiopoda	  Inarticulata Lingulata	          Dysoristuó	      Dysoristus
+#                                        note prior was corrected in 'sepkoski'
+# Brachiopoda	  Inarticulata Lingulata	     Prototretá	        Prototreta
+#                                        note prior was corrected in 'sepkoski'
+# Mollusca      Incertae sedis Incertae sedis     Truncátoconus     Truncatoconus                         
+# Echinodermata	Echinoidea	   Cidaroida          Mikrocidarió	    Mikrocidari
+#                                                   =misspelling of Mikrocidaris
+
+# Also note that because of a concatenation error, the following genus was not added to the 'sepkoski' database: 
+# Brachiopoda	  Articulata     Terebratulida     Aneuthelasma     P (Guad-u) (ref 7)
+
+# And some brachiopods (others, too?) seem to be missing, such as order
+# Kutorginida, Obolellida, Chileida, Naukatoidea, and uncertains following them.
+# Worth checking for others that may have been missed?
+
+
+
+# And also make write-protected to archive the file.
 
 ## Confirm open as expected
 # sepkoski_cleaned <- read.csv("Sepkoski_Compendium.csv", row.names = 1)
