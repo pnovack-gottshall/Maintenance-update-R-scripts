@@ -575,7 +575,7 @@ write.table(post, file = "PreSizes_Constant_withPBDB.tab", quote = FALSE,
 #  b. Some names have different ranks in my database and the PBDB. See code in 
 #     IDBadHigherTaxa.R for a function to automate. Known instances include:
 
-#   - CHANGE the following subclass ranks to rank class:
+#   - ELEVATE the following subclass ranks to class rank:
 #       (i)   arthropods Malacostraca (and set in Subphylum Crustacea)
 #       (ii)  echinoderms Blastoidea and Parablastoidea
 #       (iii) vertebrates Placodermi and Thelodonti
@@ -589,8 +589,8 @@ write.table(post, file = "PreSizes_Constant_withPBDB.tab", quote = FALSE,
 #     infraclass in my core database. In other words, when dealing fossils, the 
 #     cirripeds are practically synonymous with thecostracans.
 
-#   - CHANGE Class Opisthobranchs down a rank to subclass (and placing them in
-#     Class Heterobranchia) such that Opisthobranchia is a Subclass and their 
+#   - LOWER Class Opisthobranchs down a rank to subclass (and placing them in
+#     Class Heterobranchia) such that Opisthobranchia is a subclass and their 
 #     orders are suborders.
 
 #   - Change order Cephalodiscida to Cephalodiscoidea (in class Cephalodiscida), 
@@ -628,7 +628,7 @@ write.table(post, file = "PreSizes_Constant_withPBDB.tab", quote = FALSE,
 #     rank (as ophiocistioids currently lack order names).
 
 #  c. CHANGE rank names for Order Rhombifera (Subphylum Pelmatozoa, Class
-#     Cystoidea, Subclass Hydrophoridea) to Class Rhombifera (Subphylum 
+#     Cystoidea, Subclass Hydrophoridea) to Class 'rhombifera' (Subphylum 
 #     Blastozoa, Order UNCERTAIN), and CHANGE Subphylum Pelmatozoa to Blastozoa.
 
 #  d. ADD new taxonomic names for following:
@@ -657,11 +657,10 @@ write.table(post, file = "PreSizes_Constant_withPBDB.tab", quote = FALSE,
 #       (vii)  starfish class (or infraclass) Neoasteroidea to Ambuloasteroidea
 #       (viii) bryozoan order Trepostomida to Trepostomata 
 #       (vix)  bryozoan order Cystoporida to Cystoporata 
-#       (x)    barnacle order Thoracica to Sessilia
-#       (xi)   diploporitan superfamily Glyptosphaeritida to 
+#       (x)    diploporitan superfamily Glyptosphaeritida to 
 #              Glyptosphaeritidacea (in order UNCERTAIN). 
 #              (See below for details on other diploporitans.)
-#       (xii)  Superfamily Mosasauria to superfamily Mosasauroidea
+#       (xi)   Superfamily Mosasauria to superfamily Mosasauroidea
 
 #  f. Because the most recent bivalve classification (Carter, et al. 2011, to be
 #     used in the forthcoming Treatise) contains only two subclasses for all
@@ -697,17 +696,32 @@ write.table(post, file = "PreSizes_Constant_withPBDB.tab", quote = FALSE,
 #     superfamilies.) But maintain superfamily Pistosauroidea as a valid
 #     superfamily in unnamed suborder.
 
-#  i. Use (only) the following subphylum names for (primarily marine)
-#     arthropods: Arachnomorpha, Chelicerata, Crustacea, and Trilobitomorpha. Use
-#     (only) the following subphylum names for echinoderms: Asterozoa (including
-#     classes Asteroidea, Ophiuroidea, Somasteroidea, and Stenuroidea), Blastozoa
-#     (including classes Blastoidea, Coronoidea, Ctenocystoidea, Diploporita,
-#     polyphyletic 'diploporitans', Eocrinoidea, Soluta, Homostelea [and treating
-#     Cincta as a near synonym, as sole homostelean order], Parablastoidea,
-#     Paracrinoidea [thus not recognizing Subphylum Paracrinozoa], and Rhombifera),
-#     Crinozoa (including classes Crinoidea, Edrioasteroidea,  Stylophora), and
-#     Echinozoa (including classes Ctenoimbricata, Cyclocystoidea, Echinoidea,
-#     Helicoplacoidea, Holothuroidea, and Ophiocistioidea).
+#  i. Use (only) the following subphylum names for (primarily marine) taxa:
+
+#       (i)  Arthropods: Arachnomorpha, Chelicerata, Crustacea, and 
+#            Trilobitomorpha
+
+#       (ii) Echinoderms: Subphyla for echinoderms are largely informal, often 
+#            paraphyletic, and an area of much debate. For consistency, using 
+#            following until better resolved, which elevates unranked clades 
+#            Asterozoa, Echinozoa, Blastozoa (including Crinozoa) to subphylum 
+#            status, and elevates Eleutherozoa and Pelmatozoa to unranked clades
+
+#            (1) Asterozoa (classes Asteroidea, Ophiuroidea, Somasteroidea, and 
+#                Stenuroidea)
+            
+#            (2) Echinozoa (classes Echinoidea, Holothuroidea, and Ophiocistioidea)
+
+#            (3) Blastozoa  (classes Blastoidea, Parablastoidea, Paracrinoidea, 
+#                Soluta, and Crinoidea plus paraphyletic-to-polyphyletic informal 
+#                classes 'diploporita', 'eocrinoidea', 'rhombifera' and treating 
+#                class Coronoidea as subclass Coronata within blastoids)
+
+#            (4) Remaining classes (non-radials Stylophora, Cincta, Ctenocystoidea
+#                and radials Helicoplacoidea, Helicocystoids [Helicocystis], 
+#                Edrioasteroidea, and stem echinoderm Ctenoimbricata) are placed 
+#                in informal subphylum 'stem echinoderms'. Cyclocystoidea are 
+#                placed in subphylum UNCERTAIN
 
 #  j. For tetrapods, do not use the larger fish-inclusive Dipnotetrapodomorpha
 #     as subclass (and Dipnomorpha for class). Instead, use Subclass Eutheria
@@ -876,10 +890,7 @@ write.table(post, file = "PreSizes_Constant_withPBDB.tab", quote = FALSE,
 #     Aglaspidida as a subclass with orders Aglaspidida (of same name) and
 #     Strabopida.
 
-# ad. Treat Order Bradoriida as a non-ostracod member of the stem Crustacean,
-#     following consensus in Álvarez, et al. (2008) and Siveter, et al., (2014).
-
-# ae. The affinity of radiocyaths is uncertain (Treatise: Kruse, et al., 2015),
+# ad. The affinity of radiocyaths is uncertain (Treatise: Kruse, et al., 2015),
 #     with most considering them either allied to archaeocyath or heteractine
 #     sponges or receptaculacean (dasyclad) algae. Although most recent research
 #     supports an algal affinity, re-ranking class Radiocyatha as distinct 
@@ -887,7 +898,14 @@ write.table(post, file = "PreSizes_Constant_withPBDB.tab", quote = FALSE,
 #     model. (Easier to assume an animal now and secondarily remove, than to 
 #     ignore and add in later, if future consensus emerges.)
 
-# af. For phosphatocopines, follow Zhang, et al. (2010) and Siveter, et al.
+# ae. Treat Order Bradoriida as a non-ostracod member of the stem Crustacean,
+#     following consensus in Álvarez, et al. (2008) and Siveter, et al., (2014).
+
+# af. Following WoRMS, reduce order Leperditicopida to superfamily 
+#     Leperditelloidea, and parent to order Myodocopida, following Hegna, et al. 
+#     (2020).
+
+# ag. For phosphatocopine crustaceans, follow Zhang, et al. (2010) and Siveter, et al.
 #     (2003) in treating Euphosphatocopida (=original Phosphatocopina) as a 
 #     subclade within Phosphatocopida. Given the lack of consistency in what 
 #     rank these names apply, treat Euphosphatocopida as an order and 
@@ -899,21 +917,13 @@ write.table(post, file = "PreSizes_Constant_withPBDB.tab", quote = FALSE,
 # ah. Use class Cincta instead of outdated class Homostelea. Note cinctans 
 #     currently lack names for orders.
 
-# ai. Subphyla for echinoderms are largely informal, often paraphyletic, and an 
-#     area of much debate. For consistency, using following until better 
-#     resolved, which elevates unranked clades Asterozoa, Echinozoa, Blastozoa 
-#     (including Crinozoa) to subphylum status, and elevates Eleutherozoa and 
-#     Pelmatozoa to unranked clades. (1) subphylum Asterozoa (classes 
-#     Asteroidea, Ophiuroidea, Somasteroidea, and Stenuroidea), (2) Echinozoa 
-#     (classes Echinoidea, Holothuroidea, and Ophiocistioidea). (3) Blastozoa 
-#     (classes Blastoidea, Parablastoidea, Paracrinoidea, Soluta, and Crinoidea 
-#     plus paraphyletic-to-polyphyletic informal classes 'diploporita', 
-#     'eocrinoidea', 'rhombifera' and treating class Coronoidea as subclass 
-#     Coronata within blastoids). (4) Remaining classes (non-radials Stylophora, 
-#     Cincta, Ctenocystoidea and radials Helicoplacoidea, Helicocystoids 
-#     [Helicocystis], Edrioasteroidea, and stem echinoderm Ctenoimbricata) are 
-#     placed in informal subphylum 'stem echinoderms'. Cyclocystoidea are 
-#     placed in subphylum UNCERTAIN.
+# ai. Following WoRMS, treat the following ostracod superorders as equivalent to 
+#     subclasses/orders: use order Platycopida for Platycopamorphes, use 
+#     Myodocopida for Myodocopamorphes, use Palaeocopida for Palaeocopamorphes, 
+#     and use Podocopida for Podocopamorphes. Replace the following suborders: 
+#     use suborder Cypridocopina for suborder Cypriformes, Halocypridina for 
+#     Halocypriformes, and use family Polycopidae for family Polycopiformes. 
+#     (But note that suborder Cytherelliformes is legitimate.)
 
 # (6) Run code as usual in "PropogateSizes.R" or "PropogateLifeHabits.R", but
 # resaving as postX_withPBDB" file name. Make sure to add new IDNumbers to the
