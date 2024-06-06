@@ -468,9 +468,12 @@ non.marine <- c("Arachnida", "Insecta", "Collembola", "Palaeophreatoicidae",
     "Orthosternina", "Posteriorricinulei", "Primoricinulei", "Sarcoptiformes", 
     "Tetrophthalmi", "Trombidiformes", "Tetrapulmonata", "Diplura", 
     "Phylactolaemata", "Spongillidae", "Opolanka", "Anomodontia", "Dicynodonta",
-    "Anthracosauromorpha")
+    "Anthracosauromorpha", "Terrestricytheroidea", "Darwinulocopina", 
+    "Carbonitoidea", "Suchonelloidea")
+
 # Most tetrapods are terrestrial, so remove by default:
 tetrapods <- c("Mammalia", "Reptilia", "Amphibia")
+
 # Then add back in the known marine tetrapods (and the sole marine amphibian
 # [Trematosauridae] and some known marine xiphosurans, etc.):
 marine.exceptions <- c("Chelonioidea", "Ophidiomorpha", "Mosasauroidea", "Mosasauria",
@@ -901,9 +904,19 @@ write.table(post, file = "PreSizes_Constant_withPBDB.tab", quote = FALSE,
 # ae. Treat Order Bradoriida as a non-ostracod member of the stem Crustacean,
 #     following consensus in Álvarez, et al. (2008) and Siveter, et al., (2014).
 
-# af. Following WoRMS, reduce order Leperditicopida to superfamily 
-#     Leperditelloidea, and parent to order Myodocopida, following Hegna, et al. 
-#     (2020).
+# af. Following WoRMS, treat the following ostracod superorders as equivalent to 
+#     subclasses/orders: use order Platycopida for Platycopamorphes, use 
+#     Myodocopida for Myodocopamorphes, use Palaeocopida for Palaeocopamorphes, 
+#     and use Podocopida for Podocopamorphes. Replace the following suborders: 
+#     use suborder Cypridocopina for suborder Cypriformes, Halocypridina for 
+#     Halocypriformes, and use family Polycopidae for family Polycopiformes. 
+#     (But note that suborder Cytherelliformes is legitimate.) Treat Ostracoda 
+#     as a class. Following Liebau (2015), and apparently WoRMS, treating order 
+#     Beyrichicopida as a junior synonym of Palaeocopida. Generally, the higher 
+#     taxonomy of ostracodes (especially Paleozoic ones) is highly unresolved 
+#     and often contradictory. See "Ostracod taxonomy.docx" for the complete 
+#     taxonomic structure used, which represents a consensus between WoRMS and 
+#     PBDBD. We need more ostracode workers!
 
 # ag. For phosphatocopine crustaceans, follow Zhang, et al. (2010) and Siveter, et al.
 #     (2003) in treating Euphosphatocopida (=original Phosphatocopina) as a 
@@ -911,19 +924,11 @@ write.table(post, file = "PreSizes_Constant_withPBDB.tab", quote = FALSE,
 #     rank these names apply, treat Euphosphatocopida as an order and 
 #     Phosphatocopida as a class.
 
-# ag. Confirm that subphylum Urochordata is replaced with synonym Tunicata (per 
+# ah. Confirm that subphylum Urochordata is replaced with synonym Tunicata (per 
 #     WoRMS and most recent usages).
 
-# ah. Use class Cincta instead of outdated class Homostelea. Note cinctans 
+# ai. Use class Cincta instead of outdated class Homostelea. Note cinctans 
 #     currently lack names for orders.
-
-# ai. Following WoRMS, treat the following ostracod superorders as equivalent to 
-#     subclasses/orders: use order Platycopida for Platycopamorphes, use 
-#     Myodocopida for Myodocopamorphes, use Palaeocopida for Palaeocopamorphes, 
-#     and use Podocopida for Podocopamorphes. Replace the following suborders: 
-#     use suborder Cypridocopina for suborder Cypriformes, Halocypridina for 
-#     Halocypriformes, and use family Polycopidae for family Polycopiformes. 
-#     (But note that suborder Cytherelliformes is legitimate.)
 
 # (6) Run code as usual in "PropogateSizes.R" or "PropogateLifeHabits.R", but
 # resaving as postX_withPBDB" file name. Make sure to add new IDNumbers to the
