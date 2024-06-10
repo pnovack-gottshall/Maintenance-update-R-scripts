@@ -469,7 +469,7 @@ non.marine <- c("Arachnida", "Insecta", "Collembola", "Palaeophreatoicidae",
     "Tetrophthalmi", "Trombidiformes", "Tetrapulmonata", "Diplura", 
     "Phylactolaemata", "Spongillidae", "Opolanka", "Anomodontia", "Dicynodonta",
     "Anthracosauromorpha", "Terrestricytheroidea", "Darwinulocopina", 
-    "Carbonitoidea", "Suchonelloidea")
+    "Carbonitoidea", "Suchonelloidea", "Eurynotoidiformes")
 
 # Most tetrapods are terrestrial, so remove by default:
 tetrapods <- c("Mammalia", "Reptilia", "Amphibia")
@@ -918,10 +918,10 @@ write.table(post, file = "PreSizes_Constant_withPBDB.tab", quote = FALSE,
 #     taxonomic structure used, which represents a consensus between WoRMS and 
 #     PBDBD. We need more ostracode workers!
 
-# ag. For phosphatocopine crustaceans, follow Zhang, et al. (2010) and Siveter, et al.
-#     (2003) in treating Euphosphatocopida (=original Phosphatocopina) as a 
-#     subclade within Phosphatocopida. Given the lack of consistency in what 
-#     rank these names apply, treat Euphosphatocopida as an order and 
+# ag. For phosphatocopine crustaceans, follow Zhang, et al. (2010) and Siveter, 
+#     et al. (2003) in treating Euphosphatocopida (=original Phosphatocopina) 
+#     as a subclade within Phosphatocopida. Given the lack of consistency in 
+#     what rank these names apply, treat Euphosphatocopida as an order and 
 #     Phosphatocopida as a class.
 
 # ah. Confirm that subphylum Urochordata is replaced with synonym Tunicata (per 
