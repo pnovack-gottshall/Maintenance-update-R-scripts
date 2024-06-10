@@ -2,7 +2,7 @@
 ## PBDB.
 
 rm(list = ls())
-setwd("C:/Users/pnovack-gottshall/Desktop/Databases/Maintenance & update R scripts")
+setwd("C:/Users/pnovack-gottshall/OneDrive - Benedictine University/Desktop/Databases/Maintenance & update R scripts")
 
 ## Run relevant code in SelectCols.R for IDBadHigherTaxa.R to obtain following
 ## output.
