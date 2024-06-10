@@ -20,41 +20,45 @@
 # to whose life habit has been coded.
 
 # 1. If an entry is already coded at species-, subgenus-, or genus-level, skip,
-# unless life habits are partly blank (uncoded), in which case use closest
-# relatives to estimate remaining states. (In these cases, tag the states as
-# "Estimated" and record the changes in the History_Ecology field.)
+#    unless life habits are partly blank (uncoded), in which case use closest
+#    relatives to estimate remaining states. (In these cases, tag the states as
+#    "Estimated" and record the changes in the History_Ecology field.)
 
 # 2. If an entry is above genus-level, use closest relatives to update
-# (override) the pre-existing codings. If unchanged (identical to relative),
-# abort and go to the next entry, leaving the 'DateEntered_Ecology' and
-# 'EcoScale' fields unchanged. If multiple relatives exist, enter the value,
-# using the specified propagation method. In the 'constant' method, propagate
-# any state that is shared among all relatives, and 'NA' if the state varies. In
-# the 'mode' method, propagate states that are most frequently occurring for
-# each state. In both cases, record the relative as "Higher taxon indet." If any
-# states remain uncoded, go to the next inclusive higher taxa in case they have
-# codings for these states, using the same logic as step 1.
+#    (override) the pre-existing codings. If unchanged (identical to relative),
+#    abort and go to the next entry, leaving the 'DateEntered_Ecology' and
+#    'EcoScale' fields unchanged. If multiple relatives exist, enter the value,
+#    using the specified propagation method. In the 'constant' method, propagate
+#    any state that is invariant (i.e., shared) among ALL relatives, and 'NA' if
+#    the state varies. In the 'mode' method, propagate states that are most
+#    frequently occurring for each state. In both cases, record the relative as
+#    "Higher taxon indet." If any states remain uncoded, go to the next 
+#    inclusive higher taxa in case they have codings for these states, using the 
+#    same logic as step 1.
 
-# The four body-size-related states (AbsStrat, RelStrat, AbsFoodStrat, and
-# RelFoodStrat) are only over-written when the states are missing or when
-# EcoScale > Species/Genus. If any of these four states are changed AND the
-# BodySizeScale was Species/Genus (implying they were originally checked after
-# the PropogateSizes.R algorithm), add a "check" tag to force a manual re-check.
-# If any life habit codings are changed, add (or override) the record-keeping
-# text to History_Ecology field. This documents a history of life-habit changes
-# that can be restored using earlier back-up database copies. If there is no
-# date in the 'DateEntered_Ecology' date field (i.e., this is the first update),
-# just update the date (without an update to the history text). If secondarily
-# filled-in states are changed (that are different than the chosen relative),
-# record those changes to the History field.
+#    The four body-size-related states (AbsStrat, RelStrat, AbsFoodStrat, and
+#    RelFoodStrat) are only over-written when the states are missing or when
+#    EcoScale > Species/Genus. If any of these four states are changed AND the
+#    BodySizeScale was Species/Genus (implying they were originally checked 
+#    after the PropogateSizes.R algorithm), add a "check" tag to force a manual 
+#    re-check. If any life habit codings are changed, add (or override) the 
+#    record-keeping text to History_Ecology field. This documents a history of 
+#    life-habit changes that can be restored using earlier back-up database 
+#    copies. If there is no date in the 'DateEntered_Ecology' date field (i.e., 
+#    this is the first update), just update the date (without an update to the 
+#    history text). If secondarily filled-in states are changed (that are 
+#    different than the chosen relative), record those changes to the History 
+#    field.
 
-# A benefit of this update-higher-taxon approach is that as we get more data, we
-# can feel more confident in codings when there are many relatives (because it
-# is still a strict consensus). If a higher taxon has lots of inherent
-# variability, the NAs get up-voted based on actual variability across the
-# higher taxon. So it's OK to "downgrade" the data (add more NAs) as we get more
-# data, because that reflects the reality of natural variability. (Recall that
-# entries coded at genus and species-level will not be overriden.)
+#    A benefit of this update-higher-taxon approach is that as we get more data, 
+#    we can feel more confident in codings when there are many relatives 
+#    (because it is still a strict consensus). If a higher taxon has lots of 
+#    inherent variability, the NAs get up-voted based on actual variability 
+#    across the higher taxon. So it's OK to "downgrade" the data (add more NAs) 
+#    as we get more data, because that reflects the reality of biological 
+#    variability. (Recall that individual states coded at genus and 
+#    species-level will not be overriden during this algorithm, only the unknown 
+#    states.)
 
 
 
@@ -66,62 +70,68 @@
 # still adds a size "Check" to trigger a second look-over afterwards.)
 
 # If updating both previously propagated "Mode" and "Constant" datasets, then
-# should run each separately, as the reference population for each algorithm
+# each should be run separately, as the reference population for each algorithm
 # will have different life-habit states for varying taxa.
 
 # (0) Not recommended (because the code algorithmically updates and gives
-# priority to species/genera with complete codings), but if want a "fresh"
-# propagation, consider first deleting all life-habit codings for any estimates
-# (EstLithic, EstBiotic, or all codings for non-species/subgenus/genus). (This
-# is recommended if, for example, a species/subgenus/genus A entry has at least
-# one estimated life-habit state, and it might be used to estimate a missing
-# state for species B, which was originally used to estimate the missing state
-# for A.) IF DO THIS, PERFORM THE DELETIONS ON A COPY OF THE DATABASE RATHER
-# THAN THE MASTER DATABASE ITSELF! If do this, it is most efficient to export
-# the "constant" database entries, which have fewer estimated states (i.e.,
-# there will be less to delete). If go this route, note that the History_Eco
-# output will be slightly off, because will imply there were prior estimates.
-# (It is easiest to clean the data set by adding a row number column so you can
-# sort as needed, then return to the original row order.)
+#     priority to species/genera with complete codings), but if want a "fresh"
+#     propagation, consider first deleting all life-habit codings for any 
+#     estimates (EstLithic, EstBiotic, or all codings for 
+#     non-species/subgenus/genus). (This is recommended if, for example, a 
+#     species/subgenus/genus A entry has at least one estimated life-habit 
+#     state, and it might be used to estimate a missing state for species B, 
+#     which was originally used to estimate the missing state for A.) IF DO 
+#     THIS, PERFORM THE DELETIONS ON A COPY OF THE DATABASE RATHER THAN THE 
+#     MASTER DATABASE ITSELF! If do this, it is most efficient to export the 
+#     "constant" database entries, which have fewer estimated states (i.e., 
+#     there will be less to delete). If go this route, note that the History_Eco
+#     output will be slightly off, because will imply there were prior 
+#     estimates. (It is easiest to clean the data set by adding a row number 
+#     column so you can sort as needed, then return to the original row order.)
 
 # (1) Before exporting, sort the entries so that EcoScale = Species is first,
-# followed by Subgenus, Genus, etc. That way those with best scales are checked
-# for completeness first.
+#     followed by Subgenus, Genus, etc. That way those with best scales are 
+#     checked for completeness first.
 
-# (2) Run relevant code in SelectCols.R for PropogateSizes.R to obtain following
-# output. Then continue with step 3.
+# (2) Run relevant code in SelectCols.R for PropogateLifeHabits.R to obtain 
+#     following output. Then continue with step 3.
 
-# IDNumber
+#     IDNumber
 
-# Taxonomy: Phylum, Subphylum, Class, Subclass, Order, Suborder, Superfamily,
-# Family, Subfamily, Genus, Subgenus, Species
+#     Taxonomy: Phylum, Subphylum, Class, Subclass, Order, Suborder, 
+#     Superfamily, Family, Subfamily, Genus, Subgenus, Species
 
-# Proxy fields: EcologyScale, RefGenusEco, RefSpeciesEco, DateEntered_Ecology,
-# SizeChanged, BodySizeScale, History_Ecology
+#     Proxy fields: EcologyScale, RefGenusEco, RefSpeciesEco, 
+#     DateEntered_Ecology, SizeChanged, BodySizeScale, History_Ecology
 
-# Life habit characters (can really be in any order, as called by name):
-# AboveImmediate, AbovePrimary, AbsFoodStratification, AbsStratification,
-# AmbientFeeder, Asexual, Attached, AttachmentFeeder, Autotroph, Biotic,
-# BulkFeeder, Carnivore, FeedingAboveImm, FeedingAbovePrimary, FeedingWithinImm,
-# FeedingWithinPrimary, [FilterDensity field (only used with suspension-feeding
-# echinoderms)], FilterFeeder, Fluidic, FreeLiving, HardSubstratum, Herbivore,
-# Incorporeal, Insubstantial, Lithic, MassFeeder, Microbivore, Mobility,
-# ParticleFeeder, RaptorFeeder, RelFoodStratification, RelStratification,
-# SelfSupport, Sexual, SoftSubstratum, SolutionFeeder, Supported,
-# WithinImmediate, WithinPrimary
+#     Life habit characters (can really be in any order, as called by name):
+#     AboveImmediate, AbovePrimary, AbsFoodStratification, AbsStratification,
+#     AmbientFeeder, Asexual, Attached, AttachmentFeeder, Autotroph, Biotic,
+#     BulkFeeder, Carnivore, FeedingAboveImm, FeedingAbovePrimary, 
+#     FeedingWithinImm, FeedingWithinPrimary, [FilterDensity field (only used 
+#     with filter-feeding echinoderms)], FilterFeeder, Fluidic, FreeLiving, 
+#     HardSubstratum, Herbivore, Incorporeal, Insubstantial, Lithic, MassFeeder, 
+#     Microbivore, Mobility, ParticleFeeder, RaptorFeeder, 
+#     RelFoodStratification, RelStratification, SelfSupport, Sexual, 
+#     SoftSubstratum, SolutionFeeder, Supported, WithinImmediate, WithinPrimary
 
-# The same characters, in Est_X form (excluding Est_AbsStratDist, Est_AP,
-# Est_DV, and EstT, which were propagated in PropagateSizes.R).
+#     The same characters, in Est_X form (excluding Est_AbsStratDist, Est_AP,
+#     Est_DV, and EstT, which were propagated in PropagateSizes.R).
 
-# (3) Open in MSWord and delete all quotation marks (replacing "^t with ^t, ^t"
-# with ^t, and "" with "). If a column (such as Est_FilterDensity) is all NAs,
-# then delete the NAs.
+# (3) Open in Excel and delete NAs for columns (typically SizeChanged, 
+#     Est_FilterDensity and other Est_Xs) when they are ALL NAs. (You don't 
+#     need to do this for all NAs, only those where the entire column is NAs.)
+
+# (4) Open in MSWord and delete all quotation marks (replacing "^t with ^t, ^t"
+#     with ^t, and "" with ").
 
 
 
 rm(list = ls())
 setwd("C:/Users/pnovack-gottshall/OneDrive - Benedictine University/Desktop/Databases/Maintenance & update R scripts")
 # setwd("C:/Users/pnovack-gottshall/Documents/GSA (& NSF & NAPC)/2016GSA/GSA2016 analyses")
+input <- read.delim(file = "PreLH_constant_Ostracodes.tab", colClasses = "character")
+# input <- read.delim(file = "PreLH_mode_Ostracodes.tab", colClasses = "character")
 # input <- read.delim(file = "PreLH_constant_Bradoriida&Aster&Echino.tab", colClasses = "character")
 # input <- read.delim(file = "preLH_mode_Bradoriida&Aster&Echino.tab", colClasses = "character")
 # input <- read.delim(file = "preLH_constant.tab", colClasses = "character")
@@ -401,16 +411,16 @@ est.col.names <- sapply(ec, function(ec) paste0("Est_", colnames(input)[eco.col]
 est.col <- match(est.col.names, colnames(input))
 
 # Life habit columns with ordered numeric characters are treated separately:
-size.col <- which(colnames(input[ ,eco.col]) == "AbsFoodStratification" | 
-    colnames(input[ ,eco.col]) == "AbsStratification" | 
-    colnames(input[ ,eco.col]) == "RelFoodStratification" |  
-    colnames(input[ ,eco.col]) == "RelStratification")
+size.col <- which(colnames(input[, eco.col]) == "AbsFoodStratification" | 
+    colnames(input[, eco.col]) == "AbsStratification" | 
+    colnames(input[, eco.col]) == "RelFoodStratification" |  
+    colnames(input[, eco.col]) == "RelStratification")
 
 # Confirm assignments
 if (length(eco.col) != 39)
   stop("double-check the life habit column assignments")
-colnames(input)[eco.col]              # AboveImmediate   < ----- >  WithinPrimary
-colnames(input)[est.col]              # Est_AboveImmediate  < -- >  Est_WithinPrimary
+colnames(input)[eco.col]              #  AboveImmediate   < ----- >  WithinPrimary
+colnames(input)[est.col]              #  Est_AboveImmediate  < -- >  Est_WithinPrimary
 if (length(eco.col) != length(est.col))
   stop("the raw and Est_X assignments have different lengths")
 if (length(eco.col) != 39)
@@ -419,7 +429,7 @@ if (length(eco.col) != length(est.col))
   stop("the raw and Est_X assignments have different lengths")
 cbind(colnames(input[eco.col]), colnames(input[est.col])) # These should match
 colnames(input)[eco.col[size.col]]    #  Four size-related stratification states
-colnames(input)[-c(eco.col, est.col)] #      IDNumber   < ---- >  History_Ecology
+colnames(input)[-c(eco.col, est.col)] #  IDNumber   < ---- >  History_Ecology
 
 # Which consensus method ('constant' or 'mode' to use for propagating from relatives
 method <- "constant"
@@ -491,6 +501,7 @@ for(i in 1:nrow(out)) {
       better.all.equal(input[i, eco.col[size.col]], cs[size.col])
     size.changed <- ncol(what.sizes.changed) > 0L
     size.changed.to.NAs <- all(is.na(what.sizes.changed[2, ]))
+
     # Revert to original size-related states if input size was coded at genus or
     # better (but trigger "check" to manually confirm coded correctly)
     revert <- size.changed & input$BodySizeScale[i] <= "Genus"
@@ -603,12 +614,13 @@ for(i in 1:nrow(out)) {
         is.na(out[i, eco.col[changed.col]]) | out[i, eco.col[changed.col]] == ""
       if (any(dropped))
         out[i, est.col[changed.col[which(dropped)]]] <- ""
-      # Note: Those ":"entered" today will be propagated at a level > genus, and
-      # so there is no need to continue documenting previous history of life-habit
-      # proxies. Remainder of changes (not tagged with updated date) are updating
-      # empty cells using appropriate higher taxa, either for a genus/species
-      # entry or for higher taxon proxy. In these cases, it is valuable to record
-      # the history of estimations.
+
+      # Note: Those "entered" today will be propagated at a level > genus, and
+      # so there is no need to continue documenting previous history of
+      # life-habit proxies. Remainder of changes (not tagged with updated date)
+      # are updating empty cells using appropriate higher taxa, either for a
+      # genus/species entry or for higher taxon proxy. In these cases, it is
+      # valuable to record the history of estimations.
       if (out$DateEntered_Ecology[i] != today) {
         out$History_Ecology[i] <- paste0(length(which(wh.changed)), 
                             " additional states updated ", today,
@@ -642,8 +654,9 @@ for(i in 1:nrow(out)) {
   
 }
 (Sys.time() - start.t)
+
 library(beepr)
-beep(3)
+beepr::beep(3)
 
 # Note that if the only change is "SizeChanged", that means the size codings
 # (AbsStrat, RelStrat, etc.) were reverted from the consensus state "back" to
@@ -670,6 +683,8 @@ if (any(table(input$IDNumber) > 1)) {
 }
 
 ## EXPORT DATA -------------------------------------------------------------
+# write.table(out, file = "PostLH_constant_Ostracodes.tab", quote = FALSE, sep = "\t", row.names = FALSE)
+# write.table(out, file = "PostLH_mode_Ostracodes.tab", quote = FALSE, sep = "\t", row.names = FALSE)
 # write.table(out, file = "PostLH_constant_Bradoriida&Aster&Echino.tab", quote = FALSE, sep = "\t", row.names = FALSE)
 # write.table(out, file = "PostLH_mode_Bradoriida&Aster&Echino.tab", quote = FALSE, sep = "\t", row.names = FALSE)
 # write.table(out, file = "PostLH_constant.tab", quote = FALSE, sep = "\t", row.names = FALSE)
@@ -678,23 +693,31 @@ if (any(table(input$IDNumber) > 1)) {
 # write.table(out, file = "PostLH_withPBDB_constant.tab", quote = FALSE, sep = "\t", row.names = FALSE)
 
 # (1) Open in Excel to confirm looks acceptable. Delete (matching entire cell
-# contents) "NA"s in life habit data.
+#     contents) all "NA"s in life habit data.
 
-# (2) Open in Word to remove quotation marks around the text entries, (replacing
-# "^t with ^t and ^t" with ^t and "" with ^t and ").
+# (2) Open in Word to remove quotation marks around the text entries [UNLESS THE
+#     QUOTATION MARK IS CORRECTLY AT THE END OF A TEXT FIELD], (replacing "^t 
+#     with ^t and replacing ^t" with " and replacing "" with ").
 
-# (3) Open FileMakerPro and import, updating records by matching names and using
-# the IDNumber as the matching identifier. (Fine to not import the taxonomic
-# names.)
+# (3) Open FileMakerPro and import as a tab-delimited file, updating records by
+#     matching names and using the IDNumber as the matching identifier. (Fine to 
+#     not import the taxonomic names, but import  everything else.) To set the 
+#     column names as the field names, make sure the first entry row in the 
+#     imported source (the column headings) are visible, then choose "Use as 
+#     Field Names" for the imported source file. Then choose "Matching Names" in
+#     the Target Fields dropdown to ensure that the source and target fields 
+#     match (but double-check that they are matched correctly). If using 
+#     different propagations for the "constant" and "mode" databases, make sure 
+#     to import the correct source file to the correct database version.
 
 # (4) Refer to PropogateSizes.R for common troubleshooting corrections to run
-# through in case of manual overrides.
+#     through in case of manual overrides.
 
-# On the post-life-habit propagation, focus on the SizeChanged = Check tagged
-# entries, but also check ALL entries using the specified criteria. (Can omit
-# those coded at EcoScale = Species/Genus.) MAKE SURE THAT IF ADD/CHANGE A STATE
-# FOR A EcoScale = SPECIES/GENUS, to tag as "Estimated" and to update the
-# History accordingly.
+#     On the post-life-habit propagation, focus on the SizeChanged = Check 
+#     tagged entries, but also check ALL entries using the specified criteria. 
+#     (Can omit those coded at EcoScale = Species/Genus.) MAKE SURE THAT IF 
+#     ADD/CHANGE A STATE FOR A EcoScale = SPECIES/GENUS, to tag as "Estimated" 
+#     and to update the History accordingly.
 
 
 

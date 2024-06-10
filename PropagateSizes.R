@@ -724,13 +724,15 @@ write.table(out, file = "PostSizes.tab", quote = FALSE, sep = "\t", row.names = 
 
 # (3) Open FileMakerPro and import as a tab-delimited file, updating records by
 #     matching names and using the IDNumber as the matching identifier. (Fine to 
-#     not import the taxonomic names and geological ranges, but import 
-#     everything else.) To set the column names as the field names, choose "Use 
-#     as Field Names" for the imported source file. Then choose "Matching Names" 
-#     in the Target Fields dropdown to ensure that the source and target fields 
-#     match (but double-check that they are matched correctly). If using 
-#     different propagations for the "constant" and "mode" databases, make sure 
-#     to import the correct source file to the correct database version.
+#     not import the taxonomic names or geological ranges, but import  
+#     everything else.) To set the column names as the field names, make sure 
+#     the first entry row in the imported source (the column headings) are 
+#     visible, then choose "Use as Field Names" for the imported source file. 
+#     Then choose "Matching Names" in the Target Fields dropdown to ensure that 
+#     the source and target fields match (but double-check that they are matched 
+#     correctly). If using different propagations for the "constant" and "mode" 
+#     databases, make sure to import the correct source file to the correct 
+#     database version.
 
 
 
@@ -1047,8 +1049,9 @@ write.table(out, file = "PostSizes.tab", quote = FALSE, sep = "\t", row.names = 
 
 #     (15B) Run separate check on scan-and-trap "raptorial" plankton (Search for
 #     Order = AGNOSTIDA, Order = EODISCIDA, Subclass = DIPLOSTRACA, Class =
-#     OSTRACODA, Class = COPEPODA and tiny trilobite subfamily = LEPTOPLASTINAE)
-#     without any life habit codings and sort by DV): RelFoodStrat ~ 1 X DV.
+#     OSTRACODA (but only those coded as raptorial!), Class = COPEPODA and tiny 
+#     trilobite subfamily = LEPTOPLASTINAE) without any life habit codings and 
+#     sort by DV): RelFoodStrat ~ 1 X DV.
 
 #     (16) Confirm AbsFoodStrat and RelFoodStrat for mass feeders (both detritus
 #     feeders, algae scrapers, and some scavengers). Search for Mass = 1 and rest
@@ -1078,11 +1081,11 @@ write.table(out, file = "PostSizes.tab", quote = FALSE, sep = "\t", row.names = 
 #     (16B) Surficial mass (typically algal) feeders (including those that use
 #     body mucus to capture seston): Animals scraping or eating algal films / 
 #     detritus ON/ABOVE substrate (e.g., SNAILS, MONOPLACOPHORANS, CHITONS, a 
-#     few infaunal TELLINID BIVALVES, JAWLESS and EARLY FISHES, and some 
-#     POLYCHAETES, ECHINOIDS, ASTEROIDS, and OPHIUROIDS), typically are coded as 
-#     AbsFoodStrat = 0. (Note macroalgae feeders are excluded here because they 
-#     are bulk feeders and often raptorial.) RelFoodStrat depends on where the 
-#     feeding organ is located:
+#     few infaunal TELLINID BIVALVES, JAWLESS and EARLY FISHES, some 
+#     POLYCHAETES, ECHINOIDS, ASTEROIDS, OPHIUROIDS, and OSTRACODES), typically 
+#     are coded as AbsFoodStrat = 0. (Note macroalgae feeders are excluded here 
+#     because they are bulk feeders and often raptorial.) RelFoodStrat depends 
+#     on where the feeding organ is located:
 
 #       (A) If the mouth is emplaced against sediment in resting (non-feeding) 
 #       position, RelFoodStrat = 0.
