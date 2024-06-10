@@ -9,25 +9,25 @@
 ## WORKFLOW ------------------------------------------------------------------
 
 # (1) From Body size layout, export ALL data fields (EXCEPT EcologyNotes),
-# selecting "Current Table ("Biota")" in dropdown, as 'AllCols.tab'
-# tab-delimited format. DO NOT SAVE AS EXCEL FORMAT, AS DOING SO
-# IDIOSYNCRATICALLY CHANGES NAs TO 0s AND 1s!! (MUST be tab-delimited, as
-# several text fields contain commas!!!). Save a duplicate as an Excel Workbook
-# (AllColsHeadings.xlsx) to automatically obtain column headings. (Need to
-# create this colnames file EVERY TIME and for EVERY FILE in case the order of
-# columns has changed or is different between files.)
+#     selecting "Current Table ("Biota")" in dropdown, as 'AllCols.tab'
+#     tab-delimited format. DO NOT SAVE AS EXCEL FORMAT, AS DOING SO
+#     IDIOSYNCRATICALLY CHANGES NAs TO 0s AND 1s!! (MUST be tab-delimited, as
+#     several text fields contain commas!!!). Save a duplicate as an Excel 
+#     Workbook (AllColsHeadings.xlsx) to automatically obtain column headings. 
+#     (Need to create this colnames file EVERY TIME and for EVERY FILE in case 
+#     the order of columns has changed or is different between files.)
 
 # (2) Open file in MSWord (make sure smart quotes are off: File > Options >
-# Proofing > Autocorrect Options > Autoformat As You Type > uncheck Smart
-# Quotes). UNLESS THE TERMINAL QUOTATION MARKS ARE CORRECTLY AT THE END OF A
-# TEXT FIELD, find and replace (a) "^t with ^t and (b) replace ^t" with ^t and
-# (c) replace "" [double quotation marks] with " [single quotation marks].
-# Re-save file in same format.
+#     Proofing > Autocorrect Options > Autoformat As You Type > uncheck Smart
+#     Quotes). UNLESS THE TERMINAL QUOTATION MARKS ARE CORRECTLY AT THE END OF A
+#     TEXT FIELD, find and replace (a) "^t with ^t and (b) replace ^t" with ^t
+#     and (c) replace "" [double quotation marks] with " [single quotation 
+#     marks]. Re-save file in same format, then close file.
 
 # (3) In Excel, add a row for headers and confirm the column headers are correct
-# (and no cells are "hanging"). (If "hanging", it means there a tab was
-# incorrectly deleted or there is a hidden tab within a field; remove the tab,
-# re-save the file, and re-open.)
+#     (and no cells are "hanging"). (If "hanging", it means a tab was deleted  
+#     incorrectly or there is a hidden tab within a field; remove the tab, 
+#     re-save the file, and re-open.)
 
 
 ## IMPORT ALL-COLUMNS DATA FILE ---------------------------------------------------
@@ -36,6 +36,7 @@ rm(list = ls())
 setwd("C:/Users/pnovack-gottshall/OneDrive - Benedictine University/Desktop/Databases/Maintenance & update R scripts")
 # setwd("C:/Users/pnovack-gottshall/Documents/GSA (& NSF & NAPC)/2016GSA/GSA2016 analyses")
 all <- read.delim(file = "AllCols.tab", stringsAsFactors = FALSE)
+all <- read.delim(file = "AllCols_Constant_OStracodes.tab", stringsAsFactors = FALSE)
 # all <- read.delim(file = "AllCols_Bradoriida&Aster&Echino.tab", stringsAsFactors = FALSE)
 # all <- read.delim(file = "AllCols_Mode.tab", stringsAsFactors = FALSE)
 # all <- read.delim(file = "AllCols_Constant.tab", stringsAsFactors = FALSE)
@@ -88,6 +89,7 @@ head(selected)
 if (!identical(cols, colnames(selected)))
   stop("column names are not as specified!")
 # write.table(selected, file = "PreSizes.tab", row.names = FALSE, sep = "\t", quote = FALSE)
+# write.table(selected, file = "PreSizes_Constant_Ostracodes.tab", row.names = FALSE, sep = "\t", quote = FALSE)
 # write.table(selected, file = "PreSizes_Bradoriida&Aster&Echino.tab", row.names = FALSE, sep = "\t", quote = FALSE)
 # write.table(selected, file = "PreSizes_Constant_withPBDB.tab", row.names = FALSE, sep = "\t", quote = FALSE)
 # write.table(selected, file = "PreSizes_Mode_withPBDB.tab", row.names = FALSE, sep = "\t", quote = FALSE)

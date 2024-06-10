@@ -9,36 +9,35 @@
 # lengths were estimated.
 
 # 1. If entry is measured at species- or genus- (or subgenus-) level AND all 3
-# lengths are measured, skip to the next entry.
+#    lengths are measured, skip to the next entry.
 #
 # 2. If entry at sp/g/subg-level AND 1 or more measures are missing, proceed to
-# estimating using following logic:
+#    estimating using following logic:
 #
-# A. Find closest relative with ALL 3 ATD. 1) if multiple relatives exist, pick
-# the one (regardless of whether sp or genus) that is closest to the same age
-# [(earlyRel - earlyEntry)^2 + (lateR - lateE)^2, and pick match with smallest
-# absolute difference). Why? Because size is known to change through time
-# (although unclear if shape does). Note that this means that taxa missing a
-# range will not get an estimated body size. (And no need to calculate square
-# root here, which saves computational time.)
+#   A. Find closest relative with ALL 3 ATD. 1) if multiple relatives exist, 
+#      pick the one (regardless of whether sp or genus) that is closest to the 
+#      same age [(earlyRel - earlyEntry) ^ 2 + (lateR - lateE) ^ 2], and pick  
+#      match with smallest absolute difference. Why? Because size is known to  
+#      change through time (although unclear if shape does). Note that this 
+#      means that taxa missing a range will not get an estimated body size. (And 
+#      no need to calculate square root here, which saves computational time.)
 #
-# B. If all 3 lengths are missing (not possible if SizeScale = sp/g?), drop in all
-# 3 measurements from relative.
+#   B. If all 3 lengths are missing (not possible if SizeScale = sp/g?), drop in
+#      all 3 measurements from relative.
 #
-# C. If 2 lengths are missing, estimate the missing ones using the relative's
-# shape.
+#   C. If 2 lengths are missing, estimate the missing ones using the relative's
+#      shape.
 #
-# D. If 1 length is missing, estimating the missing length using mean of
-# relative's shape (i.e., ratio of other lengths). (Using arithmetic mean
-# instead of geometric mean to best estimate an isometric shape; use of geomean,
-# in trials, does not produce equivalently shaped estimates.)
+#   D. If 1 length is missing, estimating the missing length using mean of
+#      relative's shape (i.e., ratio of other lengths). (Using arithmetic mean
+#      instead of geometric mean to best estimate an isometric shape; use of 
+#      geomean, in trials, does not produce equivalently shaped estimates.)
 #
-# E. Update "estimate" check boxes and metadata accordingly, for each if ()
-# step above.
+#   E. Update "estimate" check boxes and metadata accordingly.
 #
 # 3. If entry is not at genus or better level (i.e., subfamily or greater), find
-# closest-aged relative and drop in all 3 measurements, updating metadata. Only
-# in this case add tags for RefGenusSize and RefSpeciesSize.
+#    closest-aged relative and drop in all 3 measurements, updating metadata.
+#    Only in this case add tags for RefGenusSize and RefSpeciesSize.
 
 
 
@@ -47,77 +46,82 @@
 ## EXPORT DATA -------------------------------------------------------------
 
 # (0) Not recommended (because the code algorithmically updates and gives
-# priority to species/genera with complete measurements), but if want a "fresh"
-# propagation, consider first deleting all body size data for any estimates
-# (EstAP, EstT, EstDV or non-species/subgenus/genus). (This is recommended if,
-# for example, a species/subgenus/genus A entry has at least one estimated size
-# measurement, and it might be used to estimate a missing size for species B,
-# which was originally used to estimate the missing size for A.) IF DO THIS,
-# PERFORM THE DELETIONS ON A COPY OF THE DATABASE RATHER THAN THE MASTER
-# DATABASE ITSELF! If go this route, note that the History_Size output will be
-# slightly off, because will imply there were prior estimates. It is easiest to
-# clean the data set during step 5 (when it would be easiest to add a row number
-# column so you can sort as needed, then return to the original row order.)
-# However, be aware that removing estimated values has the negative side effect
-# of meaning that AbsStratDist estimates are not likely to be propagated
-# (because the get.strat() function matches the current AbsStratDist values
-# against canonical values, and deleting estimated lengths means it may not find
-# relevant matches.)
+#     priority to species/genera with complete measurements), but if want a 
+#     "fresh" propagation, consider first deleting all body size data for any 
+#     estimates (EstAP, EstT, EstDV or non-species/subgenus/genus). (This is 
+#     recommended if, for example, a species/subgenus/genus A entry has at least 
+#     one estimated size measurement, and it might be used to estimate a missing 
+#     size for species B, which was originally used to estimate the missing size
+#     for A.) IF DO THIS, PERFORM THE DELETIONS ON A COPY OF THE DATABASE RATHER 
+#     THAN THE MASTER DATABASE ITSELF! If go this route, note that the 
+#     History_Size output will be slightly off, because will imply there were 
+#     prior estimates. It is easiest to clean the data set during step 5 (when 
+#     it would be easiest to add a row number column so you can sort as needed, 
+#     then return to the original row order.) However, be aware that removing 
+#     estimated values has the negative side effect of meaning that AbsStratDist 
+#     estimates are not likely to be propagated (because the get.strat() 
+#     function matches the current AbsStratDist values against canonical values, 
+#     and deleting estimated lengths means it may not find relevant matches.)
 
 # (1) To save time, you only need to export one dataset. The "constant" database
-# is recommended, although both data sets should have identical body size
-# estimates (although there will be variation in the estimates for
-# AbsStratDist). Before exporting, sort the entries so that (i) BodySizeScale =
-# Species is first, followed by Subgenus, Genus, etc., (ii) second by
-# AbsStratDistance (in descending order, with largest first), and (iii) third
-# BodyVolume (with largest first). (This sort order means taxa with
-# AbsStratDistances and all three measurements are placed before those missing
-# one or more sizes.)
+#     is recommended, although both data sets should have identical body size
+#     estimates (although there will be variation in the estimates for
+#     AbsStratDist). Before exporting, sort the entries so that (i) 
+#     BodySizeScale = Species is first, followed by Subgenus, Genus, etc., (ii) 
+#     second by AbsStratDistance (in descending order, with largest first), and 
+#     (iii) third BodyVolume (with largest first). (This sort order means taxa 
+#     with AbsStratDistances and all three measurements are placed before those 
+#     missing one or more sizes.)
 
 # (2) Run relevant code in SelectCols.R for PropagateSizes.R to obtain following
-# output. Then continue with step 3.
+#     output. Then continue with step 3.
 
-# IDNumber
+#     IDNumber
 
-# Taxonomy: Phylum, Subphylum, Class, Subclass, Order, Suborder, Superfamily,
-# Family, Subfamily, Genus, Subgenus, Species
+#     Taxonomy: Phylum, Subphylum, Class, Subclass, Order, Suborder,
+#     Superfamily, Family, Subfamily, Genus, Subgenus, Species
 
-# Proxy fields: max_ma, min_ma, BodySizeScale, RefGenusSize,
-# RefSpeciesSize, Enterer, DateEntered_Size, SizeChanged, History_Size,
-# BodyMeasureReference
+#     Proxy fields: max_ma, min_ma, BodySizeScale, RefGenusSize,
+#     RefSpeciesSize, Enterer, DateEntered_Size, SizeChanged, History_Size,
+#     BodyMeasureReference
 
-# Body size characters (can really be in any order, as called by name):
-# APLength, TransverseLength, DVLength, PhotoAP, PhotoTransverse, PhotoDV,
-# APScale, TransverseScale, DVScale, Est_AP, Est_T, Est_DV, AbsStratDist
+#     Body-size characters (can really be in any order, as called by name):
+#     APLength, TransverseLength, DVLength, PhotoAP, PhotoTransverse, PhotoDV,
+#     APScale, TransverseScale, DVScale, Est_AP, Est_T, Est_DV, AbsStratDist
 
-# (Note "Intact" is excluded because only appropriate to the raw (observed) 
-# species/genus-level entries) and not the propagated ones.
+#     (Note "Intact" is excluded because only appropriate to the raw (observed) 
+#     species/genus-level entries) and not the propagated ones.
 
 # (3) Open file in MSWord (make sure smart quotes are off: File > Options >
-# Proofing > Autocorrect Options > Autoformat As You Type > uncheck Smart
-# Quotes) and delete any hidden tabs (tab within a text field) and all
-# problematic (i.e., double) quotation marks (replacing [UNLESS THE QUOTATION
-# MARK IS CORRECTLY AT THE END OF A TEXT FIELD] "^t with ^t and replacing ^t"
-# with ^t and replacing "" with "). Re-save file in same format.
+#     Proofing > Autocorrect Options > Autoformat As You Type > uncheck Smart
+#     Quotes) and delete any hidden tabs (tab within a text field) and all
+#     problematic (i.e., double) quotation marks (replacing [UNLESS THE 
+#     QUOTATION MARK IS CORRECTLY AT THE END OF A TEXT FIELD] "^t with ^t and 
+#     replacing ^t"with ^t and replacing "" with "). Re-save file in same 
+#     format.
 
-# (5) Open in Excel. Add a new column counting 'PhotoX' columns with values.
-# (HINT: Use = MIN((3-COUNTA(Est_AP:Est_DV)),COUNT(APLength:DVLength)) that
-# allows including the Est_X columns!) TROUBLESHOOT: Confirm that all
-# 'Sp/Subg/Gen' have at least 1 measurement! Also delete any NAs in
-# AbsStratDistance and size measures, and delete size /AbsStratDist measures
-# that are 0 or "NA".
+# (5) Open in Excel. Add a new column named 'PhotoX' that counts measured 
+#     'PhotoX' columns with values. 
+#     (HINT: Use = MIN((3-COUNTA(Est_AP:Est_DV)),COUNT(APLength:DVLength)) , 
+#     which is = MIN((3-COUNTA(AG2:AI2)),COUNT(X2:Z2)) that allows including 
+#     the Est_X columns!) TROUBLESHOOT: Confirm that all 'Sp/Subg/Gen' have at 
+#     least 1 measurement! Also delete any NAs in AbsStratDistance, SizeChanged, 
+#     and size measures, and delete size or AbsStratDist measures that are 0 
+#     (if not intentional).
+
+# (6) Add a new column named 'BodySize' that estimates the body size, using 
+#     the product of 3 'XLength' sizes (=PRODUCT(X2:Z2)).
 
 # (6) Sort the BodySizeScale = 'Sp/Subg/Gen' rows by (1) number of PhotoX
-# columns (largest first) so entries with complete (all 3) size measurements are
-# first and most incomplete are last. That way those with best scales and
-# more-complete sizes are checked first, so that later entries can use the
-# largest available pool of relatives. (2) Second, sort item by AbsStratDist,
-# with largest values first (so those with estimated AbsStratDists are
-# considered first to propagate to those lacking them). (3) Third, sort by Body
-# Size, with largest values first. (You can add a column and use the product of
-# remaining values as a proxy.)
+#     columns (largest first) so entries with complete (all 3) size measurements 
+#     are first and most incomplete are last. That way those with best scales
+#     and more-complete sizes are checked first, so that later entries can use 
+#     the largest available pool of relatives. (2) Second, sort item by 
+#     AbsStratDist, with largest values first (so those with estimated 
+#     AbsStratDists are considered first to propagate to those lacking them). 
+#     (3) Third, sort by BodySize, with largest values first.
 
-# (7) Delete the added 'PhotoX' (and volume, if used) column and resave.
+# (7) Delete the added 'PhotoX' and 'BodySize' columns and resave.
 
 
 
@@ -127,6 +131,7 @@ setwd("C:/Users/pnovack-gottshall/OneDrive - Benedictine University/Desktop/Data
 # setwd("C:/Users/pnovack-gottshall/Documents/GSA (& NSF & NAPC)/2016GSA/GSA2016 analyses")
 
 pre.input <- read.delim(file = "preSizes.tab", stringsAsFactors = FALSE)
+# pre.input <- read.delim(file = "PreSizes_Constant_Ostracodes.tab", stringsAsFactors = FALSE)
 # pre.input <- read.delim(file = "PreSizes_Bradoriida&Aster&Echino.tab", stringsAsFactors = FALSE)
 # pre.input <- read.delim(file = "PreSizes_Constant_withPBDB.tab", stringsAsFactors = FALSE)
 # pre.input <- read.delim(file = "EchinoPreSizes_withPBDB.tab", stringsAsFactors = FALSE)
@@ -142,6 +147,7 @@ colCl[est.cols] <- "character"
 rm(pre.input)
 
 input <- read.delim(file = "preSizes.tab", stringsAsFactors = FALSE, colClasses = colCl)
+# input <- read.delim(file = "PreSizes_Constant_Ostracodes.tab", stringsAsFactors = FALSE)
 # input <- read.delim(file = "PreSizes_Bradoriida&Aster&Echino.tab", stringsAsFactors = FALSE)
 # input <- read.delim(file = "PreSizes_Constant_withPBDB.tab", stringsAsFactors = FALSE)
 # input <- read.delim(file = "EchinoPreSizes_withPBDB.tab", stringsAsFactors = FALSE)
@@ -180,14 +186,14 @@ input$SizeChanged <- replace(input$SizeChanged, which(is.na(input$SizeChanged)),
 # input$Est_T <- replace(input$Est_T, which(is.na(input$Est_T)), "")
 # input$Est_DV <- replace(input$Est_DV, which(is.na(input$Est_DV)), "")
 # input$Est_AbsStratDistance <- replace(input$Est_AbsStratDistance, which(is.na(input$Est_AbsStratDistance)), "")
-# str(input)
+str(input)
 
 out <- input                    # Work with 'out', saving 'input' for reference
-colnames(input[photo.cols])       # "PhotoAP", "PhotoTransverse", "PhotoDV"
-colnames(input[est.cols])         # "Est_AP", "Est_T", "Est_DV"
-colnames(input[AP.cols])          # "APLength", "PhotoAP", "APScale"
-colnames(input[T.cols])           # "TrLength", "PhotoTr", "TrScale"
-colnames(input[DV.cols])          # "DVLength", "PhotoDV", "DVScale"
+colnames(input[photo.cols])     # "PhotoAP", "PhotoTransverse", "PhotoDV"
+colnames(input[est.cols])       # "Est_AP", "Est_T", "Est_DV"
+colnames(input[AP.cols])        # "APLength", "PhotoAP", "APScale"
+colnames(input[T.cols])         # "TrLength", "PhotoTr", "TrScale"
+colnames(input[DV.cols])        # "DVLength", "PhotoDV", "DVScale"
 
 head(out)
 tail(out)
@@ -446,7 +452,8 @@ for (i in 1:nrow(out)) {
   missing <- any.missing(out[i, ], photo.cols, est.cols)
   number.missing <- length(missing$which)
   missing.strat <- is.na(out$AbsStratDistance[i])
-  # Note prior line should NOT check Est_AbsStratDistance here. Checks below instead.
+  # Note prior line should NOT check Est_AbsStratDistance here. Checks below
+  # instead.
   
   if (!missing$any & !missing.strat & (this.scale == "Species" | 
       this.scale == "Subgenus" | this.scale == "Genus")) next
@@ -601,7 +608,8 @@ for (i in 1:nrow(out)) {
       }
     }
   } else {
-    # Or update AbsStratDist if previously existed, but some measurements were updated
+    # Or update AbsStratDist if previously existed, but some measurements were
+    # updated
     orig.ms <- unlist(input[i, ATD.cols])
     poss.dists <- c(1, -1) %x% c(orig.ms, angle.30 * orig.ms, angle.45 * orig.ms, 
       angle.60 * orig.ms, proportions %x% orig.ms)
@@ -610,14 +618,15 @@ for (i in 1:nrow(out)) {
       out$AbsStratDistance[i] <- get.strat(out[i, ], input[i, ])
   }
 
-  # Add "check" tag if any size or AbsStratDist was changed (to 2 significant digits)
+  # Add "check" tag if any size or AbsStratDist was changed (to 2 significant
+  # digits)
   if (!identical(signif(input[i, photo.cols], 2), signif(out[i, photo.cols], 2)) ||
       !identical(signif(input$AbsStratDistance[i], 2),
                  signif(out$AbsStratDistance[i], 2))) {
     out$SizeChanged[i] <- "Check"
     }
   
-  # Update history if AbsStratDist added or re-calculated (using updated
+  # Update history if AbsStratDist is added or re-calculated (using updated
   # measurements, if changed)
   if (out$Est_AbsStratDistance[i] == "Estimated") {
     orig.ms <- unlist(out[i, ATD.cols])
@@ -648,7 +657,7 @@ for (i in 1:nrow(out)) {
     cat("\n")
   }
 
-  # If recording a log of changes made
+  # If recording a log of changes made:
   if (record.log & changes.made) {
     cat(as.character(paste(out$Genus[i], out$Species[i])), "\n", file = record.file,
         append = TRUE)
@@ -663,6 +672,7 @@ for (i in 1:nrow(out)) {
   
 }
 (Sys.time() - start.t)
+
 library(beepr)
 beepr::beep(3)
 
@@ -699,20 +709,28 @@ if (any(table(input$IDNumber) > 1)) {
 
 ## EXPORT DATA -------------------------------------------------------------
 write.table(out, file = "PostSizes.tab", quote = FALSE, sep = "\t", row.names = FALSE)
+# write.table(out, file = "PostSizes_Ostracodes.tab", quote = FALSE, sep = "\t", row.names = FALSE)
 # write.table(out, file = "PostSizes_Bradoriida&Aster&Echino.tab", quote = FALSE, sep = "\t", row.names = FALSE)
 # write.table(out, file = "PostSizes_Constant_withPBDB.tab", quote = FALSE, sep = "\t", row.names = FALSE)
 
 # (1) Open in Excel to confirm looks acceptable. Replace (with Options = Match
-# entire cell contents) "NA"s in taxonomic names, body size data, stratigraphic
-# ranges, and AbsStratDist with blank cells. (Essentially the entire output.)
+#     entire cell contents) "NA"s in taxonomic names, body size data, 
+#     stratigraphic ranges, and AbsStratDist with blank cells. (Essentially the 
+#     entire output.)
 
 # (2) Open in Word to remove quotation marks around the text entries [UNLESS THE
-# QUOTATION MARK IS CORRECTLY AT THE END OF A TEXT FIELD], (replacing "^t with
-# ^t and replacing ^t" with " and replacing "" with ").
+#     QUOTATION MARK IS CORRECTLY AT THE END OF A TEXT FIELD], (replacing "^t 
+#     with ^t and replacing ^t" with " and replacing "" with ").
 
-# (3) Open FileMakerPro and import, updating records by matching names and using
-# the IDNumber as the matching identifier. (Fine to not import the taxonomic
-# names and geological ranges, but import everything else.)
+# (3) Open FileMakerPro and import as a tab-delimited file, updating records by
+#     matching names and using the IDNumber as the matching identifier. (Fine to 
+#     not import the taxonomic names and geological ranges, but import 
+#     everything else.) To set the column names as the field names, choose "Use 
+#     as Field Names" for the imported source file. Then choose "Matching Names" 
+#     in the Target Fields dropdown to ensure that the source and target fields 
+#     match (but double-check that they are matched correctly). If using 
+#     different propagations for the "constant" and "mode" databases, make sure 
+#     to import the correct source file to the correct database version.
 
 
 
@@ -724,14 +742,15 @@ write.table(out, file = "PostSizes.tab", quote = FALSE, sep = "\t", row.names = 
 ## may be challenging because of the interpretative nuances involved. One
 ## possibility (for the size-related feeding and mobility rules, at least) is to
 ## add code that uses some form of binned size regression analysis (within
-## classes) to extrapolate the size-rules. Another option might be to use
+## classes) to extrapolate the size rules. Another option might be to use
 ## machine-learning (i.e., classification trees). Either way, would need to add
 ## an "exception" field when a coding defies the standard coding rules (for
-## example, when crinoid sizes lack column lengths but a AbsStrat coding is
+## example, when crinoid sizes lack column lengths but an AbsStrat coding is
 ## still possible, or when the functional gill size in vermiculariids is best
-## approximated by transverse width instead of AP length).
+## approximated by transverse width instead of the typical AP length for most
+## filter-feeding snails).
 
-# Once imported (BEFORE THE LIFE HABITS are propagated, but then again
+# Once imported (BEFORE THE LIFE HABITS are propagated, but THEM AGAIN
 # afterwards, too), run the following manual corrections. (Note the RelStrat
 # should not be deleted, but updated as needed, with appropriate
 # stratifications.) The current version of the FileMakerPro database includes
@@ -748,8 +767,8 @@ write.table(out, file = "PostSizes.tab", quote = FALSE, sep = "\t", row.names = 
 # SizeChanged = Check tagged entries. On the post-life-habit propagation, focus
 # on the SizeChanged = Check tagged entries, but also check ALL entries using
 # the following criteria. (Can omit those coded at EcoScale = Species/Genus.)
-# MAKE SURE THAT IF ADD/CHANGE A STATE FOR A EcoScale = SPECIES/GENUS, to tag as
-# "Estimated."
+# MAKE SURE THAT IF ADD/CHANGE A STATE FOR AN ECOSCALE = SPECIES/GENUS, to tag
+# as "Estimated."
 
 # When checking with the pre-life-habit propagation, if a size-based coding (or
 # any, really) is uncertain, it is better to leave blank than to guess. Leaving
@@ -1111,6 +1130,6 @@ write.table(out, file = "PostSizes.tab", quote = FALSE, sep = "\t", row.names = 
 # it can lead to new entries with a particular feeding mode.)
 
 # (20) Once these checks are run, re-run them (except no. 1 that checks every
-# one) and clear the SizeChanged = Check tags. Then do a final search for any
-# that are still checked, focusing on the size-related characters, to confirm
-# sensibility, clearing them at end.
+# one) and clear the SizeChanged = Check tags for each check. Then do a final
+# search for any that are still checked, focusing on the size-related
+# characters, to confirm sensibility, clearing them at end.
