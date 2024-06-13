@@ -360,7 +360,7 @@ rm(list = c("i", "r", "cols", "est.cols", "missings", "estimateds", "cs.c",
 
 # Go through each record and life-habit state one by one, propagating codings as
 # relevant.
-index <- seq(100, nrow(input), by = 100) # For keeping track
+index <- seq(0, nrow(input), by = 100) # For keeping track
 today <- format(Sys.Date(), "%m/%d/%Y")
 
 # Confirm correct columns for life habit codings (match manually):
