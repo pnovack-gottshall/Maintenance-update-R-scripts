@@ -134,7 +134,7 @@ pre.input <- read.delim(file = "preSizes.tab", stringsAsFactors = FALSE)
 # pre.input <- read.delim(file = "PreSizes_Constant_Ostracodes.tab", stringsAsFactors = FALSE)
 # pre.input <- read.delim(file = "PreSizes_Bradoriida&Aster&Echino.tab", stringsAsFactors = FALSE)
 # pre.input <- read.delim(file = "PreSizes_Constant_withPBDB.tab", stringsAsFactors = FALSE)
-# pre.input <- read.delim(file = "EchinoPreSizes_withPBDB.tab", stringsAsFactors = FALSE)
+# pre.input <- read.delim(file = "PreSizes_Mode_withPBDB.tab", stringsAsFactors = FALSE)
 
 # Following confirms that certain columns (with many empty cells) are treated as
 # characters:
@@ -150,7 +150,7 @@ input <- read.delim(file = "preSizes.tab", stringsAsFactors = FALSE, colClasses 
 # input <- read.delim(file = "PreSizes_Constant_Ostracodes.tab", stringsAsFactors = FALSE)
 # input <- read.delim(file = "PreSizes_Bradoriida&Aster&Echino.tab", stringsAsFactors = FALSE)
 # input <- read.delim(file = "PreSizes_Constant_withPBDB.tab", stringsAsFactors = FALSE)
-# input <- read.delim(file = "EchinoPreSizes_withPBDB.tab", stringsAsFactors = FALSE)
+# pre.input <- read.delim(file = "PreSizes_Mode_withPBDB.tab", stringsAsFactors = FALSE)
 scales <- c("Species", "Subgenus", "Genus", "Subfamily", "Family", "Superfamily",
   "Suborder", "Order", "Subclass", "Class", "Subphylum", "Phylum", "", NA)
 scales <- factor(scales, levels = scales, ordered = TRUE)
@@ -687,6 +687,7 @@ beepr::beep(3)
 # Has been an improvement in taxonomic resolution?
 round(table(input$BodySizeScale) * 100 / nrow(input), 1)
 round(table(out$BodySizeScale) * 100 / nrow(out), 1)
+round(cumsum(table(input$BodySizeScale) * 100 / nrow(input)), 1)
 round(cumsum(table(out$BodySizeScale) * 100 / nrow(out)), 1)
 table(input$BodySizeScale)
 table(out$BodySizeScale)
@@ -715,6 +716,7 @@ write.table(out, file = "PostSizes.tab", quote = FALSE, sep = "\t", row.names = 
 # write.table(out, file = "PostSizes_Ostracodes.tab", quote = FALSE, sep = "\t", row.names = FALSE)
 # write.table(out, file = "PostSizes_Bradoriida&Aster&Echino.tab", quote = FALSE, sep = "\t", row.names = FALSE)
 # write.table(out, file = "PostSizes_Constant_withPBDB.tab", quote = FALSE, sep = "\t", row.names = FALSE)
+# write.table(out, file = "PostSizes_Mode_withPBDB.tab", quote = FALSE, sep = "\t", row.names = FALSE)
 
 # (1) Open in Excel to confirm looks acceptable. Replace (with Options = Match
 #     entire cell contents) "NA"s in taxonomic names, body size data, 
