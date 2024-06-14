@@ -6,6 +6,9 @@
 ##
 ## !!!NONE!!!
 ##
+##  triple check that the new (June 2024) switch in lines 590-593 works as 
+##  intended
+##
 ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ##
 ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ##
 ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ##
@@ -129,7 +132,7 @@
 
 rm(list = ls())
 setwd("C:/Users/pnovack-gottshall/OneDrive - Benedictine University/Desktop/Databases/Maintenance & update R scripts")
-# setwd("C:/Users/pnovack-gottshall/Documents/GSA (& NSF & NAPC)/2016GSA/GSA2016 analyses")
+# setwd("C:/Users/pnovack-gottshall/OneDrive - Benedictine University/Documents/GSA (& NAPC)/2024NAPC/Higher taxa eco diversity")
 input <- read.delim(file = "PreLH_constant_Ostracodes.tab", colClasses = "character")
 # input <- read.delim(file = "PreLH_mode_Ostracodes.tab", colClasses = "character")
 # input <- read.delim(file = "PreLH_constant_Bradoriida&Aster&Echino.tab", colClasses = "character")
@@ -441,7 +444,9 @@ ncs <- 14:98          # For printing interactive data
 (start.t <- Sys.time())
 
 for(i in 1:nrow(out)) {
-  if (i %in% index)
+# for(i in 4665:nrow(out)) {
+
+    if (i %in% index)
     cat("record", i, "of", nrow(out), ":", out$Genus[i], out$Species[i], "\n")
   
   # Ignore if no higher taxonomic information at all
@@ -582,8 +587,13 @@ for(i in 1:nrow(out)) {
                          (which(scales == as.character(higher.rels$eco.sc))) + 1)
       higher.rels <- find.rels(x = input, i = i, eco.col = eco.col, min.rels = 5, 
                                start = start.scale, end = 12)
-      higher.cs <- consensus(rels = higher.rels$rels, cols = still.missing$which, 
-                             method = method, na.rm = TRUE)
+      # Only proceed if there are relatives to work with (maintaining prior
+      # scale states, which will be unchanged from prior scale, so essentially
+      # ignored):
+      if (nrow(higher.rels$rels) > 0L) {
+        higher.cs <- consensus(rels = higher.rels$rels, cols = still.missing$which, 
+                               method = method, na.rm = TRUE)
+      }
 
       # Ignore if the consensus is missing or NA: 
       l.cs <- seq_along(still.missing$which)
