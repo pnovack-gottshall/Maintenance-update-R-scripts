@@ -89,6 +89,7 @@ if(length(table(table(occs$Genus))) > 1L) {
 ## Get updated PBDB intervals and ages
 strat_names <-
   read.csv("https://www.paleobiodb.org/data1.2/intervals/list.csv?all_records&vocab=pbdb")
+# strat_names <- read.csv("strat_names.csv")
 head(strat_names)
 ## "Level-4" "subperiods" (eons are level 1, eras=level 2, periods=3,
 ## subperiods=4, epochs=5)
