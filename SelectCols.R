@@ -162,3 +162,29 @@ if (!identical(cols, colnames(selected)))
   stop("column names are not as specified!")
 write.table(selected, file = "Taxa_Mode.tab", row.names = FALSE, sep = "\t", 
             quote = FALSE)
+
+
+
+# Alternative: Per-character sorting for downstream analyses:     ----------------------------------------------------
+cols <- c("Phylum", "Subphylum", "Class", "Subclass", "Order", 
+          "Suborder", "Superfamily", "Family", "Subfamily", "Genus", "Subgenus", 
+          "Species", "max_ma",	"min_ma", "Fossilization", "Environment", 
+          "EcologyScale", "BodySizeScale", "AbsStratDistance", "BodyVolume", 
+          "BodyVolumeCode", "AbsStratification", "RelStratification", 
+          "AbsFoodStratification", "RelFoodStratification", "Mobility", 
+          "Sexual", "Asexual", "Biotic", "Lithic", "Fluidic", "HardSubstratum", 
+          "SoftSubstratum", "Insubstantial", "Attached", "FreeLiving", 
+          "AbovePrimary", "WithinPrimary", "AboveImmediate", "WithinImmediate", 
+          "SelfSupport", "Supported", "FeedingAbovePrimary", 
+          "FeedingWithinPrimary", "FeedingAboveImm", "FeedingWithinImm", 
+          "AmbientFeeder", "FilterFeeder", "FilterDensity", "AttachmentFeeder", 
+          "MassFeeder", "RaptorFeeder", "Autotroph", "Microbivore", "Herbivore", 
+          "Carnivore", "Incorporeal", "SolutionFeeder", "ParticleFeeder", 
+          "BulkFeeder")
+wh.cols <- match(cols, colnames(all))
+selected <- all[, wh.cols]
+head(selected)
+if (!identical(cols, colnames(selected)))
+  stop("column names are not as specified!")
+write.table(selected, file = "Taxa_Mode.tab", row.names = FALSE, sep = "\t", 
+            quote = FALSE)
