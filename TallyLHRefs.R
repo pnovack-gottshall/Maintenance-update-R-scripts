@@ -27,7 +27,11 @@
 
 # (6). In Excel, remove the "IDNumber" and "EcologyNotes" columns.
 
-# (7). Open in Word, and find-and-replace ;_ with hard returns "^p", "^p with
+# (7). If want to also tally the number of references per species, then save
+# this file as "LHRefs_per_species.tab" and use the original file for the next
+# step. (THIS CODE STILL NEEDS TO BE WRITTEN)
+
+# (7). Open in Word, and find-and-replace ";_" with hard returns "^p", "^p with
 # ^p, ^p" with ^p, and "Application of " with "". Text should be a column of
 # references, one entry per line/row. Review and edit, if needed. Resave and
 # open here.
@@ -41,7 +45,7 @@
 
 rm(list = ls())
 setwd("C:/Users/pnovack-gottshall/OneDrive - Benedictine University/Desktop/Databases/Maintenance & update R scripts")
-# setwd("C:/Users/pnovack-gottshall/Documents/GSA (& NSF & NAPC)/2016GSA/GSA2016 analyses")
+# setwd("C:/Users/pnovack-gottshall/OneDrive - Benedictine University/Documents/GSA (& NAPC)/2024NAPC/Higher taxa eco diversity")
 input <- read.delim(file = "LHRefs.tab", header = TRUE, colClasses = "character")
 # input <- read.delim(file = "SizeRefs.tab", header = TRUE, colClasses = "character")
 head(input)
@@ -61,12 +65,12 @@ if(ncol(input) == 2L) {
 # How many unique references?
 length(unique(input$EcologyReference))
 
-sort(table(input$EcologyReference), increasing = TRUE)
+tail(sort(table(input$EcologyReference), increasing = TRUE), 10)
 sorted.tab <- sort(table(input$EcologyReference), decreasing = TRUE)
 names(sorted.tab) <- 1:length(sorted.tab)
 plot(sorted.tab, xlab = "Life habit reference", 
      ylab = "No. of entries per reference", 
-     main = "Distribution of life habit references used")
+     main = "Distribution of life habit references used", xaxt = "n")
 summary(as.vector(table(input$EcologyReference)))
 
 # Save the list of unique references used
