@@ -128,7 +128,7 @@
 ## READ AND PROCESS DATA ---------------------------------------------------
 rm(list = ls())
 setwd("C:/Users/pnovack-gottshall/OneDrive - Benedictine University/Desktop/Databases/Maintenance & update R scripts")
-# setwd("C:/Users/pnovack-gottshall/Documents/GSA (& NSF & NAPC)/2016GSA/GSA2016 analyses")
+# setwd("C:/Users/pnovack-gottshall/OneDrive - Benedictine University/Documents/GSA (& NAPC)/2024NAPC/Higher taxa eco diversity")
 
 pre.input <- read.delim(file = "preSizes.tab", stringsAsFactors = FALSE)
 # pre.input <- read.delim(file = "PreSizes_Constant_Ostracodes.tab", stringsAsFactors = FALSE)
@@ -176,7 +176,8 @@ str(input)
 # errors below) and replaced with NA. If needed (such as when there are no
 # "check"ed entries; i.e., when did a clean propagation), use next lines to
 # force to proper class. Note that it is fine for AbsStratDist to have NAs for
-# missing values (so long as the column is treated as a numeric).
+# missing values (so long as the column is treated as a numeric). IT is also
+# advisable to confirm the PhotoX and XLength columns are input as numerics.
 
 ## Following usually required:
 input$SizeChanged <- replace(input$SizeChanged, which(is.na(input$SizeChanged)), "")
@@ -440,7 +441,8 @@ if (record.log) cat("Changes made to body sizes on", today, ":\n\n", file = reco
 (start.t <- Sys.time())
 
 for (i in 1:nrow(out)) {
-  
+# for (i in 29220:nrow(out)) {
+    
   if (i %in% index)
     cat("record", i, "of", nrow(out), ":", out$Genus[i], out$Species[i], "\n")
   
@@ -559,6 +561,7 @@ for (i in 1:nrow(out)) {
     rel <- find.rel(x = out, i = i, photo.cols = photo.cols, est.cols = est.cols, 
                     sim.time = TRUE, all.3 = FALSE)
     if (is.null(rel$rel)) next
+    if (nrow(rel$rel) == 0L) next
     out$RefGenusSize[i] <- rel$rel$RefGenusSize
     out$RefSpeciesSize[i] <- rel$rel$RefSpeciesSize
     out$BodySizeScale[i] <- rel$size.sc
