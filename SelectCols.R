@@ -70,6 +70,7 @@ head(selected)
 if (!identical(cols, colnames(selected)))
   stop("column names are not as specified!")
 write.csv(selected, file = "occs.csv", row.names = FALSE)
+# write.csv(selected, file = "occs_Constant_PBDB.csv", row.names = FALSE)
 
 
 
