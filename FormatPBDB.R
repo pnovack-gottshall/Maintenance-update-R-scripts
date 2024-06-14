@@ -299,7 +299,7 @@ prep <- sfLapply(x = gen.seq, fun = prep.PBDB, gen.order = gen.order,
                  which.gsg = which.gsg, pbdb = pbdb) # Version without load-balancing
 sfStop()
 output <- data.table::rbindlist(prep)
-(Sys.time() - t.start0)  # ~ 13 minutes with 8 CPUs
+(Sys.time() - t.start0)  # ~ 13 minutes with 8 CPUs, ~7 minutes w/ 20 cores
 head(output)
 beepr::beep(3)
 
@@ -320,6 +320,7 @@ nrow(output)
 strat_names <-
   read.csv("https://www.paleobiodb.org/data1.2/intervals/list.csv?all_records&vocab=pbdb")
 # 1 = eons, 2 = eras, 3 = periods, 4 (the default) = subperiods, and 5 = epochs.
+# strat_names <- read.csv("strat_names.csv")
 scale_level <- 4
 ages <- strat_names[which(strat_names$scale_level == scale_level),]
 edia <- strat_names[which(strat_names$interval_name == "Ediacaran"), ]
@@ -543,25 +544,32 @@ if (length(wh.anaptychus) > 0L)
 # (1) In Excel, open the "postSizes.tab" or "postLH.tab" file (may need to
 # re-export from FMP and use SelectCols.R to align proper columns) and re-save
 # as "PreSizes_withPBDB.tab" or "PreLH_withPBDB.tab" (MANUALLY ADD THE ".TAB" TO
-# FILE NAME TO FORCE AS TAB-DELIMITED INSTEAD OF TEXT FILE FORMAT. Open
+# FILE NAME TO FORCE AS TAB-DELIMITED INSTEAD OF TEXT FILE FORMAT.) Open
 # "PBDBformatted_NoTerr.csv" and copy this data into the combined database.
 # Manually delete any "NA"s in early and late ages. If using both a "mode" and
 # "constant" LH data treatment, only need to propogate sizes using one of these
 # data sets, as the size propogations are the same for both.
 
-# (2) Open here and run following code to remove duplicated genus entries.
+# (2) Open here and run following code to remove duplicated genus entries. 
+#  NEED TO FIX TSO THAT DOESN'T REMOVE HOMONYMS!!!!
 
 rm(list = ls())
-setwd("C:/Users/pnovack-gottshall/Desktop/Databases/Maintenance & update R scripts")
+setwd("C:/Users/pnovack-gottshall/OneDrive - Benedictine University/Desktop/Databases/Maintenance & update R scripts")
+# setwd("C:/Users/pnovack-gottshall/OneDrive - Benedictine University/Documents/GSA (& NAPC)/2024NAPC/Higher taxa eco diversity")
 # pre <- read.delim(file = "PreSizes_Constant_withPBDB.tab", stringsAsFactors = FALSE)
+# pre <- read.delim(file = "PreSizes_Mode_withPBDB.tab", stringsAsFactors = FALSE)
 head(pre)
 tail(pre)
+dim(pre)
 duplicate.G <- duplicated(pre$Genus)
+table(duplicate.G)
 post <- pre[!duplicate.G, ]
-write.table(post, file = "PreSizes_Constant_withPBDB.tab", quote = FALSE, 
-            sep = "\t", row.names = FALSE)
+dim(post)
+# write.table(post, file = "PreSizes_Constant_withPBDB.tab", quote = FALSE, sep = "\t", row.names = FALSE)
+# write.table(post, file = "PreSizes_Mode_withPBDB.tab", quote = FALSE, sep = "\t", row.names = FALSE)
 
-# (3) Copy new entries by Phylum > Subphylum > Class > Subclass > Order.
+# (3) Copy new (AND ONLY THE NEW!) entries by Phylum > Subphylum > Class >
+# Subclass > Order.
 
 # (4) Add new IDNumbers (that pick up after those in the existing database), and
 # re-save.
@@ -592,9 +600,9 @@ write.table(post, file = "PreSizes_Constant_withPBDB.tab", quote = FALSE,
 #     infraclass in my core database. In other words, when dealing fossils, the 
 #     cirripeds are practically synonymous with thecostracans.
 
-#   - LOWER Class Opisthobranchs down a rank to subclass (and placing them in
-#     Class Heterobranchia) such that Opisthobranchia is a subclass and their 
-#     orders are suborders.
+#   - LOWER class Opisthobranchia to order rank (and placing them in subclass
+#     Heterobranchia), such that Opisthobranchia is an order and their orders 
+#     are suborders.
 
 #   - Change order Cephalodiscida to Cephalodiscoidea (in class Cephalodiscida), 
 #     per WoRMS.
@@ -628,9 +636,10 @@ write.table(post, file = "PreSizes_Constant_withPBDB.tab", quote = FALSE,
 #   - Current consensus (Smith and Reich, 2013; Rahman, et al., 2019) considers 
 #     the ophiocistioids as a branch of very early stem holothuroids. To 
 #     maintain them as a distinct group, reduce class Ophiocistioidea to order 
-#     rank (as ophiocistioids currently lack order names).
+#     rank (as ophiocistioids currently lack order names), and place in class 
+#     Holothuroidea.
 
-#  c. CHANGE rank names for Order Rhombifera (Subphylum Pelmatozoa, Class
+#  c. CHANGE rank names for order Rhombifera (Subphylum Pelmatozoa, Class
 #     Cystoidea, Subclass Hydrophoridea) to Class 'rhombifera' (Subphylum 
 #     Blastozoa, Order UNCERTAIN), and CHANGE Subphylum Pelmatozoa to Blastozoa.
 
@@ -639,7 +648,7 @@ write.table(post, file = "PreSizes_Constant_withPBDB.tab", quote = FALSE,
 #       (i)    Class Hyolitha (in Phylum Hyolitha) for Orders Hyolithida and
 #                Orthothecida.
 #       (ii)   Class Dipnomorpha for orders Dipnoi and Dipnotetrapodomorpha.
-#       (iii)  Class Tentaculitita / Phylum Mollusca for Order Tentaculitida.
+#       (iii)  Class Tentaculita / Phylum Mollusca for Order Tentaculitida.
 #       (iv)   Phylum Annelida for Class Palaeoscolecida.
 #       (v)    Phylum Agmata for Order Volborthellida.
 #       (vi)   Add name UNCERTAIN for any phylum, class, order, or family that is 
@@ -651,7 +660,8 @@ write.table(post, file = "PreSizes_Constant_withPBDB.tab", quote = FALSE,
 
 #  e. CHANGE the following names (typically alternative spellings or 
 #     archaic synonyms):
-#       (i)    cephalochordate order Amphioxi to Amphioxiformes
+#       (i)    cephalochordate order Amphioxi to Amphioxiformes (and place in 
+#                class Leptocardii)
 #       (ii)   vertebrate class Actinopteri to Actinopterygii
 #       (iii)  sponge class Demospongea to Demospongiae 
 #       (iv)   sponge class Archeocyatha to Archaeocyatha
@@ -702,7 +712,7 @@ write.table(post, file = "PreSizes_Constant_withPBDB.tab", quote = FALSE,
 #  i. Use (only) the following subphylum names for (primarily marine) taxa:
 
 #       (i)  Arthropods: Arachnomorpha, Chelicerata, Crustacea, and 
-#            Trilobitomorpha
+#            Artiopoda (=Trilobita + Nektaspidida + Vicissicaudata + Agnostida)
 
 #       (ii) Echinoderms: Subphyla for echinoderms are largely informal, often 
 #            paraphyletic, and an area of much debate. For consistency, using 
@@ -713,12 +723,13 @@ write.table(post, file = "PreSizes_Constant_withPBDB.tab", quote = FALSE,
 #            (1) Asterozoa (classes Asteroidea, Ophiuroidea, Somasteroidea, and 
 #                Stenuroidea)
             
-#            (2) Echinozoa (classes Echinoidea, Holothuroidea, and Ophiocistioidea)
+#            (2) Echinozoa (classes Echinoidea, Holothuroidea [including 
+#                Ophiocistioidea])
 
 #            (3) Blastozoa  (classes Blastoidea, Parablastoidea, Paracrinoidea, 
 #                Soluta, and Crinoidea plus paraphyletic-to-polyphyletic informal 
 #                classes 'diploporita', 'eocrinoidea', 'rhombifera' and treating 
-#                class Coronoidea as subclass Coronata within blastoids)
+#                class Coronoidea as order Coronata within blastoids)
 
 #            (4) Remaining classes (non-radials Stylophora, Cincta, Ctenocystoidea
 #                and radials Helicoplacoidea, Helicocystoids [Helicocystis], 
@@ -797,7 +808,8 @@ write.table(post, file = "PreSizes_Constant_withPBDB.tab", quote = FALSE,
 
 #  t. Despite PBDB (and some primary literature articles) claiming the order
 #     Metacopida is valid, most consider them in suborder Metacopina and order
-#     Podocopida, the taxonomy used herein.
+#     Podocopida, the taxonomy used herein. See other details of ostracod 
+#     taxonomy below.
 
 #  u. Following WoRMS (and modified from Bouchet and Rocroi, 2005), treat
 #     Neogastropoda as a suborder in order Hypsogastropoda / subclass 
@@ -819,7 +831,7 @@ write.table(post, file = "PreSizes_Constant_withPBDB.tab", quote = FALSE,
 #     are treated as larger, more inclusive ones.)
 
 #  x. Following Sheffield and Sumrall (2019), place the diploporitans in
-#     Glyptosphaeritidacea and Asteroblastida in Class 'diploporitans' because they
+#     Glyptosphaeritidacea and Asteroblastida in Class 'diploporitan' because they
 #     are now polyphyletic. Use Order Diplporita only for members of Sphaeronitida
 #     and any traditional diploporitan NOT explicitly noted in their paper as not
 #     monophyletic members of the Sphaeronitida clade. (In other words, the
@@ -896,10 +908,11 @@ write.table(post, file = "PreSizes_Constant_withPBDB.tab", quote = FALSE,
 # ad. The affinity of radiocyaths is uncertain (Treatise: Kruse, et al., 2015),
 #     with most considering them either allied to archaeocyath or heteractine
 #     sponges or receptaculacean (dasyclad) algae. Although most recent research
-#     supports an algal affinity, re-ranking class Radiocyatha as distinct 
+#     supports an algal affinity, parenting class Radiocyatha as distinct 
 #     subclass of class Archaeocyatha so that life habit propagates as a sponge 
-#     model. (Easier to assume an animal now and secondarily remove, than to 
-#     ignore and add in later, if future consensus emerges.)
+#     model, and maintaining Hill's 1972 order names for now. (Easier to assume 
+#     an animal now and secondarily remove, than to ignore and add in later, if 
+#     future consensus emerges.)
 
 # ae. Treat Order Bradoriida as a non-ostracod member of the stem Crustacean,
 #     following consensus in Álvarez, et al. (2008) and Siveter, et al., (2014).
