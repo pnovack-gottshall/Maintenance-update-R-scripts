@@ -42,6 +42,8 @@ all <- read.delim(file = "AllCols_Constant_PBDB.tab", stringsAsFactors = FALSE)
 # all <- read.delim(file = "AllCols_Bradoriida&Aster&Echino.tab", stringsAsFactors = FALSE)
 # all <- read.delim(file = "AllCols_Mode.tab", stringsAsFactors = FALSE)
 # all <- read.delim(file = "AllCols_Constant.tab", stringsAsFactors = FALSE)
+# all <- read.delim(file = "AllCols_Mode_PBDB_June2024.tab", stringsAsFactors = FALSE)
+# all <- read.delim(file = "AllCols_Constant_PBDB_June2024.tab", stringsAsFactors = FALSE)
 head(all)
 nrow(all)
 
@@ -186,5 +188,6 @@ selected <- all[, wh.cols]
 head(selected)
 if (!identical(cols, colnames(selected)))
   stop("column names are not as specified!")
-write.table(selected, file = "Taxa_Mode.tab", row.names = FALSE, sep = "\t", 
-            quote = FALSE)
+write.table(selected, file = "Taxa_Mode.tab", row.names = FALSE, sep = "\t", quote = FALSE)
+# write.table(selected, file = "AllPBDBTaxa_Mode_June2024.tab", row.names = FALSE, sep = "\t", quote = FALSE)
+# write.table(selected, file = "AllPBDBTaxa_Constant_June2024.tab", row.names = FALSE, sep = "\t", quote = FALSE)
