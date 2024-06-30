@@ -15,6 +15,17 @@
 ## beta fix for the "original name" issue, I'm hoping this issue soon becomes
 ## moot. (Preliminary testing on the training site shows it won't.) But
 ## something to be aware of until know how will behave.
+
+## Another issue is that Pterosauria is currently an unranked clade rather than
+## a formal order, which means the code below can not include/exclude them. A
+## wrap-around for now is to list the genera known to be marine, exclude those
+## known to be non-marine, and include the dominant suborders Pterodactyloidea
+## and Rhamphorhynchoidea individually. Aaargh, I hate cladistic-based taxonomy!
+
+## Also, it seems Aves are also now classed in PBDB as Reptilia. The code below
+## seems to scoop in those (like Hesperornithiformes, Pelecaniformes,
+## Charadriiformes, and Suliformes), but may need to test other work-arounds.
+
 ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
@@ -409,7 +420,7 @@ beepr::beep()
 # the duplicate (and to re-classify their occurrences). But confirm first that
 # the genus isn't listed twice in Sepkoski's Compendium, in which case we should
 # keep both entries in the PBDB for legacy purposes. In these cases, change one
-# of Sepkoski's opinions to "objective synonym" of and add a note in the
+# of Sepkoski's opinions to "objective synonym of" and add a note in the
 # Comments field to let future users understand why the opinion was changed.
 # (Ideally, make the entry with zero occurrences and no other parenting opinions
 # be the one to point to the more completely fleshed out genus.)
@@ -479,8 +490,28 @@ non.marine <- c("Arachnida", "Insecta", "Collembola", "Palaeophreatoicidae",
                 "Phylactolaemata", "Spongillidae", "Opolanka", "Anomodontia", 
                 "Dicynodonta", "Anthracosauromorpha", "Terrestricytheroidea", 
                 "Darwinulocopina", "Carbonitoidea", "Suchonelloidea", 
-                "Eurynotoidiformes", "Caulkicephalus", "Jidapterus", 
-                "Huaxiapterus", "Sinopterus", "Caupedactylus", "Tupandactylus")
+                "Eurynotoidiformes", "Alanqa", "Angustinaripterus", 
+                "Aralazhdarcho", "Archaeoistiodactylus", "Bakonydraco", 
+                "Batrachognathus", "Beipiaopterus", "Boreopterus", 
+                "Cathayopterus", "Caulkicephalus", "Caupedactylus", 
+                "Changchengopterus", "Chaoyangopterus", "Coloborhynchus", 
+                "Darwinopterus", "Dendrorhynchoides", "Dsungaripterus", 
+                "Elanodactylus", "Eoazhdarcho", "Eopteranodon", "Eosipterus", 
+                "Eurazhdarcho", "Europejara", "Feilongus", "Fenghuangopterus", 
+                "Gegepterus", "Gladocephaloideus", "Guidraco", "Haopterus", 
+                "Harpactognathus", "Hatzegopteryx", "Hongshanopterus", 
+                "Huanhepterus", "Huaxiapterus", "Istiodactylus", "Jeholopterus", 
+                "Jianchangnathus", "Jianchangopterus", "Jidapterus", 
+                "Kepodactylus", "Kunpengopterus", "Lacusovagus", 
+                "Liaoningopterus", "Liaoxipterus", "Lonchognathosaurus", 
+                "Ludodactylus", "Mesadactylus", "Moganopterus", "Montanazdarcho", 
+                "Navajodactylus", "Nemicolopterus", "Ningchengopterus", 
+                "Noripterus", "Nurhachius", "Piksi", "Prejanopterus", 
+                "Pterodaustro", "Pterofiltus", "Pterorhynchus", "Qinglongopterus", 
+                "Quetzalcoatlus", "Rhamphinion", "Sericipterus", "Shenzhoupterus", 
+                "Sinopterus", "Sordes", "Tendaguripterus", "Tupandactylus", 
+                "Vectidraco", "Wukongopterus", "Yixianopterus", "Zhejiangopterus", 
+                "Zhenyuanopterus", "Yanornithiformes")
 
 # Most tetrapods are terrestrial, so remove by default:
 tetrapods <- c("Mammalia", "Reptilia", "Amphibia")
@@ -490,19 +521,19 @@ tetrapods <- c("Mammalia", "Reptilia", "Amphibia")
 marine.exceptions <- c("Chelonioidea", "Ophidiomorpha", "Mosasauroidea", 
                        "Mosasauria", "Thalattosauria", "Sauropterygia", 
                        "Ichthyopterygia", "Mesoeucrocodylia", "Pterosauria", 
-                       "Hesperornithiformes", "Ichthyornithiformes", 
-                       "Sphenisciformes", "Procellariiformes", "Pelecaniformes", 
-                       "Pelagornithidae", "Plotopteridae", "Charadriiformes", 
-                       "Cetacea", "Sirenia", "Pinnipedia", "Desmostylia", 
-                       "Ariidae", "Plotosidae", "Archaeoceti", "Mysticeti", 
-                       "Odontoceti", "Diploaspididae", "Mycteropidae", 
-                       "Pterygotidae", "Woodwardopteridae", "Waeringopteroidea",
-                       "Eurypterina", "Limulina", "Stylonurina", 
-                       "Trematosauridae", "Aerotitan", "Aetodactylus", 
-                       "Anhanguera", "Anurognathus", "Arambourgiania", 
-                       "Ardeadactylus", "Arthurdactylus", "Aurorazhdarcho", 
-                       "Aussiedraco", "Austriadactylus", "Azhdarcho", 
-                       "Barbosania", "Bellubrunnus", "Bennettazhia", 
+                       "Hesperornithiformes", "Ichthyornithiformes", "Lari",
+                       "Suliformes", "Sphenisciformes", "Procellariiformes", 
+                       "Pelecaniformes", "Pelagornithidae", "Plotopteridae", 
+                       "Charadriiformes", "Cetacea", "Sirenia", "Pinnipedia", 
+                       "Desmostylia", "Ariidae", "Plotosidae", "Archaeoceti", 
+                       "Mysticeti", "Odontoceti", "Diploaspididae", 
+                       "Mycteropidae", "Pterygotidae", "Woodwardopteridae", 
+                       "Waeringopteroidea", "Eurypterina", "Limulina", 
+                       "Stylonurina", "Trematosauridae", "Aerotitan", 
+                       "Aetodactylus", "Anhanguera", "Anurognathus", 
+                       "Arambourgiania", "Ardeadactylus", "Arthurdactylus", 
+                       "Aurorazhdarcho", "Aussiedraco", "Austriadactylus", 
+                       "Azhdarcho", "Barbosania", "Bellubrunnus", "Bennettazhia", 
                        "Bogolubovia", "Brasileodactylus", "Cacibupteryx", 
                        "Camposipterus", "Campylognathoides", "Carniadactylus", 
                        "Caviramus", "Cearadactylus", "Cimoliopterus", 
@@ -512,15 +543,16 @@ marine.exceptions <- c("Chelonioidea", "Ophidiomorpha", "Mosasauroidea",
                        "Germanodactylus", "Gnathosaurus", "Herbstosaurus", 
                        "Lonchodectes", "Lonchodraco", "Microtuban", 
                        "Muzquizopteryx", "Mythunga", "Nesodactylus", 
-                       "Normannognathus", "Nyctosaurus", "Nyctosaurus", 
-                       "Ornithocheirus", "Ornithostoma", "Parapsicephalus", 
-                       "Peteinosaurus", "Phosphatodraco", "Plataleorhynchus", 
-                       "Preondactylus", "Pteranodon", "Pterodactylus", 
-                       "Rhamphocephalus", "Rhamphorhynchus", "Santanadactylus", 
-                       "Scaphognathus", "Tapejara", "Thalassodromeus", 
-                       "Tupuxuara", "Uktenadactylus", "Unwindia", "Volgadraco", 
-                       "Wenupteryx", "Ornithocheiridae", "Pteranodontidae", 
-                       "Nyctosauridae", "Lonchodectidae", "Tapejaridae")
+                       "Normannognathus", "Nyctosaurus", "Ornithocheirus", 
+                       "Ornithostoma", "Parapsicephalus", "Peteinosaurus", 
+                       "Phosphatodraco", "Plataleorhynchus", "Preondactylus", 
+                       "Pteranodon", "Pterodactylus", "Rhamphocephalus", 
+                       "Rhamphorhynchus", "Santanadactylus", "Scaphognathus", 
+                       "Tapejara", "Thalassodromeus", "Tupuxuara", 
+                       "Uktenadactylus", "Unwindia", "Volgadraco", "Wenupteryx", 
+                       "Ornithocheiridae", "Pteranodontidae", "Nyctosauridae", 
+                       "Lonchodectidae", "Tapejaridae", "Pterodactyloidea", 
+                       "Rhamphorhynchoidea")
 # Pterosaur genus list from Dean, Mannion, and Butler (2016, Palaeontology,
 # Appendix S1) and family list from Bestwick, Unwin, Butler, Henderson, and
 # Purnell (2018, Biological Reviews).
@@ -544,7 +576,7 @@ beepr::beep()
 # Remove confirmed form taxa (ammonoid aptychi and dissociated crinoid
 # columnals, holdfasts, and anal sacs). Including these "genera" would
 # artificially inflate standing genus richness. (Also including some non-marine
-# pterosaurs that the code above does not remove.)
+# birds and pterosaurs the code above does not remove.)
 known.forms <- c("Aptychus", "Cornaptychus", "Crassaptychus", "Granulaptychus", 
                  "Laevaptychus", "Laevicornaptychus", "Laevilamellaptychus", 
                  "Lamellaptychus", "Lissaptychus", "Praestriaptychus", 
@@ -561,9 +593,30 @@ known.forms <- c("Aptychus", "Cornaptychus", "Crassaptychus", "Granulaptychus",
                  "Pentagonocyclicus", "Pentaridica", "Preptopremnum", 
                  "Salairocrinus", "Schyschcatocrinus", "Stenocrinus", 
                  "Tetragonocyclicus", "Tetralobocrinus", "Tjeecrinus", 
-                 "Zeravschanocrinus", "Entrochus", "Caulkicephalus", 
-                 "Jidapterus", "Huaxiapterus", "Sinopterus", "Caupedactylus", 
-                 "Tupandactylus")
+                 "Zeravschanocrinus", "Entrochus", "Alanqa", "Angustinaripterus", 
+                 "Aralazhdarcho", "Archaeoistiodactylus", "Bakonydraco", 
+                 "Batrachognathus", "Beipiaopterus", "Boreopterus", 
+                 "Cathayopterus", "Caulkicephalus", "Caupedactylus", 
+                 "Changchengopterus", "Chaoyangopterus", "Coloborhynchus", 
+                 "Darwinopterus", "Dendrorhynchoides", "Dsungaripterus", 
+                 "Elanodactylus", "Eoazhdarcho", "Eopteranodon", "Eosipterus", 
+                 "Eurazhdarcho", "Europejara", "Feilongus", "Fenghuangopterus", 
+                 "Gegepterus", "Gladocephaloideus", "Guidraco", "Haopterus", 
+                 "Harpactognathus", "Hatzegopteryx", "Hongshanopterus", 
+                 "Huanhepterus", "Huaxiapterus", "Istiodactylus", 
+                 "Jeholopterus", "Jianchangnathus", "Jianchangopterus", 
+                 "Jidapterus", "Kepodactylus", "Kunpengopterus", "Lacusovagus", 
+                 "Liaoningopterus", "Liaoxipterus", "Lonchognathosaurus", 
+                 "Ludodactylus", "Mesadactylus", "Moganopterus", "Montanazdarcho", 
+                 "Navajodactylus", "Nemicolopterus", "Ningchengopterus", 
+                 "Noripterus", "Nurhachius", "Piksi", "Prejanopterus", 
+                 "Pterodaustro", "Pterofiltus", "Pterorhynchus", "Qinglongopterus", 
+                 "Quetzalcoatlus", "Rhamphinion", "Sericipterus", "Shenzhoupterus", 
+                 "Sinopterus", "Sordes", "Tendaguripterus", "Tupandactylus", 
+                 "Vectidraco", "Wukongopterus", "Yixianopterus", "Zhejiangopterus", 
+                 "Zhenyuanopterus", "Turnicidae", "Glareolidae", "Burhinidae", 
+                 "Jacanidae", "Pedionomidae", "Thinocoridae", "Ardeidae", 
+                 "Protoplotidae", "Brodavis")
 wh.forms <- which(marine.taxa$Genus %in% known.forms | 
                     marine.taxa$Subgenus %in% known.forms)
 marine.taxa <- marine.taxa[-wh.forms, ]
