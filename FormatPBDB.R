@@ -511,7 +511,7 @@ non.marine <- c("Arachnida", "Insecta", "Collembola", "Palaeophreatoicidae",
                 "Quetzalcoatlus", "Rhamphinion", "Sericipterus", "Shenzhoupterus", 
                 "Sinopterus", "Sordes", "Tendaguripterus", "Tupandactylus", 
                 "Vectidraco", "Wukongopterus", "Yixianopterus", "Zhejiangopterus", 
-                "Zhenyuanopterus", "Yanornithiformes")
+                "Zhenyuanopterus")
 
 # Most tetrapods are terrestrial, so remove by default:
 tetrapods <- c("Mammalia", "Reptilia", "Amphibia")
@@ -521,19 +521,19 @@ tetrapods <- c("Mammalia", "Reptilia", "Amphibia")
 marine.exceptions <- c("Chelonioidea", "Ophidiomorpha", "Mosasauroidea", 
                        "Mosasauria", "Thalattosauria", "Sauropterygia", 
                        "Ichthyopterygia", "Mesoeucrocodylia", "Pterosauria", 
-                       "Hesperornithiformes", "Ichthyornithiformes", "Lari",
-                       "Suliformes", "Sphenisciformes", "Procellariiformes", 
-                       "Pelecaniformes", "Pelagornithidae", "Plotopteridae", 
-                       "Charadriiformes", "Cetacea", "Sirenia", "Pinnipedia", 
-                       "Desmostylia", "Ariidae", "Plotosidae", "Archaeoceti", 
-                       "Mysticeti", "Odontoceti", "Diploaspididae", 
-                       "Mycteropidae", "Pterygotidae", "Woodwardopteridae", 
-                       "Waeringopteroidea", "Eurypterina", "Limulina", 
-                       "Stylonurina", "Trematosauridae", "Aerotitan", 
-                       "Aetodactylus", "Anhanguera", "Anurognathus", 
-                       "Arambourgiania", "Ardeadactylus", "Arthurdactylus", 
-                       "Aurorazhdarcho", "Aussiedraco", "Austriadactylus", 
-                       "Azhdarcho", "Barbosania", "Bellubrunnus", "Bennettazhia", 
+                       "Hesperornithiformes", "Ichthyornithiformes", 
+                       "Sphenisciformes", "Procellariiformes", "Pelecaniformes", 
+                       "Pelagornithidae", "Plotopteridae", "Charadriiformes", 
+                       "Cetacea", "Sirenia", "Pinnipedia", "Desmostylia", 
+                       "Ariidae", "Plotosidae", "Archaeoceti", "Mysticeti", 
+                       "Odontoceti", "Diploaspididae", "Mycteropidae", 
+                       "Pterygotidae", "Woodwardopteridae", "Waeringopteroidea",
+                       "Eurypterina", "Limulina", "Stylonurina", 
+                       "Trematosauridae", "Aerotitan", "Aetodactylus", 
+                       "Anhanguera", "Anurognathus", "Arambourgiania", 
+                       "Ardeadactylus", "Arthurdactylus", "Aurorazhdarcho", 
+                       "Aussiedraco", "Austriadactylus", "Azhdarcho", 
+                       "Barbosania", "Bellubrunnus", "Bennettazhia", 
                        "Bogolubovia", "Brasileodactylus", "Cacibupteryx", 
                        "Camposipterus", "Campylognathoides", "Carniadactylus", 
                        "Caviramus", "Cearadactylus", "Cimoliopterus", 
@@ -576,7 +576,7 @@ beepr::beep()
 # Remove confirmed form taxa (ammonoid aptychi and dissociated crinoid
 # columnals, holdfasts, and anal sacs). Including these "genera" would
 # artificially inflate standing genus richness. (Also including some non-marine
-# birds and pterosaurs the code above does not remove.)
+# pterosaurs that the code above does not remove.)
 known.forms <- c("Aptychus", "Cornaptychus", "Crassaptychus", "Granulaptychus", 
                  "Laevaptychus", "Laevicornaptychus", "Laevilamellaptychus", 
                  "Lamellaptychus", "Lissaptychus", "Praestriaptychus", 
@@ -614,9 +614,7 @@ known.forms <- c("Aptychus", "Cornaptychus", "Crassaptychus", "Granulaptychus",
                  "Quetzalcoatlus", "Rhamphinion", "Sericipterus", "Shenzhoupterus", 
                  "Sinopterus", "Sordes", "Tendaguripterus", "Tupandactylus", 
                  "Vectidraco", "Wukongopterus", "Yixianopterus", "Zhejiangopterus", 
-                 "Zhenyuanopterus", "Turnicidae", "Glareolidae", "Burhinidae", 
-                 "Jacanidae", "Pedionomidae", "Thinocoridae", "Ardeidae", 
-                 "Protoplotidae", "Brodavis")
+                 "Zhenyuanopterus")
 wh.forms <- which(marine.taxa$Genus %in% known.forms | 
                     marine.taxa$Subgenus %in% known.forms)
 marine.taxa <- marine.taxa[-wh.forms, ]
