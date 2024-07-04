@@ -521,13 +521,10 @@ tetrapods <- c("Mammalia", "Reptilia", "Amphibia")
 marine.exceptions <- c("Chelonioidea", "Ophidiomorpha", "Mosasauroidea", 
                        "Mosasauria", "Thalattosauria", "Sauropterygia", 
                        "Ichthyopterygia", "Mesoeucrocodylia", "Pterosauria", 
-                       "Hesperornithiformes", "Ichthyornithiformes", 
-                       "Sphenisciformes", "Procellariiformes", "Pelecaniformes", 
-                       "Pelagornithidae", "Plotopteridae", "Charadriiformes", 
                        "Cetacea", "Sirenia", "Pinnipedia", "Desmostylia", 
                        "Ariidae", "Plotosidae", "Archaeoceti", "Mysticeti", 
                        "Odontoceti", "Diploaspididae", "Mycteropidae", 
-                       "Pterygotidae", "Woodwardopteridae", "Waeringopteroidea",
+                       "Pterygotidae", "Woodwardopteridae", "Waeringopteroidea", 
                        "Eurypterina", "Limulina", "Stylonurina", 
                        "Trematosauridae", "Aerotitan", "Aetodactylus", 
                        "Anhanguera", "Anurognathus", "Arambourgiania", 
@@ -552,10 +549,18 @@ marine.exceptions <- c("Chelonioidea", "Ophidiomorpha", "Mosasauroidea",
                        "Uktenadactylus", "Unwindia", "Volgadraco", "Wenupteryx", 
                        "Ornithocheiridae", "Pteranodontidae", "Nyctosauridae", 
                        "Lonchodectidae", "Tapejaridae", "Pterodactyloidea", 
-                       "Rhamphorhynchoidea")
+                       "Rhamphorhynchoidea", "Hesperornithiformes", 
+                       "Ichthyornithiformes", "Sphenisciformes", 
+                       "Procellariiformes", "Pelecaniformes", "Pelagornithidae", 
+                       "Plotopteridae", "Charadriiformes", "Phaethontiformes", 
+                       "Odontopterygiformes", "Lari", "Xema", "Larus", 
+                       "Pagophila", "Fregatidae", "Sulidae", "Gulosus",
+                       "Nannopterum", "Phalacrocorax", "Piscator", 
+                       "Poikilocarbo", "Urile")
 # Pterosaur genus list from Dean, Mannion, and Butler (2016, Palaeontology,
 # Appendix S1) and family list from Bestwick, Unwin, Butler, Henderson, and
-# Purnell (2018, Biological Reviews).
+# Purnell (2018, Biological Reviews). Birds provided from Alex Clark (Field
+# Museum).
 
 # Extract the known marine taxa (in lineages that are typically non-marine):
 sq <- 1:nrow(x)
@@ -576,7 +581,8 @@ beepr::beep()
 # Remove confirmed form taxa (ammonoid aptychi and dissociated crinoid
 # columnals, holdfasts, and anal sacs). Including these "genera" would
 # artificially inflate standing genus richness. (Also including some non-marine
-# pterosaurs that the code above does not remove.)
+# pterosaurs and birds that the code above does not remove. Birds provided from
+# Alex Clark at Field Museum).
 known.forms <- c("Aptychus", "Cornaptychus", "Crassaptychus", "Granulaptychus", 
                  "Laevaptychus", "Laevicornaptychus", "Laevilamellaptychus", 
                  "Lamellaptychus", "Lissaptychus", "Praestriaptychus", 
@@ -610,11 +616,18 @@ known.forms <- c("Aptychus", "Cornaptychus", "Crassaptychus", "Granulaptychus",
                  "Ludodactylus", "Mesadactylus", "Moganopterus", "Montanazdarcho", 
                  "Navajodactylus", "Nemicolopterus", "Ningchengopterus", 
                  "Noripterus", "Nurhachius", "Piksi", "Prejanopterus", 
-                 "Pterodaustro", "Pterofiltus", "Pterorhynchus", "Qinglongopterus", 
-                 "Quetzalcoatlus", "Rhamphinion", "Sericipterus", "Shenzhoupterus", 
-                 "Sinopterus", "Sordes", "Tendaguripterus", "Tupandactylus", 
-                 "Vectidraco", "Wukongopterus", "Yixianopterus", "Zhejiangopterus", 
-                 "Zhenyuanopterus")
+                 "Pterodaustro", "Pterofiltus", "Pterorhynchus", 
+                 "Qinglongopterus", "Quetzalcoatlus", "Rhamphinion", 
+                 "Sericipterus", "Shenzhoupterus", "Sinopterus", "Sordes", 
+                 "Tendaguripterus", "Tupandactylus", "Vectidraco", 
+                 "Wukongopterus", "Yixianopterus", "Zhejiangopterus", 
+                 "Zhenyuanopterus", "Turnicidae", "Glareolidae", "Burhinidae", 
+                 "Jacanidae", "Pedionomidae", "Thinocoridae", "Ardeidae",
+                 "Protoplotidae", "Threskiornithidae", "Balaenicipitidae",
+                 "Scopidae", "Anhingidae", "Borvocarbo", "Leucocarbo", 
+                 "Limicorallus", "Microcarbo", "Hydrocorax", "Miocorax",
+                 "Nambashag", "Nectornis", "Oligocorax", "Paracorax", 
+                 "Valenticarbo")
 wh.forms <- which(marine.taxa$Genus %in% known.forms | 
                     marine.taxa$Subgenus %in% known.forms)
 marine.taxa <- marine.taxa[-wh.forms, ]
