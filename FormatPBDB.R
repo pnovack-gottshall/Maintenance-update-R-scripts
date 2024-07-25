@@ -556,7 +556,8 @@ marine.exceptions <- c("Chelonioidea", "Ophidiomorpha", "Mosasauroidea",
                        "Odontopterygiformes", "Lari", "Xema", "Larus", 
                        "Pagophila", "Fregatidae", "Sulidae", "Gulosus",
                        "Nannopterum", "Phalacrocorax", "Piscator", 
-                       "Poikilocarbo", "Urile")
+                       "Poikilocarbo", "Urile", "Benggwigwishingasuchus",
+                       "Qianosuchus", "Ticinosuchus")
 # Pterosaur genus list from Dean, Mannion, and Butler (2016, Palaeontology,
 # Appendix S1) and family list from Bestwick, Unwin, Butler, Henderson, and
 # Purnell (2018, Biological Reviews). Birds provided from Alex Clark (Field
