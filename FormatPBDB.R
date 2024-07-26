@@ -557,11 +557,11 @@ marine.exceptions <- c("Chelonioidea", "Ophidiomorpha", "Mosasauroidea",
                        "Pagophila", "Fregatidae", "Sulidae", "Gulosus",
                        "Nannopterum", "Phalacrocorax", "Piscator", 
                        "Poikilocarbo", "Urile", "Benggwigwishingasuchus",
-                       "Qianosuchus", "Ticinosuchus")
+                       "Qianosuchus", "Ticinosuchus", "Diandongosuchus")
 # Pterosaur genus list from Dean, Mannion, and Butler (2016, Palaeontology,
 # Appendix S1) and family list from Bestwick, Unwin, Butler, Henderson, and
 # Purnell (2018, Biological Reviews). Birds provided from Alex Clark (Field
-# Museum).
+# Museum). 
 
 # Extract the known marine taxa (in lineages that are typically non-marine):
 sq <- 1:nrow(x)
