@@ -511,7 +511,8 @@ non.marine <- c("Arachnida", "Insecta", "Collembola", "Palaeophreatoicidae",
                 "Quetzalcoatlus", "Rhamphinion", "Sericipterus", "Shenzhoupterus", 
                 "Sinopterus", "Sordes", "Tendaguripterus", "Tupandactylus", 
                 "Vectidraco", "Wukongopterus", "Yixianopterus", "Zhejiangopterus", 
-                "Zhenyuanopterus", "Screbinodus", "Strepsodus")
+                "Zhenyuanopterus", "Screbinodus", "Strepsodus", "Tardigrada",
+                "Onychophora")
 
 # Most tetrapods are terrestrial, so remove by default:
 tetrapods <- c("Mammalia", "Reptilia", "Amphibia")
@@ -557,7 +558,17 @@ marine.exceptions <- c("Chelonioidea", "Ophidiomorpha", "Mosasauroidea",
                        "Pagophila", "Fregatidae", "Sulidae", "Gulosus",
                        "Nannopterum", "Phalacrocorax", "Piscator", 
                        "Poikilocarbo", "Urile", "Benggwigwishingasuchus",
-                       "Qianosuchus", "Ticinosuchus", "Diandongosuchus")
+                       "Qianosuchus", "Ticinosuchus", "Diandongosuchus", 
+                       "Aysheaia", "Aysheaidae", "Hallucigeniidae", "Thanahita", 
+                       "Cardiodictyon", "Microdictyon", "Carbotubulus",
+                       "Hallucigenia", "Hallucishaniida", "Collinsovermis", 
+                       "Luolishaniida", "Collinsovermidae", "Acinocricus", 
+                       "Collinsium", "Entothyreos", "Facivermis", "Ovatiovermis",
+                       "Luolishania", "Onychodictyon", "Paucipodia", "Diania",
+                       "Antennacanthopodia", "Helenodora", "Xenusion", "Hadranax",
+                       "Jianshanopodia", "Megadictyon", "Siberion", "Pambdelurion",
+                       "Kerygmachela", "Xenuria", "Xenusiida", "Xenusiidae", 
+                       "Orstenotubulus", "Rushtonites")
 # Pterosaur genus list from Dean, Mannion, and Butler (2016, Palaeontology,
 # Appendix S1) and family list from Bestwick, Unwin, Butler, Henderson, and
 # Purnell (2018, Biological Reviews). Birds provided from Alex Clark (Field
