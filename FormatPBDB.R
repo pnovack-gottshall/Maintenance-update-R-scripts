@@ -568,11 +568,12 @@ marine.exceptions <- c("Chelonioidea", "Ophidiomorpha", "Mosasauroidea",
                        "Antennacanthopodia", "Helenodora", "Xenusion", "Hadranax",
                        "Jianshanopodia", "Megadictyon", "Siberion", "Pambdelurion",
                        "Kerygmachela", "Xenuria", "Xenusiida", "Xenusiidae", 
-                       "Orstenotubulus", "Rushtonites")
+                       "Orstenotubulus", "Rushtonites", "Tubiluchus", "Ilyodes")
 # Pterosaur genus list from Dean, Mannion, and Butler (2016, Palaeontology,
 # Appendix S1) and family list from Bestwick, Unwin, Butler, Henderson, and
 # Purnell (2018, Biological Reviews). Birds provided from Alex Clark (Field
-# Museum). 
+# Museum). Early panarthropods ('lopopods', onychophorans, etc.) from Aria and
+# Caron (2024) and  Smith and Ortega-Hernandez (2014).
 
 # Extract the known marine taxa (in lineages that are typically non-marine):
 sq <- 1:nrow(x)
