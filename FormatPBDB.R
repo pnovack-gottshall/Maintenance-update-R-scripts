@@ -310,7 +310,7 @@ prep <- sfLapply(x = gen.seq, fun = prep.PBDB, gen.order = gen.order,
                  which.gsg = which.gsg, pbdb = pbdb) # Version without load-balancing
 sfStop()
 output <- data.table::rbindlist(prep)
-(Sys.time() - t.start0)  # ~ 13 minutes with 8 CPUs, ~7 minutes w/ 20 cores
+(Sys.time() - t.start0)  # ~ 13 minutes with 8 CPUs, ~7 minutes w/ 20 cores, 3 minutes w/ 112 cores
 head(output)
 beepr::beep(3)
 
