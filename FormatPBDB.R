@@ -185,9 +185,9 @@ table(duplicated(rownames(pbdb), rownames(pbdb_add_synonyms)))
 # subgenus components.
 prep.PBDB <- function(g = 1, gen.order = NULL, which.gsg = NULL, pbdb = NULL) {
   scales <- c("phylum", "subphylum", "superclass", "class", "subclass", 
-              "infraclass", "superorder", "order", "infraorder", "section",
-              "subsection", "suborder", "infraorder", "superfamily", "family", 
-              "subfamily", "genus", "subgenus")
+              "infraclass", "superorder", "order", "suborder", "infraorder", 
+              "section", "subsection", "superfamily", "family", "subfamily", 
+              "genus", "subgenus")
   out <- data.frame(Phylum = character(1), Subphylum = character(1), 
                     Superclass = character(1), Class = character(1), 
                     Subclass = character(1), Infraclass = character(1), 
