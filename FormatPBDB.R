@@ -187,18 +187,21 @@ prep.PBDB <- function(g = 1, gen.order = NULL, which.gsg = NULL, pbdb = NULL) {
   scales <- c("phylum", "subphylum", "superclass", "class", "subclass", 
               "infraclass", "superorder", "order", "suborder", "infraorder", 
               "section", "subsection", "superfamily", "family", "subfamily", 
-              "genus", "subgenus")
+              "tribe", "genus", "subgenus")
   out <- data.frame(Phylum = character(1), Subphylum = character(1), 
                     Superclass = character(1), Class = character(1), 
                     Subclass = character(1), Infraclass = character(1), 
                     Superorder = character(1), Order = character(1), 
                     Suborder = character(1), Infraorder = character(1), 
-                    Superfamily = character(1), Family = character(1), 
-                    Subfamily = character(1), Genus = character(1), 
-                    Subgenus = character(1), Species = "sp.", 
+                    Section = character(1), Subsection = character(1), 
+                    Superfamily = character(1),Family = character(1), 
+                    Subfamily = character(1), Tribe =  character(1), 
+                    Genus = character(1), Subgenus = character(1), 
+                    Species = "sp.", PBDBNumber = integer(1), 
                     stringsAsFactors = FALSE)
   out$Genus <- as.character(pbdb$accepted_name[which.gsg][gen.order[g]])
   wh <- which.gsg[gen.order[g]]
+  out$PBDBNumber <- pbdb$taxon_no[wh]
   out$max_ma <- as.numeric(pbdb$firstapp_max_ma[wh])
   out$min_ma <- as.numeric(pbdb$lastapp_min_ma[wh])
   # Implement 'Pull-of-the-Recent' extension:
