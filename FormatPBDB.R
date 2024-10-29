@@ -516,7 +516,7 @@ non.marine <- c("Arachnida", "Insecta", "Collembola", "Palaeophreatoicidae",
                 "Sinopterus", "Sordes", "Tendaguripterus", "Tupandactylus", 
                 "Vectidraco", "Wukongopterus", "Yixianopterus", "Zhejiangopterus", 
                 "Zhenyuanopterus", "Screbinodus", "Strepsodus", "Tardigrada",
-                "Onychophora")
+                "Eutardigrada", "Onychophora", "Rhabdocoela")
 
 # Most tetrapods are terrestrial, so remove by default:
 tetrapods <- c("Mammalia", "Reptilia", "Amphibia")
