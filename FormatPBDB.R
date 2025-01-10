@@ -762,6 +762,9 @@ dim(post)
 #     rank (as ophiocistioids currently lack order names), and place in class 
 #     Holothuroidea.
 
+#   - Following WoRMS, elevating Aplacophora to superclass rank and 
+#     Caudofoveata and Solenogastres to class rank.
+
 #  c. CHANGE rank names for order Rhombifera (Subphylum Pelmatozoa, Class
 #     Cystoidea, Subclass Hydrophoridea) to Class 'rhombifera' (Subphylum 
 #     Blastozoa, Order UNCERTAIN), and CHANGE Subphylum Pelmatozoa to Blastozoa.
