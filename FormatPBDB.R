@@ -756,6 +756,8 @@ dim(post)
 
 #   - Treat unranked, informal priapulid group Archaeopriapulida as an order.
 
+#   - Treat unranked Vetulicystida as a class.
+
 #   - Current consensus (Smith and Reich, 2013; Rahman, et al., 2019) considers 
 #     the ophiocistioids as a branch of very early stem holothuroids. To 
 #     maintain them as a distinct group, reduce class Ophiocistioidea to order 
