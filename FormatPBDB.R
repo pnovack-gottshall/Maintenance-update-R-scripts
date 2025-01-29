@@ -1071,6 +1071,9 @@ dim(post)
 # ai. Use class Cincta instead of outdated class Homostelea. Note cinctans 
 #     currently lack names for orders.
 
+# aj. Because PBDB lacks infraphylum ranks, treating infraphylum Agnatha as 
+#     superclass.
+
 # (6) Run code as usual in "PropogateSizes.R" or "PropogateLifeHabits.R", but
 # resaving as postX_withPBDB" file name. Make sure to add new IDNumbers to the
 # new PBDB entries!
