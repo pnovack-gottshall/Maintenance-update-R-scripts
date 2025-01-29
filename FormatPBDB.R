@@ -113,7 +113,7 @@ library(parallel)    # v. 4.2.2
 
 ## DOWNLOAD FROM PBDB ----------------------------------------------------------
 
-# Easier if paste link into URL and save manually 
+# Easier if paste URL link into browser and save manually 
 
 # https://paleobiodb.org/data1.2/taxa/list.csv?base_name=Metazoa&rank=min_subgenus&variant=all&show=app
 # pbdb <- read.csv("https://paleobiodb.org/data1.2/taxa/list.csv?base_name=Metazoa&rank=min_subgenus&variant=all&show=app")
