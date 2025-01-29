@@ -1072,7 +1072,7 @@ dim(post)
 #     currently lack names for orders.
 
 # aj. Because PBDB lacks infraphylum ranks, treating infraphylum Agnatha as 
-#     superclass.
+#     superclass, but writing as "Agnatha" because likely paraphyletic.
 
 # (6) Run code as usual in "PropogateSizes.R" or "PropogateLifeHabits.R", but
 # resaving as postX_withPBDB" file name. Make sure to add new IDNumbers to the
