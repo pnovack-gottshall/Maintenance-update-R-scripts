@@ -450,11 +450,12 @@ head(x)
 # Remove terrestrial and non-marine taxa, but include marine tetrapods. List
 # modified from Bush and Bambach (2015) to explicitly include three cetacean
 # suborders (because Cetacea now listed within Order Artiodactyla in PBDB) and
-# known marine xiphosurans and eurypterids, and to exclude Myriapoda, 
-# Kannemeyeriiformes, Pelycosauria, Theriodontia, Therocephalia, 
-# freshwater Branchiopoda (= conchostrans, notostracans, cladocerans, etc.), and
-# all known arachnid taxa (because many arachnids are getting listed in the 
-# xiphosuran download).
+# known marine xiphosurans and eurypterids, and to exclude Myriapoda,
+# Kannemeyeriiformes, Pelycosauria, Theriodontia, Therocephalia, freshwater
+# Branchiopoda (= conchostrans, notostracans, cladocerans, etc.), all known
+# arachnid taxa (because many arachnids are getting listed in the xiphosuran
+# download), and a variety of fishes, tetrapods, and others. WoRMS relied
+# heavily for extant taxa.
 non.marine <- c("Arachnida", "Insecta", "Collembola", "Palaeophreatoicidae",
                 "Limnocytheridae", "Darwinuloidea", "Cypridoidea", 
                 "Cytherideidae", "Assimineidae", "Stenothyridae", "Hydrobiidae", 
@@ -516,7 +517,114 @@ non.marine <- c("Arachnida", "Insecta", "Collembola", "Palaeophreatoicidae",
                 "Sinopterus", "Sordes", "Tendaguripterus", "Tupandactylus", 
                 "Vectidraco", "Wukongopterus", "Yixianopterus", "Zhejiangopterus", 
                 "Zhenyuanopterus", "Screbinodus", "Strepsodus", "Tardigrada",
-                "Eutardigrada", "Onychophora", "Rhabdocoela")
+                "Eutardigrada", "Onychophora", "Rhabdocoela", "Hiodontiformes", 
+                "Hiodontidae", "Cyprinodontidae","Cyprinodontiformes", 
+                "Characinidae", "Characidae", "Crenuchidae", "Percopsiformes",
+                "Percichthyidae", "Sinipercidae", "Toxotidae", "Platanistidae",
+                "Lipotidae", "Iniidae", "Phyllolepida", "Adelospondyli", 
+                "Captorhinomorpha", "Eupelycosauria", "Lysorophia", 
+                "Morganucodonta", "Amphibamidae", "Peliontidae", "Phyllospondyli",
+                "Trilophosauridae", "Aistopoda", "Branchiosauria", "Chroniosuchia",
+                "Conodectiformes", "Diadectoidea", "Diadectidae", "Embolomeri",
+                "Anthracosauroidea", "Anteosauria", "Microuranioidea", 
+                "Microuraniidae", "Niaftasuchoidea", "Niaftasuchidae", 
+                "Rhopalodontoidea", "Rhopalodontidae", "Estemmenosuchidae",
+                "Inostranceviidae", "Phthinosuchidae", "Rubidgeoidea", 
+                "Tapinocephaloidea", "Tapinocephalidae", "Ulemosauridae", 
+                "Titanosuchoidea", "Titanosuchidae", "Alrausuchidae", 
+                "Brasilodontidae", "Brithopodidae", "Burnetiidae", 
+                "Charassognathidae", "Chiniquodontidae", "Chronoperatidae",
+                "Cistecynodontidae", "Cryptodontidae", "Diademodontidae", 
+                "Dimacrodontidae", "Driveriidae", "Dromatheriidae", "Dviniidae",
+                "Ecteniniidae", "Edaphosauridae", "Galesauridae", "Gorgonopidae",
+                "Haramiyaviidae", "Haramiyidae", "Homodontosauridae", 
+                "Ictidorhinidae", "Kuehneotheriidae", "Lumkuiidae", "Madysauridae",
+                "Mastersoniidae", "Nikkasauridae", "Ophiacodontidae", 
+                "Probainognathidae", "Procynosuchidae", "Sphenacodontidae",
+                "Tapinocephalidae", "Tappenosauridae", "Therioherpetidae",
+                "Thrinaxodontidae", "Traversodontidae", "Trirachodontidae", 
+                "Tritheledontidae", "Tritylodontidae", "Varanopidae", 
+                "Gephyrostegida", "Gephyrostegidae", "Seymouriamorpha", 
+                "Kotlassioidea", "Seymourioidea", "Baphetoidea", "Baphetidae",
+                "Spathicephalidae", "Acanthostegidae", "Archeriidae", 
+                "Brachystelechidae", "Caerorhachidae", "Canowindridae", "Caseidae",
+                "Colosteidae", "Crassigyrinidae", "Diadectidae", 
+                "Elginerpetontidae", "Eoherpetontidae", "Eothyrididae", 
+                "Gymnarthridae", "Ichthyostegidae", "Limnoscelidae", 
+                "Mesosauridae", "Molgophidae", "Pantylidae", "Proterogyrinidae",
+                "Tseajaiidae", "Whatcheeriidae", "Aeduelliformes", "Aeduellidae",
+                "Saurodipterini", "Crossopterygii", "Discordichthyidae", 
+                "Discordichthyiformes", "Elonichthyiformes", "Acrolepidae", 
+                "Acrolepididae", "Eigiliidae", "Elonichthyidae", "Gonatodidae",
+                "Varialepididae", "Eurynotiformes", "Amphicentridae", 
+                "Styracopteridae", "Oligopleuridae", "Dicellopygidae", 
+                "Rhabdolepidae", "Rhadinichthyidae", "Redfieldioidei", 
+                "Redfieldiidae", "Atherstoniidae", "Brazilichthyidae", 
+                "Canobiidae", "Cosmoptychiidae", "Dwykiidae", "Holuridae",
+                "Igornichthyidae", "Scanilepididae", "Sceletophoridae", 
+                "Trissolepidae", "Sphaerolepis", "Paramblypteriformes",
+                "Pholidopleuridae", "Pholidopleuriformes", "Brookvaliidae",
+                "Redfieldiiformes", "Willomorichthyidae", "Rhadinichthyiformes",
+                "Lepisosteidae", "Coregonidae", "Dictyopygidae", "Haplolepidae",
+                "Howqualepididae", "Karaunguriidae", "Turseoidae", "Hyriidina", 
+                "Hyrioidea", "Hyriidae", "Unionidina", "Unionoidea", "Unionidae", 
+                "Mullerioidea", "Mulleriidae", "Dendropupoidea", "Geophila", 
+                "Inoperculata", "Aillyidae", "Ferussaciidae", "Micractaeonidae",
+                "Clausilioidea", "Clausiliidae", "Filholiidae", "Palaeostoidae",
+                "Anadromidae", "Gastrodontoidea", "Gastrodontidae", "Oxychilidae",
+                "Pristilomatidae", "Helicarionoidea", "Ariophantidae", 
+                "Helicarionidae", "Urocyclidae", "Camaenidae", "Canariellidae",
+                "Cepolidae", "Elonidae", "Epiphragmophoridae", "Geomitridae",
+                "Helicodontidae", "Hygromiidae", "Labyrinthidae", "Polygyridae", 
+                "Pleurodontidae", "Sphincterochilidae", "Thysanophoridae", 
+                "Trichodiscinidae", "Trissexodontidae", "Xanthonychidae", 
+                "Ariantinae", "Murellinae", "Helicoidea", "Helicidae", 
+                "Allognathini", "Maculariini", "Thebini", "Helicini", "Limacoidea",
+                "Agriolimacidae", "Boettgerillidae", "Limacidae", "Vitrinidae",
+                "Oleacinoidea", "Oleacinidae", "Spiraxidae", "Orthalicoidea",
+                "Amphibulimidae", "Bothriembryontidae", "Bulimulidae", 
+                "Cyclodontinidae", "Megaspiridae", "Orthalicidae", "Simpulopsidae",
+                "Tomogeridae", "Parmacelloidea", "Parmacellidae", "Plectopyloidea",
+                "Plectopylidae", "Sculptariidae", "Punctoidea", "Charopidae", 
+                "Cystopeltidae", "Discidae", "Endodontidae", "Helicodiscidae", 
+                "Oopeltidae", "Oreohelicidae", "Punctidae", "Pupilloidea",
+                "Achatinellidae", "Agardhiellidae", "Amastridae", "Argnidae",
+                "Cerastidae", "Cochlicopidae", "Draparnaudiidae", "Enidae", 
+                "Fauxulidae", "Gastrocoptidae", "Lauriidae", "Odontocycladidae",
+                "Orculidae", "Pagodulinidae", "Partulidae", "Pleurodiscidae",
+                "Pupillidae", "Pyramidulidae", "Spelaeoconchidae", "Spelaeodiscidae",
+                "Strobilopsidae", "Valloniidae", "Vertiginidae", "Azecoidea", 
+                "Azecidae", "Arionoidei", "Arionoidea", "Anadenidae", 
+                "Ariolimacidae", "Arionidae", "Binneyidae", "Philomycidae", 
+                "Clausilioidei", "Limacoidei", "Oleacinoidei", "Haplotrematoidea",
+                "Haplotrematidae", "Orthalicoidei", "Chondrinoidea", "Chondrinidae",
+                "Truncatellinidae", "Dendropupoidea", "Anthracopupidae", 
+                "Dendropupidae", "Pupilloidea", "Pupilloidei", "Rhytidoidei", 
+                "Rhytidoidea", "Acavidae", "Caryodidae", "Clavatoridae", 
+                "Dorcasiidae", "Macrocyclidae", "Megomphicidae", "Odontostomidae",
+                "Rhyididae", "Strophocheilidae", "Vidaliellidae", "Succineoidei", 
+                "Athoracophoroidea", "Athoracophoridae", "Succineoidea", 
+                "Succineidae", "Sagdoidea", "Sagdidae", "Solaropsidae", 
+                "Zachrysiidae", "Helicoidei", "Trigonochlamydidae", 
+                "Trochomorphoidea", "Chronidae", "Dyakiidae", "Euconulidae", 
+                "Geotrochidae", "Microcystidae", "Staffordiidae", 
+                "Trochomorphidae", "Zonitoidea", "Archaeozonitidae", "Zonitidae",
+                "Testacelloidea", "Testacellidae", "Urocoptoidea", "Cerionidae",
+                "Epirobiidae", "Eucalodiidae", "Holospiridae", "Urocoptidae", 
+                "Acanthinulidae", "Grandipatulidae", "Grangerellidae", 
+                "Acroloxoidea", "Acroloxidae", "Lymnaeoidea", "Bulinidae",
+                "Burnupiidae", "Clivunellidae", "Lymnaeidae", "Physidae", 
+                "Planorbidae", "Hygrophila", "Chilinoidea", "Chilinidae", 
+                "Latiidae", "Lymnaeoidea", "Helminthoglyptidae", 
+                "Helminthoglyptinae", "Camaeninae", "Eloninae", "Klikiinae",
+                "Geomitrinae", "Helicellinae", "Ariantiinae", "Helcinae", 
+                "Murellinae", "Helicodintinae", "Lindholmiolinae", "Soosiinae",
+                "Hygromiinae", "Leptaxinae", "Metafruticolinae", "Trochulininae",
+                "Discolepinae", "Lucerninae", "Pleurodontinae", "Polygyrinae", 
+                "Triodopsinae", "Pseudoleptaxinae", "Sphincterochilinae",
+                "Miraverelliinae", "Trichodiscininae", "Gittenbergeriinae",
+                "Trissexodontinae", "Echinichinae", "Helminthoglyptinae", 
+                "Humboldtianinae", "Lysinoinae", "Monadeniinae", "Xanthonychinae")
 
 # Most tetrapods are terrestrial, so remove by default:
 tetrapods <- c("Mammalia", "Reptilia", "Amphibia")
@@ -572,12 +680,31 @@ marine.exceptions <- c("Chelonioidea", "Ophidiomorpha", "Mosasauroidea",
                        "Antennacanthopodia", "Helenodora", "Xenusion", "Hadranax",
                        "Jianshanopodia", "Megadictyon", "Siberion", "Pambdelurion",
                        "Kerygmachela", "Xenuria", "Xenusiida", "Xenusiidae", 
-                       "Orstenotubulus", "Rushtonites", "Tubiluchus", "Ilyodes")
+                       "Orstenotubulus", "Rushtonites", "Tubiluchus", "Ilyodes", 
+                       "Pontoporia", "Pontoporiidae", "Papahu", "Allodelphinidae",
+                       "Squalodelphinidae", "Squalodontidae", "Waipatiidae", 
+                       "Sauripteridae", "Tulerpetidae", "Megalichthys", 
+                       "Guildayichthyiformes", "Guildayichthyidae", 
+                       "Stratodontidae", "Iniomi", "Cyclolepidae", 
+                       "Luganoiiformes", "Luganoiidae", "Dorypteroidei", 
+                       "Dorypteridae", "Amblypteridae", "Palaeoniscidae", 
+                       "Pygopteridae", "Platysomidae", "Platysomoidei", 
+                       "Bobasatraniidae", "Bobasatraniiformes", "Boreolepidae",
+                       "Paphosisciformes", "Paphosiscidae", "Percomorphi", 
+                       "Elephenoridae", "Ptycholepiformes", "Ptycholepididae",
+                       "Saurichthyiformes", "Saurichthyidae", "Yelangichthyidae",
+                       "Scleroparei", "Tarrasiiformes", "Trachichthyiformes",
+                       "Anomalopidae", "Aesopichthyidae", "Centrolepidae",
+                       "Elopsidae", "Lepidopidae", "Mesolepidae", "Mimiidae",
+                       "Scopelidae"
+                       
+)
 # Pterosaur genus list from Dean, Mannion, and Butler (2016, Palaeontology,
 # Appendix S1) and family list from Bestwick, Unwin, Butler, Henderson, and
 # Purnell (2018, Biological Reviews). Birds provided from Alex Clark (Field
 # Museum). Early panarthropods ('lopopods', onychophorans, etc.) from Aria and
-# Caron (2024) and  Smith and Ortega-Hernandez (2014).
+# Caron (2024) and  Smith and Ortega-Hernandez (2014). Only marine osteostracan 
+# Sclerodus from Denison (1956) and others added based on PBDB occurrences.
 
 # Extract the known marine taxa (in lineages that are typically non-marine):
 sq <- 1:nrow(x)
@@ -1073,6 +1200,9 @@ dim(post)
 
 # aj. Because PBDB lacks infraphylum ranks, treating infraphylum Agnatha as 
 #     superclass, but writing as "Agnatha" because likely paraphyletic.
+
+# ak. Based on convention in WoRMS, treating downgrade class Tergomya to 
+#     subclass rank and placing within class Monoplacophora.
 
 # (6) Run code as usual in "PropogateSizes.R" or "PropogateLifeHabits.R", but
 # resaving as postX_withPBDB" file name. Make sure to add new IDNumbers to the
