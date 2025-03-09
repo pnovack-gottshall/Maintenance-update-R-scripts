@@ -454,7 +454,7 @@ head(x)
 # Kannemeyeriiformes, Pelycosauria, Theriodontia, Therocephalia, freshwater
 # Branchiopoda (= conchostrans, notostracans, cladocerans, etc.), all known
 # arachnid taxa (because many arachnids are getting listed in the xiphosuran
-# download), and a variety of fishes, tetrapods, and others. WoRMS relied
+# download), and a variety of fishes, tetrapods, and others. WoRMS relied on
 # heavily for extant taxa.
 non.marine <- c("Arachnida", "Insecta", "Collembola", "Palaeophreatoicidae",
                 "Limnocytheridae", "Darwinuloidea", "Cypridoidea", 
@@ -635,7 +635,7 @@ non.marine <- c("Arachnida", "Insecta", "Collembola", "Palaeophreatoicidae",
                 "Dolerocypridinae", "Hungarocypridinae", "Mediocyprinae", 
                 "Megalocypridinae", "Mytilocypridinae", "Ngarawinae", 
                 "Rudjakoviellinae", "Scottiinae", "Talicyprideinae", "Candonidae",
-                "Candoninae", "Kliellidae")
+                "Candoninae", "Kliellidae", "Lota")
 
 # Most tetrapods are terrestrial, so remove by default:
 tetrapods <- c("Mammalia", "Reptilia", "Amphibia")
@@ -934,10 +934,11 @@ dim(post)
 #       (vii)  starfish class (or infraclass) Neoasteroidea to Ambuloasteroidea
 #       (viii) bryozoan order Trepostomida to Trepostomata 
 #       (vix)  bryozoan order Cystoporida to Cystoporata 
-#       (x)    diploporitan superfamily Glyptosphaeritida to 
+#       (x)    bryozoan order Cyclostomata to Cyclostomatida 
+#       (xi)   diploporitan superfamily Glyptosphaeritida to 
 #              Glyptosphaeritidacea (in order UNCERTAIN). 
 #              (See below for details on other diploporitans.)
-#       (xi)   Superfamily Mosasauria to superfamily Mosasauroidea
+#       (xii)   Superfamily Mosasauria to superfamily Mosasauroidea
 
 #  f. Because the most recent bivalve classification (Carter, et al. 2011, to be
 #     used in the forthcoming Treatise) contains only two subclasses for all
@@ -1212,6 +1213,14 @@ dim(post)
 
 # ak. Based on convention in WoRMS, treating downgrade class Tergomya to 
 #     subclass rank and placing within class Monoplacophora.
+
+# al. Based on convention in WoRMS, use corrected name Cyclostomatida for 
+#     order of cyclostomes (synonym of Tubuliporata), with suborders 
+#     Articulina (replaced name for Articulata, with families Crisiidae and 
+#     Crisuliporidae), Cancellata, Cerioporina, Fasciculina (with families
+#     Actinoporidae, Frondiporidae, Hastingsiidae, Semiceidae, Siphoniotyphlidae,
+#     and Theonoidae), Hederellida (with families Hederellidae and Reptariidae),
+#     Palaeostomata, Paleotubuliporina, Rectangulata, and Tubuliporina.
 
 # (6) Run code as usual in "PropogateSizes.R" or "PropogateLifeHabits.R", but
 # resaving as postX_withPBDB" file name. Make sure to add new IDNumbers to the
