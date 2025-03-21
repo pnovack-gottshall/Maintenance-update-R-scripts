@@ -249,8 +249,10 @@ find.rel <- function(x, i, start = 4, end = 21, photo.cols = NULL,
                      est.cols = NULL, all.3 = TRUE, sim.time = TRUE) {
   if (any(is.null(photo.cols), is.null(est.cols)))
     stop("photo.cols and est.cols need to be specified\n")
-  scales <- c("Species", "Subgenus", "Genus", "Subfamily", "Family", "Superfamily",
-    "Suborder", "Order", "Subclass", "Class", "Subphylum", "Phylum")
+  scales <- c("Species", "Subgenus", "Genus", "Tribe", "Subfamily", "Family", 
+              "Superfamily", "Subsection", "Section", "Infraorder", "Suborder", 
+              "Order", "Superorder", "Infraclass", "Subclass", "Class", 
+              "Superclass", "Subphylum", "Phylum", "", NA)
   scales <- factor(scales, levels = scales, ordered = TRUE)
   others <- x[-i, ] # Entry cannot be its own relative
   for (e in start:end) {
