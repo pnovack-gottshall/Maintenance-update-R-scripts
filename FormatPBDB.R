@@ -624,24 +624,30 @@ non.marine <- c("Arachnida", "Insecta", "Collembola", "Palaeophreatoicidae",
                 "Triodopsinae", "Pseudoleptaxinae", "Sphincterochilinae",
                 "Miraverelliinae", "Trichodiscininae", "Gittenbergeriinae",
                 "Trissexodontinae", "Echinichinae", "Helminthoglyptinae", 
-                "Humboldtianinae", "Lysinoinae", "Monadeniinae", "Xanthonychinae",
-                "Astacoidea", "Parastacoidea", "Atyidae", "Anchialocarididae",
-                "Trogloplacinae", "Euryrhynchidae", "Typhlocarididae", 
-                "Potamoidea", "Deckeniidae", "Potamidae", "Potamonautidae",
-                "Trichodactyloidea", "Trichodactylidae", "Advenocypridinae", 
-                "Batucyprettinae", "Bennelongiinae", "Bradycypridinae", 
-                "Callistocypridinae", "Cyprettinae", "Cypricercinae", "Cypridinae",
-                "Cypridopsinae", "Cyprinotinae", "Diacypridinae", 
-                "Dolerocypridinae", "Hungarocypridinae", "Mediocyprinae", 
-                "Megalocypridinae", "Mytilocypridinae", "Ngarawinae", 
-                "Rudjakoviellinae", "Scottiinae", "Talicyprideinae", "Candonidae",
-                "Candoninae", "Kliellidae", "Lota")
+                "Humboldtianinae", "Lysinoinae", "Monadeniinae", 
+                "Xanthonychinae", "Astacoidea", "Parastacoidea", 
+                "Protastacoidea",  "Cambaroididae", "Atyidae", "Atyoidea",
+                "Anchialocarididae", "Trogloplacinae", "Euryrhynchidae", 
+                "Typhlocarididae", "Potamoidea", "Deckeniidae", "Potamidae", 
+                "Potamonautidae", "Trichodactyloidea", "Trichodactylidae", 
+                "Advenocypridinae", "Batucyprettinae", "Bennelongiinae", 
+                "Bradycypridinae", "Callistocypridinae", "Cyprettinae", 
+                "Cypricercinae", "Cypridinae", "Cypridopsinae", "Cyprinotinae", 
+                "Diacypridinae", "Dolerocypridinae", "Hungarocypridinae", 
+                "Mediocyprinae", "Megalocypridinae", "Mytilocypridinae", 
+                "Ngarawinae", "Rudjakoviellinae", "Scottiinae", "Talicyprideinae", 
+                "Candonidae", "Candoninae", "Kliellidae", "Lota", "Aeglidae", 
+                "Aegloidea", "Aegla", "Pseudothelphusidae", "Pseudothelphusoidea",
+                "Epiloboceridae", "Odiomarinae", "Anchialocarididae", 
+                "Xiphocarididae", "Desmocarididae", "Euryrhynchidae", 
+                "Typhlocarididae")
 
 # Most tetrapods are terrestrial, so remove by default:
 tetrapods <- c("Mammalia", "Reptilia", "Amphibia")
 
-# Then add back in the known marine tetrapods (and the sole marine amphibian
-# [Trematosauridae] and some known marine xiphosurans, pterosaurs, etc.):
+# Then add back in the known marine tetrapods, the sole marine amphibian
+# [Trematosauridae], and some known marine xiphosuran, pterosaur, decapod, etc.
+# taxa that otherwise typically non-marine):
 marine.exceptions <- c("Chelonioidea", "Ophidiomorpha", "Mosasauroidea", 
                        "Mosasauria", "Thalattosauria", "Sauropterygia", 
                        "Ichthyopterygia", "Mesoeucrocodylia", "Pterosauria", 
@@ -707,7 +713,7 @@ marine.exceptions <- c("Chelonioidea", "Ophidiomorpha", "Mosasauroidea",
                        "Scleroparei", "Tarrasiiformes", "Trachichthyiformes",
                        "Anomalopidae", "Aesopichthyidae", "Centrolepidae",
                        "Elopsidae", "Lepidopidae", "Mesolepidae", "Mimiidae",
-                       "Scopelidae")
+                       "Scopelidae", "Protaegla", "Haumuriaegla")
 # Pterosaur genus list from Dean, Mannion, and Butler (2016, Palaeontology,
 # Appendix S1) and family list from Bestwick, Unwin, Butler, Henderson, and
 # Purnell (2018, Biological Reviews). Birds provided from Alex Clark (Field
