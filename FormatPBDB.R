@@ -646,8 +646,9 @@ non.marine <- c("Arachnida", "Insecta", "Collembola", "Palaeophreatoicidae",
 tetrapods <- c("Mammalia", "Reptilia", "Amphibia")
 
 # Then add back in the known marine tetrapods, the sole marine amphibian
-# [Trematosauridae], and some known marine xiphosuran, pterosaur, decapod, etc.
-# taxa that otherwise typically non-marine):
+# (Trematosauridae), and some known marine xiphosuran, pterosaur, decapod, etc.
+# taxa that are otherwise typically non-marine (and may have been removed in
+# taxa above):
 marine.exceptions <- c("Chelonioidea", "Ophidiomorpha", "Mosasauroidea", 
                        "Mosasauria", "Thalattosauria", "Sauropterygia", 
                        "Ichthyopterygia", "Mesoeucrocodylia", "Pterosauria", 
