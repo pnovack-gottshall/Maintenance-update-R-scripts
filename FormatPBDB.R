@@ -639,8 +639,9 @@ non.marine <- c("Arachnida", "Insecta", "Collembola", "Palaeophreatoicidae",
                 "Candonidae", "Candoninae", "Kliellidae", "Lota", "Aeglidae", 
                 "Aegloidea", "Aegla", "Pseudothelphusidae", "Pseudothelphusoidea",
                 "Epiloboceridae", "Odiomarinae", "Anchialocarididae", 
-                "Xiphocarididae", "Desmocarididae", "Euryrhynchidae", 
-                "Typhlocarididae")
+                "Xiphocarididae", "Desmocarididae", "Johngarthia", "Bahiacaris", 
+                "Bechleja", "Yongjiacaris", "Pseudocaridinella", "Gecarcinus",
+                "Epigrapsus", "Tuerkayana")
 
 # Most tetrapods are terrestrial, so remove by default:
 tetrapods <- c("Mammalia", "Reptilia", "Amphibia")
