@@ -920,7 +920,7 @@ dim(post)
 #       (i)    Class Hyolitha (in Phylum Hyolitha) for Orders Hyolithida and
 #                Orthothecida.
 #       (ii)   Class Dipnomorpha for orders Dipnoi and Dipnotetrapodomorpha.
-#       (iii)  Class Tentaculita / Phylum Mollusca for Order Tentaculitida.
+#       (iii)  Class Tentaculita / Phylum Tentaculita for Order Tentaculitida.
 #       (iv)   Phylum Annelida for Class Palaeoscolecida.
 #       (v)    Phylum Agmata for Order Volborthellida.
 #       (vi)   Add name UNCERTAIN for any phylum, class, order, or family that is 
