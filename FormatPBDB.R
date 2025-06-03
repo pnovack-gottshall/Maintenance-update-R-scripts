@@ -1230,6 +1230,13 @@ dim(post)
 #     and Theonoidae), Hederellida (with families Hederellidae and Reptariidae),
 #     Palaeostomata, Paleotubuliporina, Rectangulata, and Tubuliporina.
 
+# am. Problematic Ediacarans: Following Erwin, et al. (2011), treating unranked 
+#     Dickinsoniomorpha as a class; placing as stem member of phylum Placozoa 
+#     following Sperling and Vinther (2010), which is not entirely refuted by 
+#     Gold, et al. (2015). Treating unranked clades Rangeomorpha and 
+#     Erniettomorpha as orders within phylum and class Petalonamae, as implied 
+#     by Hoyal Cuthill and Han (2018).
+
 # (6) Run code as usual in "PropogateSizes.R" or "PropogateLifeHabits.R", but
 # resaving as postX_withPBDB" file name. Make sure to add new IDNumbers to the
 # new PBDB entries!
