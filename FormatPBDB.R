@@ -1056,7 +1056,8 @@ dim(post)
 #     Amphinomorpha, Eunicida for Eunicemorpha, Phyllodocida for Phyllodocemorpha,
 #     Spionida for Spiomorpha, Scolecida (Family Arenicolidae) for Drilomorpha,
 #     Terebellida for Terebellomorpha, Terebellida (Family Flabelligeridae) for
-#     Flabelligerimorpha, and Sabellida (Family Serpulidae) for Serpulimorpha.
+#     Flabelligerimorpha, and Sabellida (Family Serpulidae) for Serpulimorpha 
+#     (as well as still used order Sabelliditida).
 
 #  q. Based on recent work by Skovsted and Holmer and their group (mostly in
 #     2008-2009), treating Hyolithelminthida (including Hyolithellidae and
