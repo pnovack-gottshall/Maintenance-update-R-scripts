@@ -373,7 +373,7 @@ get.strat <- function(target, ref) {
   angle.30 <- sin(30 * pi / 180)
   angle.45 <- sin(45 * pi / 180)
   angle.60 <- sin(60 * pi / 180)
-  proportions <- c(.25, (1 / 3), 0.5, (2 / 3), 0.75, 0.9, 2.0, 4.0)
+  proportions <- c(.25, (1 / 3), 0.5, (2 / 3), 0.75, 0.9, 2.0, 4.0, 5.0)
   ref_ms <- c(ref$APLength, ref$TransverseLength, ref$DVLength)
   ref_dists <- c(1, -1) %x% c(ref_ms, angle.30 * ref_ms, angle.45 * ref_ms, 
     angle.60 * ref_ms, proportions %x% ref_ms)
@@ -432,7 +432,7 @@ today <- format(Sys.Date(), "%m/%d/%Y")
 angle.30 <- sin(30 * pi / 180)
 angle.45 <- sin(45 * pi / 180)
 angle.60 <- sin(60 * pi / 180)
-proportions <- c(.25, (1 / 3), 0.5, (2 / 3), 0.75, 0.9, 2.0, 4.0)
+proportions <- c(.25, (1 / 3), 0.5, (2 / 3), 0.75, 0.9, 2.0, 4.0, 5.0)
 AbsStratDist.text <- c("AP.", "T.", "DV.", "30 degrees (from horiz.) of AP, or half AP.", 
   "30 degrees (from horiz.) of T, or half T.", 
   "30 degrees (from horiz.) of DV, or half DV.", "45 degrees (from horiz.) of AP.", 
