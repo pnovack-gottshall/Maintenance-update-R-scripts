@@ -942,12 +942,13 @@ dim(post)
 #       (vii)  starfish class (or infraclass) Neoasteroidea to Ambuloasteroidea
 #       (viii) bryozoan order Trepostomida to Trepostomata 
 #       (vix)  bryozoan order Cystoporida to Cystoporata 
-#       (x)    bryozoan order Cyclostomata to Cyclostomatida 
-#       (xi)   diploporitan superfamily Glyptosphaeritida to 
+#       (x)    bryozoan order Ctenostomata to Ctenostomatida 
+#       (xi)   bryozoan order Cyclostomata to Cyclostomatida 
+#       (xii)  diploporitan superfamily Glyptosphaeritida to 
 #              Glyptosphaeritidacea (in order UNCERTAIN) 
 #              (See below for details on other diploporitans)
-#       (xii)   Superfamily Mosasauria to superfamily Mosasauroidea
-#       (xiii) tentaculite class Tentaculitoidea to Tentaculita
+#       (xiii) Superfamily Mosasauria to superfamily Mosasauroidea
+#       (xix)  tentaculite class Tentaculitoidea to Tentaculita
 
 #  f. Because the most recent bivalve classification (Carter, et al. 2011, to be
 #     used in the forthcoming Treatise) contains only two subclasses for all
