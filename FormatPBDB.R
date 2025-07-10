@@ -1240,6 +1240,14 @@ dim(post)
 #     Erniettomorpha as orders within phylum and class Petalonamae, as implied 
 #     by Hoyal Cuthill and Han (2018).
 
+# an. Bryozoan taxonomy in the PBDB is a mess, but improving slowly. For 
+#     cheilostomes, rely on combination of Gordon (2012, interim Treatise 
+#     classification) and WoRMS. Follow convention in WoRMS (but not 
+#     consistently in PBDB) to treat suborders Neocheilostomina, 
+#     Neocheilostomatina, Anasca, Ascophora, and Ascophorina all as junior 
+#     synonyms of suborder Flustrina. And to treat suborder Malicostega as 
+#     junior synonym of Membranipora.
+
 # (6) Run code as usual in "PropogateSizes.R" or "PropogateLifeHabits.R", but
 # resaving as postX_withPBDB" file name. Make sure to add new IDNumbers to the
 # new PBDB entries!
