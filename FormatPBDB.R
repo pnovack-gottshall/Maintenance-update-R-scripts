@@ -950,19 +950,19 @@ dim(post)
 #       (xiii) Superfamily Mosasauria to superfamily Mosasauroidea
 #       (xix)  tentaculite class Tentaculitoidea to Tentaculita
 
-#  f. Because the most recent bivalve classification (Carter, et al. 2011, to be
-#     used in the forthcoming Treatise) contains only two subclasses for all
-#     bivalves, elevate their Infraclass names to subclass rank for their 
-#     Subclass Autobranchia (which is similar to how WoRMS names the bivalves).
-#     For outdated names (i.e., bivalves listed in PBDB without a family assignment 
-#     and placed in outdated orders used by Sepkoski but not mentioned in 
-#     Carter, et al., 2011), use the following rules: orders Anomalodesmacea, Myoida, 
+#  f. Bivalve classification primarily follows that of Carter, et al. (2011), 
+#     the basis of the forthcoming Treatise). For outdated names (i.e., 
+#     bivalves listed in PBDB without a family assignment and placed in 
+#     outdated orders used by Sepkoski but not mentioned in Carter, et al., 
+#     2011), use the following rules: orders Anomalodesmacea, Myoida, 
 #     Thraciida, and Trigoniida are in Subclass Heteroconchia. Members of 
 #     Superfamily Grammysioidea (Families Grammysiidae and Sanguinolitidae) and 
 #     Superfamily Lyrodesmatoidea (Family Lyrodesmatidae) are in Order UNCERTAIN 
 #     and Subclass Heteroconchia. Order Pterioida is in Subclass Pteromorphia.
 #     (This has the effect of making my propogation algorithm more conservative
-#     because smaller ranks are treated as larger, more inclusive ones.)
+#     because smaller ranks are treated as larger, more inclusive ones.) Elevate
+#     "cohorts" Mytilomorphi, Ostreomorphi, Uniomorphi, and Cardiomorphi to rank
+#     superorder.
 
 #  g. For opisthobranch and pulmonate gastropods, use a modified version of 
 #     Bouchet and Rocroi (2005), that is also consistent with how WoRMS treats 
