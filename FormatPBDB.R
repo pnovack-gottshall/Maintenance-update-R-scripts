@@ -1219,8 +1219,58 @@ dim(post)
 # ai. Use class Cincta instead of outdated class Homostelea. Note cinctans 
 #     currently lack names for orders.
 
-# aj. Because PBDB lacks infraphylum ranks, treating infraphylum Agnatha as 
-#     superclass, but writing as "Agnatha" because likely paraphyletic.
+# aj. Vertebrate zoologists and paleontologists have relied much more on 
+#     phylogenetic analyses to classify monophyletic clades than other 
+#     disciplines, using a much more varied lexicon of formal and unranked 
+#     clade names. In general, taxonomy at and below the rank of order are 
+#     stable; ranks above are much less consistent. For fishes, relying on 
+#     modification of Nelson, et al. (2016, Fishes of the World) and van der 
+#     Laan (2019, Family-group names of fossil fishes) combined with WoRMS. 
+#     Because PBDB lacks infraphylum, parvphylum, and similar intermediate 
+#     ranks, using the following scheme to merge (often distinct) 
+#     classifications in WoRMS and PBDB (defaulting to terms in PBDB when 
+#     different versions of same name (e.g., Batomorphii vs Batoidea).
+
+#     (1) Using modification of Nelson, et al. (2016, Fishes of the World), 
+#         placing class Conodonta in superclass Conodontophorida (within 
+#         Vertebrata) instead of separate subphylum.
+
+#     (2) For presumably paraphyletic jaw-less vertebrates ("Agnatha"), 
+#         ignoring infraphylum Agnatha and maintaining PBDB superclasses 
+#         Anaspidomorphi (= class Anaspida) Cyclostomata (= classes Myxini, 
+#         Petromyzontida), Osteostracomorphi (= classes Cephalaspidomorphi, 
+#         Galeaspida, Osteostraci, and Pituriaspida [for order Pituriaspida]), 
+#         Pteraspidomorphi (= class Pteraspidomorpha), and Thelodontomorphi 
+#         (= class Thelodonti).
+
+#     (3) Ignoring superclass (PBDB) / infraphylum (WoRMS) Gnathostomata, 
+#         and re-ranking class (PBDB) / parvphylum (oRMSW) Chondrichthyes as 
+#         superclass.  The superclass includes (after elevating subclasses to 
+#         classes, as in WORMS and, in part, van der Laan, 2019): Acanthodii, 
+#         Elasmobranchii (= s.s.s. of Neoselachii, the subclass used in WoRMS), 
+#         and Holocephali (redundant with subclass Holocephali). Class 
+#         Elasmobranchii is nearly redundant with subclass Neoselachii. 
+#         Infraclass Euselachii is used instead of infraclass Selachii in WoRMS.
+#         Superorder Batomorphii is used instead of infraclass Batoidea in 
+#         WoRMS. Infraclass Hybodonta is down-graded to rank superorder so it 
+#         can be parented to infraclass Euselachii.
+
+#     (4) Superclass Actinopterygii (a superclass in PBDB and gigaclass in WoRMS)
+#         is used to include classes Cladistia (= infraclasses Cladistia) and 
+#         Actinopteri (= subclasses Chondrostei and Neopterygii). Most 
+#         subdivisions in van der Laan (2019) have been entered in the PBDB as 
+#         unranked clades. In most cases, these are reassigned to superorder 
+#         rank.
+
+#     (5) Superclass Sarcopterygii (a gigaclass in WoRMS and subclass in PBDB)
+#         is used to include classes Coelacanthimorpha (= subclasses Actinistia)
+#         and Dipnomorpha (=subclass Dipnotetrapodomorpha)
+
+#     (6) Modifying Nelson, et al. (2016), assigning class Placodermi in 
+#         subclass Placodermiomorphi (who considers this an unranked clade).
+
+#     (7) Assigning all tetrapods to superclass Tetrapoda (= classes Amphibia,
+#         Aves, Mammalia, and Reptilia).
 
 # ak. Based on convention in WoRMS, treating downgrade class Tergomya to 
 #     subclass rank and placing within class Monoplacophora.
