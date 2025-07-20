@@ -66,12 +66,15 @@
 # (1) To save time, you only need to export one dataset. The "constant" database
 #     is recommended, although both data sets should have identical body size
 #     estimates (although there will be variation in the estimates for
-#     AbsStratDist). Before exporting, sort the entries so that (i) 
-#     BodySizeScale = Species is first, followed by Subgenus, Genus, etc., (ii) 
-#     second by AbsStratDistance (in descending order, with largest first), and 
-#     (iii) third BodyVolume (with largest first). (This sort order means taxa 
-#     with AbsStratDistances and all three measurements are placed before those 
-#     missing one or more sizes.)
+#     AbsStratDist). Before exporting, sort the entries in the following order:
+
+#     (a) BodySizeScale = Species is first, followed by Subgenus, Genus, etc.,
+
+#     (b) AbsStratDistance (in descending order, with largest first), and
+
+#     (c) BodyVolume (with largest first). (This sort order means taxa 
+#         with AbsStratDistances and all three measurements are placed before 
+#         those missing one or more sizes.)
 
 # (2) Run relevant code in SelectCols.R for PropagateSizes.R to obtain following
 #     output. Then continue with step 3.
@@ -111,18 +114,23 @@
 #     (if not intentional).
 
 # (6) Add a new column named 'BodySize' that estimates the body size, using 
-#     the product of 3 'XLength' sizes (=PRODUCT(AE2:AG2)).
+#     the product of 3 'XLength' sizes (= PRODUCT(AE2:AG2)).
 
-# (6) Sort the BodySizeScale = 'Sp/Subg/Gen' rows by (1) number of PhotoX
-#     columns (largest first) so entries with complete (all 3) size measurements 
-#     are first and most incomplete are last. That way those with best scales
-#     and more-complete sizes are checked first, so that later entries can use 
-#     the largest available pool of relatives. (2) Second, sort item by 
-#     AbsStratDist, with largest values first (so those with estimated 
-#     AbsStratDists are considered first to propagate to those lacking them). 
-#     (3) Third, sort by BodySize, with largest values first.
+# (7) Sort the BodySizeScale = 'Sp/Subg/Gen' rows (AND ONLY THESE ROWS!) by:
 
-# (7) Delete the added 'PhotoX' and 'BodySize' columns and resave.
+#     (a) Number of PhotoX columns (with largest first) so entries with complete 
+#         (all 3) size measurements are first and most incomplete are last. 
+#         That way those entries with best scales and more-complete sizes are 
+#         checked first, and so later entries can use the largest available pool 
+#         of relatives.
+
+#     (b) Sort item by AbsStratDist (with largest values first) so entries with 
+#         estimated AbsStratDists are considered first to propagate to those 
+#         lacking them.
+
+#     (c) Sort by BodySize (with largest values first).
+
+# (8) Delete the added 'PhotoX' and 'BodySize' columns and resave.
 
 
 
