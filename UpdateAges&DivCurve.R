@@ -14,6 +14,7 @@
 
 rm(list = ls())
 setwd("C:/Users/pnovack-gottshall/OneDrive - Benedictine University/Desktop/Databases/Maintenance & update R scripts")
+# setwd("C:/Users/pnovack-gottshall/OneDrive - Benedictine University/Documents/_Spring2025/Research")
 
 ## Download data directly from PaleobioDB and save to working directory (will be
 ## > 25 MB)
@@ -22,6 +23,7 @@ setwd("C:/Users/pnovack-gottshall/OneDrive - Benedictine University/Desktop/Data
 # pbdb.all <- read.csv("https://www.paleobiodb.org/data1.2/taxa/list.csv?base_name=Metazoa&interval=Phanerozoic&show=app&show=acconly&vocab=pbdb")
 # If want forams too, use base_name=Metazoa,Retaria
 pbdb.all <- read.csv("pbdb_data.csv")
+# pbdb.all <- read.csv("pbdb_data_URSA.csv")
 head(pbdb.all)
 
 # Extract only genera (to ensure only searching for sub/genus ranges; sometimes
@@ -37,6 +39,7 @@ nrow(pbdb)
 ## Use the following columns: IDNumber, Phylum, Class, Order, Superfamily,
 ## Family, Genus, Subgenus, Species, max_age, max_ma, min_age, min_ma
 occs <- read.csv("occs.csv", header = TRUE)
+# occs <- read.csv("occs_decapods.csv", header = TRUE)
 ph.tbl <- table(occs$Phylum)
 sort(ph.tbl, decreasing = FALSE)
 length(ph.tbl)
@@ -282,6 +285,7 @@ if (any(occs$max_ma < occs$min_ma)) {
 
 
 # write.csv(occs, file = "PBDBDates.csv", row.names = FALSE)
+# write.csv(occs, file = "PBDBDates_Decapods.csv", row.names = FALSE)
 
 # It is worthwhile to compare the original and updated ranges to troubleshoot
 # for errors. If there is a significant change (e.g., > 100 Myr), it is possible
