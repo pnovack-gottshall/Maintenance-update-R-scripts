@@ -35,13 +35,10 @@
 rm(list = ls())
 setwd("C:/Users/pnovack-gottshall/OneDrive - Benedictine University/Desktop/Databases/Maintenance & update R scripts")
 # setwd("C:/Users/pnovack-gottshall/OneDrive - Benedictine University/Documents/GSA (& NAPC)/2024NAPC/Higher taxa eco diversity")
-# setwd("C:/Users/pnovack-gottshall/OneDrive - Benedictine University/Documents/_Spring2025/Research")
+# setwd("C:/Users/pnovack-gottshall/Dropbox/Decapod size research/Analyses")
 # all <- read.delim(file = "AllCols.tab", stringsAsFactors = FALSE)
 all <- read.delim(file = "AllCols_Constant_PBDB.tab", stringsAsFactors = FALSE)
 # all <- read.delim(file = "AllCols_Mode_PBDB.tab", stringsAsFactors = FALSE)
-# all <- read.delim(file = "AllCols_Constant_Ostracodes.tab", stringsAsFactors = FALSE)
-# all <- read.delim(file = "AllCols_Mode_Ostracodes.tab", stringsAsFactors = FALSE)
-# all <- read.delim(file = "AllCols_Bradoriida&Aster&Echino.tab", stringsAsFactors = FALSE)
 # all <- read.delim(file = "AllCols_Mode.tab", stringsAsFactors = FALSE)
 # all <- read.delim(file = "AllCols_Constant.tab", stringsAsFactors = FALSE)
 # all <- read.delim(file = "AllCols_Mode_PBDB_June2024.tab", stringsAsFactors = FALSE)
@@ -66,15 +63,15 @@ write.csv(selected, file = "HigherTaxa.csv", row.names = FALSE)
 
 
 # UpdateAges&DivCurve columns: ----------------------------------------------------
-cols <- c("IDNumber", "Phylum", "Class", "Order", "Superfamily", "Family", "Genus", 
-          "Subgenus", "Species", "max_age", "max_ma", "min_age", "min_ma")
+cols <- c("IDNumber", "PBDB_GSG_Number", "Phylum", "Class", "Order", 
+          "Superfamily", "Family", "Genus", "Subgenus", "Species", "max_age", 
+          "max_ma", "min_age", "min_ma")
 wh.cols <- match(cols, colnames(all))
 selected <- all[, wh.cols]
 head(selected)
 if (!identical(cols, colnames(selected)))
   stop("column names are not as specified!")
 write.csv(selected, file = "occs.csv", row.names = FALSE)
-# write.csv(selected, file = "occs_decapods.csv", row.names = FALSE)
 # write.csv(selected, file = "occs_Constant_PBDB.csv", row.names = FALSE)
 
 
