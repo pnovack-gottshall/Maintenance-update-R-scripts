@@ -1,20 +1,22 @@
-## Update age ranges from Paleobiology Database and create diversity curves.
-## Check for missing ID numbers. Check that extant/extincts are correct (but
-## note false flag if a subgenus is extinct within a still-extant genus).
+## Update age ranges from Paleobiology Database (and Sepkoski's Compendium) and
+## create diversity curves. Check for missing ID numbers. Check that
+## extant/extincts are correct (but note false flag if a subgenus is extinct
+## within a still-extant genus).
 
 ## ISSUES ######################################################################
-## 1. Add routines that add in Sepkoski Genus Compendium ages.
-## 2. Add routine that confirms extant status with WoRMS.
-## 3. Silence the errors (and convert to warnings) so that doesn't die when trips.
+## 1. Add routine that confirms extant status with WoRMS.
+## 2. Silence the errors (and convert to warnings) so that doesn't die when trips.
 ################################################################################
 
 
 
-## IMPORT AND PROCESS FILES ############################################
+## IMPORT AND PROCESS FILES ####################################################
 
 rm(list = ls())
 setwd("C:/Users/pnovack-gottshall/OneDrive - Benedictine University/Desktop/Databases/Maintenance & update R scripts")
-# setwd("C:/Users/pnovack-gottshall/OneDrive - Benedictine University/Documents/_Spring2025/Research")
+# setwd("C:/Users/pnovack-gottshall/OneDrive - Benedictine University/Documents/GSA (& NAPC)/2025GSA/Decapod size")
+
+library(beepr)
 
 ## Download data directly from PaleobioDB and save to working directory (will be
 ## > 25 MB)
@@ -22,8 +24,9 @@ setwd("C:/Users/pnovack-gottshall/OneDrive - Benedictine University/Desktop/Data
 ## Easier if paste link into URL and save manually
 # pbdb.all <- read.csv("https://www.paleobiodb.org/data1.2/taxa/list.csv?base_name=Metazoa&interval=Phanerozoic&show=app&show=acconly&vocab=pbdb")
 # If want forams too, use base_name=Metazoa,Retaria
+# https://paleobiodb.org/data1.2/taxa/list.csv?base_name=Decapoda&rank=min_subgenus&variant=all&show=app
 pbdb.all <- read.csv("pbdb_data.csv")
-# pbdb.all <- read.csv("pbdb_data_URSA.csv")
+# pbdb.all <- read.csv("decapoda_pbdb_data.csv")
 head(pbdb.all)
 
 # Extract only genera (to ensure only searching for sub/genus ranges; sometimes
@@ -32,14 +35,22 @@ pbdb <- pbdb.all[which(pbdb.all$taxon_rank == "genus" |
                          pbdb.all$taxon_rank == "subgenus"), ]
 nrow(pbdb)
 
+## Identify potential homonym genera (used only if trouble-shooting for below)
+which(table(pbdb$taxon_name) > 1L)
+
+
 
 ## Run relevant code in SelectCols.R for UpdateAges&DivCurve.R to obtain
 ## following output.
 
+
+## Prepare the database occurrences to return updated strat ranges:
+
 ## Use the following columns: IDNumber, Phylum, Class, Order, Superfamily,
-## Family, Genus, Subgenus, Species, max_age, max_ma, min_age, min_ma
+## Family, Genus, Subgenus, Species, max_age, max_ma, min_age, t_age
 occs <- read.csv("occs.csv", header = TRUE)
-# occs <- read.csv("occs_decapods.csv", header = TRUE)
+head(occs)
+
 ph.tbl <- table(occs$Phylum)
 sort(ph.tbl, decreasing = FALSE)
 length(ph.tbl)
@@ -59,9 +70,11 @@ length(fam.tbl)
 # Confirm that max_age and min_age are factors
 is.factor(occs$max_age)
 is.factor(occs$min_age)
+
 # If not, run following:
 # occs$max_age <- as.factor(as.character(occs$max_age))
 # occs$min_age <- as.factor(as.character(occs$min_age))
+
 head(occs)
 
 ## Any duplicated ID numbers?
@@ -73,58 +86,123 @@ all(num %in% sort(occs$IDNumber)) # TRUE if nothing missing
 which(num %in% sort(occs$IDNumber) == FALSE)
 
 # Any duplicated genus entries?
-if(length(table(table(occs$Genus))) > 1L) {
+if (length(table(table(occs$Genus))) > 1L) {
   foo <- which(table(occs$Genus) > 1L)
   print(foo)
   cat("There are", length(foo), "entries above.\n")
   stop("The above genus entries are entered twice. Delete the outdated entry/entries?")
-}
-# Ignore the 72 extant brachiopod genera with multiple species in the database
-# (mostly extant species, some fossil species), cases where multiple subgenera
-# are included in same genus, where there are ecologically quite different
-# species in same genus, and homonyms.
+  }
+# Ignore the cases where multiple subgenera are included in same genus, where
+# there are ecologically quite different species in same genus, and homonyms.
 
 
 
 
-## PREP TIME SCALE #####################################################
+## PREP ICS 2024 TIME SCALE FROM PBDB ##########################################
+
+# Note substantial changes occurred in the stratigraphic naming system used in
+# the PBDB starting ca. 2023. The new system uses new database field names and
+# incorporates multiple geochronological systems. We only use the one listed as
+# scale_no = 1 (ICS 2024).
 
 ## Get updated PBDB intervals and ages
 strat_names <-
   read.csv("https://www.paleobiodb.org/data1.2/intervals/list.csv?all_records&vocab=pbdb")
 # strat_names <- read.csv("strat_names.csv")
 head(strat_names)
-## "Level-4" "subperiods" (eons are level 1, eras=level 2, periods=3,
-## subperiods=4, epochs=5)
-l4s <- strat_names[which(strat_names$scale_level == 4),]
+## Restrict to the default geochronological scale (ICS 2024) epochs.
+## Other options includes "eons", "eras", "periods", "epochs", and "ages", etc.
+epochs <- strat_names[which(strat_names$type == "epoch" &
+                              strat_names$scale_no == 1), ]
 ## Add in Ediacaran, too:
 edia <- strat_names[which(strat_names$interval_name == "Ediacaran"),]
-l4s <- rbind(l4s, edia)
-## Series 3 now named Miaolingian (Zhao, et al. 2019, Episodes)
-l4s$interval_name[which(l4s$interval_name == "Series 3")] <- "Miaolingian"
-l4s[, 1:5]
-
-## Are there any disallowed intervals in your database? (Allow blank ("") and
-## Recent, although not official subperiods)
-ints <- unique(c(levels(occs$max_age), levels(occs$min_age)))
-ints[which(!ints %in% l4s$interval_name)]
-
-## Manually replace the bad interval (one at a time, within FMP file [and
-## occ.csv], manually changing 'bad' value and re-running until all replaced).
-## But keep the listed interval (mya), if listed, which is higher resolution
-## than summary subperiod
-
-# bad <- "Botomian"; (wh.bad <- strat_names[which(strat_names$interval_name==bad),])
-
-## With this one: 
-
-# l4s[c(length(which(l4s$min_ma <= wh.bad$min_ma)), length(which(l4s$min_ma < wh.bad$max_ma))), 3:5]
+epochs <- rbind(epochs, edia)
+epochs[, 1:5]
 
 
+## IMPORT AND PREP SEPKOSKI COMPENDIUM #########################################
+
+## Import Peter Wagner's digitized version of Sepkoski's Compendium. DO NOT
+## SHARE THIS FILE!
+load(file = "Sepkoski_Genus_Compendium.Rdata")
+head(sepkoski_compendium)
+tail(sepkoski_compendium)
+
+# Some explanation: The items tagged "_98" are the assignments from Sepkoski's
+# 1998 version of the Compendium. The other ones are what the PBDB now assigns
+# it as. For the list of genera, "Genus" is how it was spelled by Sepkoski,
+# "Genus_23.1" is identical to "Genus" (WHY???) and "Genus_23" is how the PBDB
+# currently spells it, or synonymizes it.
 
 
-## Identify potential homonym genera (used only if trouble-shooting for below)
-which(table(pbdb$taxon_name) > 1L)
+## Import a geochronological look-up table (also compiled from Peter Wagner).
+## This is needed to convert the named intervals in Sepkoski's Compendium to
+## current geochronological names. DO NOT SHARE THIS FILE!
+load(file = "Gradstein_2020_Augmented.RData")
+
+# This object includes 2 lists, and uses stratigraphic names from the Gradstein,
+# et al. 2020 volume. We only need the first one.
+head(gradstein_2020_emended$time_scale)
+head(gradstein_2020_emended$zones)
+
+
+
+## Convert named intervals in Sepkoski Compendium to current ICS 2024 dates
+
+# Example using middle Callovian (Jurassic)
+"J (Call-m)" %in% gradstein_2020_emended$time_scale$interval
+which(gradstein_2020_emended$time_scale$interval == "J (Call-m)")
+
+all.names <- sort(unique(c(sepkoski_compendium$FA, sepkoski_compendium$LA)))
+sq <- seq.int(all.names)
+matches <- sapply(sq, function(sq) all.names[sq] %in% gradstein_2020_emended$time_scale$interval)
+table(matches)
+all.names[!matches]
+
+# OK, so only "empty" (= "") and "T" are not in Peter's Gradstein look-up table.
+# That makes things easy! According to the Compendium (p. 7), "T" means Tertiary
+# (whose FAD = 66 Ma and LAD = 2.58 Ma).
+
+which(sepkoski_compendium$FA == "")
+which(sepkoski_compendium$LA == "")
+which(sepkoski_compendium$FA == "T")
+which(sepkoski_compendium$LA == "T")
+
+# Let's take a look at the first two:
+sepkoski_compendium[c(4474, 2886), ]
+
+# Now we need to add the dates to the Compendium. Because the first is the blank
+# one ("") we'll only loop through the others, and manually override "T". "" can
+# remain the default NA because missing.
+sepkoski_compendium$max_ma <- as.numeric(NA)
+sepkoski_compendium$min_ma <- as.numeric(NA)
+for (int in 2:length(all.names)) {
+  # Start by extracting max and min ages for the interval
+  wh.gradstein <- 
+    which(gradstein_2020_emended$time_scale$interval == all.names[int])
+  max_ma <- gradstein_2020_emended$time_scale$ma_lb[wh.gradstein]
+  t_age <- gradstein_2020_emended$time_scale$ma_ub[wh.gradstein]
+  
+  # Special case for int = 233 ("T"), not in gradstein object
+  if (int == 233 & length(wh.gradstein) == 0L) {
+    wh.tertiary <- which(gradstein_2020_emended$time_scale$interval == "Tertiary")
+    max_ma <- gradstein_2020_emended$time_scale$ma_lb[wh.tertiary]
+    t_age <- gradstein_2020_emended$time_scale$ma_ub[wh.tertiary]
+  }
+  
+  # Amend to the Sepkoski Compendium
+  wh.max <- which(sepkoski_compendium$FA == all.names[int])
+  wh.min <- which(sepkoski_compendium$LA == all.names[int])
+  sepkoski_compendium$max_ma[wh.max] <- max_ma
+  sepkoski_compendium$min_ma[wh.min] <- t_age
+}
+
+head(sepkoski_compendium)
+
+# Confirm "" and Tertiary handled correctly:
+sepkoski_compendium[c(4474, 2886), ]
+
+
 
 
 
@@ -135,33 +213,74 @@ which(table(pbdb$taxon_name) > 1L)
 # fossil record, according to WoRMS) or enter manually (and start at next "i" in
 # loop).
 
-index <- seq(0, 10000, by=100)
-# In next line, make sure Genus is added before Subgenus. Algorithm will first
-# update the ranges for all subgenera in a genus to the range for the type
-# subgenus (if subgenus shares name same as genus), then will override for
-# individual subgenera later
-Gen <- sort(unique(unlist(list(occs$Genus, occs$Subgenus), recursive = TRUE)))
+index <- seq(0, 100000, by = 500)
+
+# Do you choose to combine in ranges from both PBDB (= requires occurrences and
+# uses updated taxonomic synonymizations) and Sepkoski's Compendium ( = doesn't
+# require occurrences in PBDB but might use outdated synonyms).
+use.Sepkoski = TRUE
+
+# In cases where the Sepkoski range is substantially different than that in the
+# PBDB, what maximum range extension window are you willing to expand PBDB
+# occurrences based on Sepkoski?
+
+# Rationale: If within this window, use Sepkoski's Compendium to expand it; if
+# greater than this value, then only uses the PBDB range. 10 million years is
+# used as a default because the median epoch is 11 million years in duration,
+# which means adding in Sepkoski's ranges will only expand by 1 interval, on
+# average, and assume greater range extensions are the result of errors in
+# taxonomic identification or synonymization that were subsequently corrected in
+# the PBDB, or potentially spurious occurrences. In other words, when there is a
+# conflict between PBDB and Sepkoski, the default is to go with the PBDB's more
+# updated taxonomic namespace. But to revert to the Compendium when there are no
+# PBDB occurrences (which is quite often, depending on taxonomic group).
+Sepkoski.offset = 10
+
+# Following code uses PBDB genus (or subgenus) ID numbers instead of genus
+# (subgenus) names. Confirm cases that will be ignored below because not in the
+# PBDB namespace.
+wh.no.ID <- which(is.na(occs$PBDB_GSG_Number))
+occs[wh.no.ID, c(1:2, 8, 11:14)]
+
+# Confirm actually missing from PBDB namespace. (If so, manually update and
+# reprocess above again.)
+any(occs$Genus[wh.no.ID] %in% pbdb$taxon_name)
+
+# Confirm actually missing from Sepkoski's Compendium. (If so, manually update
+# and reprocess above again.)
+any(occs$Genus[wh.no.ID] %in% sepkoski_compendium$Genus)
+any(occs$Genus[wh.no.ID] %in% sepkoski_compendium$Genus_23)
+
+Gen <- sort(unique(occs$PBDB_GSG_Number))
 for (i in 1:length(Gen)) {
   # for(i in 72:length(Gen)) {
-  gen.pbdb <- max.ma <- min.ma <- Early <- Late <- NA
-  override <- homonym <- FALSE
-  gen <- as.character(Gen[i])
-  if(gen == "") next   # Combining genera and subgenera sometimes adds a blank
-  if(i %in% index) cat("genus ", i, ":", gen, "\n")
-  # PBDB treats the accepted names of subgenera as "Genus (Subgenus)"
-  if (gen %in% occs$Subgenus) {
-    wh.occs.G <- which(occs$Subgenus == gen)
-    gen <- paste(occs$Genus[wh.occs.G[1]], " (",
-                 occs$Subgenus[wh.occs.G[1]], ")", sep = "")
-  } else wh.occs.G <- which(occs$Genus==gen)
-  len.g <- length(wh.occs.G)
-  wh.pbdb.G <- which(pbdb$taxon_name == gen)
-  len.pbdb.G <- length(wh.pbdb.G)
+  gen.pbdb <- max.ma <- min.ma <- Early <- Late <- Sepkoski.max.ma <- 
+    Sepkoski.min.ma <- NA
+  override <- not.in.pbdb <- not.in.Sepkoski <- homonym <- FALSE
+  gen <- Gen[i]
+  if(i %in% index) cat("processing genus ", i, "\n")
   
-  # Manual override: Taxa not in PBDB but manually given dates or ages (the code
-  # here re-confirms the ages and interval names are correct if more recently
-  # added to PBDB)
-  if (len.pbdb.G == 0L) override <- TRUE
+  # Extract the rows for this taxon in occs, pbdb, and Sepkoski:
+  wh.occs.G <- which(occs$PBDB_GSG_Number == gen)
+  wh.pbdb.G <- which(pbdb$taxon_no == gen)
+  wh.Sepkoski.G <- which(sepkoski_compendium$pbdb_taxon_no == gen)
+
+  # Check for duplicate ID numbers (which should not happen):
+  if (length(wh.pbdb.G) > 1L) stop("check 'i' if there's a duplicate PBDB ID number")
+  
+  # Manual override: Taxa not in PBDB (nor Sepkoski's Compendium, if using) but
+  # manually given dates or ages (the code here re-confirms the ages and
+  # interval names are correct if more recently added to PBDB). Note that all
+  # genera in Sepkoski's Compendium are in PBDB, so no need to query the
+  # Compendium.
+  if (length(wh.pbdb.G) == 0L) not.in.pbdb <- TRUE
+  
+  if (use.Sepkoski) {
+    if (length(wh.Sepkoski.G) == 0L) not.in.Sepkoski <- TRUE
+  }
+  
+  if (not.in.pbdb & not.in.Sepkoski) override <- TRUE
+  
   if (override) {
     # If only range is provided, give correct interval name :
     if (occs$max_age[wh.occs.G] == "" &
@@ -169,109 +288,100 @@ for (i in 1:length(Gen)) {
         !is.na(occs$max_ma[wh.occs.G]) &
         !is.na(occs$min_ma[wh.occs.G])) {
       occs$max_age[wh.occs.G] <-
-        rep(as.character(l4s$interval_name[length(which(l4s$min_ma < occs$max_ma[wh.occs.G]))]), len.g)
+        as.character(epochs$interval_name[length(which(epochs$b_age < occs$max_ma[wh.occs.G]))])
       occs$min_age[wh.occs.G] <-
-        rep(as.character(l4s$interval_name[length(which(l4s$min_ma <= occs$min_ma[wh.occs.G]))]), len.g)
+        as.character(epochs$interval_name[length(which(epochs$b_age <= occs$min_ma[wh.occs.G]))])
     }
-    # If only interval names are given, give correct range (be aware range could be overextended):
+    
+    # If only interval names are given, give correct range (be aware range could
+    # be overextended):
     if (occs$max_age[wh.occs.G] != "" &
         occs$min_age[wh.occs.G] != "" &
         is.na(occs$max_ma[wh.occs.G]) &
         is.na(occs$min_ma[wh.occs.G])) {
       if (occs$max_age[wh.occs.G] == "Recent") {
-        occs$max_ma[wh.occs.G] <- rep(0, len.g)
+        occs$max_ma[wh.occs.G] <- 0
       } else {
         occs$max_ma[wh.occs.G] <-
-          rep(l4s$max_ma[which(l4s$interval_name == as.character(occs$max_age[wh.occs.G]))], len.g)
+          epochs$b_age[which(epochs$interval_name == as.character(occs$max_age[wh.occs.G]))]
       }
       if (occs$min_age[wh.occs.G] == "Recent") { 
-        occs$min_ma[wh.occs.G] <- rep(0, len.g)
+        occs$min_ma[wh.occs.G] <- 0
       } else {
         occs$min_ma[wh.occs.G] <-
-          rep(l4s$min_ma[which(l4s$interval_name == as.character(occs$min_age[wh.occs.G]))], len.g)
+          epochs$b_age[which(epochs$interval_name == as.character(occs$min_age[wh.occs.G]))]
       }
     }
+    
     # If no stratigraphic information is available:
     if (occs$max_age[wh.occs.G] == "" &
         occs$min_age[wh.occs.G] == "" &
         is.na(occs$max_ma[wh.occs.G]) &
         is.na(occs$min_ma[wh.occs.G])) {
-      cat(paste("  - check ", gen, " (", occs$Class[wh.occs.G], 
-        "): no age known in PBDB; check Treatise/Sepkoski\n", sep=""))
+      cat(paste("  - check ", gen, " (", occs$Genus[wh.occs.G], "): no age known in PBDB or Sepkoski; check Treatise/WoRMS\n", sep=""))
     }
   }
   
-  if(override) next
+  if (override) next
 
-  # In case of homonyms, reconfirm "by hand" (using PBDB web interface) so that
-  # do not assign range to wrong taxon. (The PBDB uses the same 'accepted_name'
-  # for synonyms, making it challenging in the raw data to distinguish homonyms
-  # from synonyms, but synonyms are assigned the same strat ranges whereas
-  # homonyms are not.)
-  if (len.pbdb.G > 1L &
-      (length(unique(pbdb$firstapp_max_ma[wh.pbdb.G])) > 1L |
-       length(unique(pbdb$lastapp_min_ma[wh.pbdb.G])) > 1L)) {
-    homonym <- TRUE
-    cat(paste("         * Manually confirm range for possible homonym ",
-        gen, " (", occs$Class[wh.occs.G], ")\n", sep = ""))
-  }
-  
-  # Continue with those taxa with PBDB ranges (attempting to match homonym with
-  # most similar stratigraphic range if at least one FAD or LAD already
-  # provided):
-  gen.pbdb <- pbdb[wh.pbdb.G,]
-  if (homonym) {
-    how.many.na <- c(is.na(occs$min_ma[wh.occs.G]), is.na(occs$max_ma[wh.occs.G]))
-    sum.how.many <- sum(how.many.na)
-    if (sum.how.many < 2L) {
-      max.dev <- (occs$max_ma[wh.occs.G] - gen.pbdb$firstapp_max_ma) ^ 2
-      min.dev <- (occs$min_ma[wh.occs.G] - gen.pbdb$lastapp_min_ma) ^ 2
-      if (sum.how.many == 1L) {
-        if (how.many.na[1])
-          which.best <- which.min(max.dev)
-        else
-          which.best <- which.min(min.dev)
-      }
-      if (sum.how.many == 0L)
-        which.best <- which.min(max.dev + min.dev)
-      max.ma <- gen.pbdb$firstapp_max_ma[which.best]
-      min.ma <- gen.pbdb$lastapp_min_ma[which.best]
-    } else {
-      # If not able to estimate the most likely homonym, use the first entered:
-      max.ma <- gen.pbdb$firstapp_max_ma[1]
-      min.ma <- gen.pbdb$lastapp_min_ma[1]
-    }
-  } else {
+  if (!not.in.pbdb) {
+    gen.pbdb <- pbdb[wh.pbdb.G, ]
     max.ma <- gen.pbdb$firstapp_max_ma
     min.ma <- gen.pbdb$lastapp_min_ma
   }
   
-  # Flag any discrepancies in extinct / extant tags
-  if (any(occs$min_age[wh.occs.G] == "Recent") &
-      any(gen.pbdb$is_extant == "extinct"))
-    cat("+ Confirm extinct/extant status for", gen, "\n")
-  if (any(occs$min_age[wh.occs.G] != "Recent") &
-      any(gen.pbdb$is_extant == "extant"))
-    cat("+ Confirm extinct/extant status for", gen, "\n")
+  # Same, using Sepkoski's Compendium (and using offset window), if there
+  if (use.Sepkoski & !not.in.Sepkoski) {
+    gen.Sepkoski <- sepkoski_compendium[wh.Sepkoski.G, ]
+    Sepkoski.max.ma <- gen.Sepkoski$max_ma
+    Sepkoski.min.ma <- gen.Sepkoski$min_ma
+    # Default to Sepkoski if not in PBDD
+    if (is.na(max.ma))
+      max.ma <- Sepkoski.max.ma
+    if (is.na(min.ma))
+      min.ma <- Sepkoski.min.ma
+    # And expand if within offset window (but not if more than that, implying
+    # the record when Sepkoski compiled his ranges are now potentialy suspect)
+    if (Sepkoski.max.ma > max.ma &
+        (Sepkoski.max.ma - max.ma <= Sepkoski.offset))
+      max.ma <- Sepkoski.max.ma
+    if (Sepkoski.min.ma < min.ma  &
+        (min.ma - Sepkoski.min.ma <= Sepkoski.offset))
+      min.ma <- Sepkoski.min.ma
+  }
   
-  # Assign to "level-4" ages (overriding if previously assigned)
-  Early <-
-    as.character(l4s$interval_name[length(which(l4s$min_ma < max.ma))])
-  Late <-
-    as.character(l4s$interval_name[length(which(l4s$min_ma <= min.ma))])
-  occs$max_ma[wh.occs.G] <- rep(max.ma, len.g)
-  occs$max_age[wh.occs.G] <- rep(Early, len.g)
+  # Flag any discrepancies in extinct / extant tags
+  if (occs$min_age[wh.occs.G] == "Recent" & gen.pbdb$is_extant == "extinct")
+    cat("+ Confirm extinct/extant status for", occs$Genus[wh.occs.G], ", PBDB # ", gen, "\n")
+
+  if (occs$min_age[wh.occs.G] != "Recent" & gen.pbdb$is_extant == "extant") 
+    cat("+ Confirm extinct/extant status for", occs$Genus[wh.occs.G], ", PBDB # ", gen, "\n")
+  
+  # Assign to epochs (overriding if previously assigned), but only if a range
+  # exists
+  if (!is.na(max.ma) & !is.na(min.ma)) {
+    Early <-
+      as.character(epochs$interval_name[length(which(epochs$t_age < max.ma))])
+    Late <-
+      as.character(epochs$interval_name[length(which(epochs$t_age <= min.ma))])
+  }
+  occs$max_ma[wh.occs.G] <- max.ma
+  occs$max_age[wh.occs.G] <- Early
   
   # Implement pull-of-the-Recent
-  if (any(occs$min_age[wh.occs.G] == "Recent") |
-      any(gen.pbdb$is_extant == "extant")) {
+  if (occs$min_age[wh.occs.G] == "Recent" | gen.pbdb$is_extant == "extant") {
     Late <- "Recent"
     min.ma <- 0
   }
-
-  occs$min_ma[wh.occs.G] <- rep(min.ma, len.g)
-  occs$min_age[wh.occs.G] <- rep(Late, len.g)
+  
+  occs$min_ma[wh.occs.G] <- min.ma
+  occs$min_age[wh.occs.G] <- Late
+  
 }
+
+beepr::beep(3)
+
+
 
 # Confirm no dates are out of order (e.g., FAD younger than LAD). This is
 # because of manual entry errors by me in cases where a genus does not have
@@ -281,7 +391,6 @@ if (any(occs$max_ma < occs$min_ma)) {
   cat(occs$Genus[which(occs$max_ma < occs$min_ma)])
   stop("Prior genera have the FAD and LAD switched.)")
 }
-
 
 
 # write.csv(occs, file = "PBDBDates.csv", row.names = FALSE)
@@ -329,9 +438,9 @@ head(occs)
 
 
 # Get midpoint age for PBDB subperiods
-mids <- apply(l4s[ ,9:10], 1, mean)
-divs <- data.frame(interval = l4s$interval_name, base = l4s$max_ma,
-                   top = l4s$min_ma, midpt = mids, div = NA)
+mids <- apply(epochs[ ,9:10], 1, mean)
+divs <- data.frame(interval = epochs$interval_name, base = epochs$b_age,
+                   top = epochs$t_age, midpt = mids, div = NA)
 
 # Genus-level diversity curve (using database occurrences above)
 for(t in 1:nrow(divs)) {
@@ -411,11 +520,11 @@ for (r in 1:length(ranks)) {
     if (taxon.pbdb$is_extant == "extant") min.ma <- 0
     if (max.ma > occs.max.ma) t.occs$max_ma[i] <- max.ma
     if (min.ma < occs.min.ma) t.occs$min_ma[i] <- min.ma
-    # Assign to "level-4" ages
+    # Assign to epochs
     Early <-
-      as.character(l4s$interval_name[length(which(l4s$min_ma < t.occs$max_ma[i]))])
+      as.character(epochs$interval_name[length(which(epochs$t_age < t.occs$max_ma[i]))])
     Late <-
-      as.character(l4s$interval_name[length(which(l4s$min_ma <= t.occs$min_ma[i]))])
+      as.character(epochs$interval_name[length(which(epochs$t_age <= t.occs$min_ma[i]))])
     t.occs$min_age[i] <- Late
     t.occs$max_age[i] <- Early
   }
@@ -432,9 +541,9 @@ for (r in 1:length(ranks)) {
   ## Construct diversity curves        (using 'Total Diversity' of Foote 2000)
   
   # Get midpoint age for PBDB subperiods
-  mids <- apply(l4s[, 9:10], 1, mean)
-  divs <- data.frame(interval = l4s$interval_name, base = l4s$max_ma,
-                     top = l4s$min_ma, midpt = mids, div = NA)
+  mids <- apply(epochs[, 9:10], 1, mean)
+  divs <- data.frame(interval = epochs$interval_name, base = epochs$b_age,
+                     top = epochs$t_age, midpt = mids, div = NA)
   
   # Higher taxa diversity curve (using database occurrences above)
   for (t in 1:nrow(divs)) {
