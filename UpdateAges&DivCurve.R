@@ -115,7 +115,7 @@ head(strat_names)
 epochs <- strat_names[which(strat_names$type == "epoch" &
                               strat_names$scale_no == 1), ]
 ## Add in Ediacaran, too:
-edia <- strat_names[which(strat_names$interval_name == "Ediacaran"),]
+edia <- strat_names[which(strat_names$interval_name == "Ediacaran"), ]
 epochs <- rbind(epochs, edia)
 epochs[, 1:5]
 
@@ -478,7 +478,7 @@ ranks <- c("Family", "Superfamily", "Order", "Class", "Phylum")
 for (r in 1:length(ranks)) {
   t.rank <- ranks[r]
   wh.col <- which(colnames(occs) == t.rank)
-  t.occs <- occs[0 , c(2:wh.col, 9:12)]
+  t.occs <- occs[0 , c(3:wh.col, 11:14)]
   taxa <- sort(unique(occs[[wh.col]]))
   for (i in 1:length(taxa)) {
     taxon.pbdb <- max.ma <- min.ma <- Early <- Late <- NA
@@ -489,7 +489,7 @@ for (r in 1:length(ranks)) {
     if (taxon == "Cyanobacteria") next
     if (taxon == "Chlorophyta") next
     wh.occs.taxon <- which(occs[[wh.col]] == taxon)
-    t.occs[i, 1:(wh.col - 1)] <- occs[wh.occs.taxon[1], 2:wh.col]
+    t.occs[i, 1:(wh.col - 2)] <- occs[wh.occs.taxon[1], 3:wh.col]
     # Use current ranges before updating with PBDB:
     wh.max <- which.max(occs$max_ma[wh.occs.taxon])
     wh.min <- which.min(occs$min_ma[wh.occs.taxon])
@@ -503,23 +503,27 @@ for (r in 1:length(ranks)) {
       t.occs$min_ma[i] <- occs.min.ma
       t.occs$min_age[i] <- occs.Late
     }
-    # Update with PBDB (if extends range):
+    # Update with PBDB (if extends range, often caused by indeterminate
+    # occurrences lacking a genus identification):
     wh.pbdb.taxon <- which(pbdb$taxon_name == taxon)
     # Note sometimes higher taxa have homonyms. Use most frequently used name as
-    # the likely correct one. (Not not a perfect guarantee.)
+    # the likely correct one. (Not a perfect guarantee.)
     n.matches <- length(wh.pbdb.taxon)
     if (n.matches == 0L)
       next
-    if (n.matches > 1L)
-      best.match <- which.max(pbdb$n_occs[wh.pbdb.taxon])
-    taxon.pbdb <- pbdb[wh.pbdb.taxon[best.match],]
+    best.match <- which.max(pbdb$n_occs[wh.pbdb.taxon])
+    taxon.pbdb <- pbdb[wh.pbdb.taxon[best.match], ]
     if (is.na(taxon.pbdb$firstapp_max_ma) &
         is.na(taxon.pbdb$lastapp_min_ma)) next
     max.ma <- max(taxon.pbdb$firstapp_max_ma, na.rm = TRUE)
     min.ma <- min(taxon.pbdb$lastapp_min_ma, na.rm = TRUE)
     if (taxon.pbdb$is_extant == "extant") min.ma <- 0
-    if (max.ma > occs.max.ma) t.occs$max_ma[i] <- max.ma
-    if (min.ma < occs.min.ma) t.occs$min_ma[i] <- min.ma
+    if (length(occs.max.ma) == 0L)
+      t.occs$max_ma[i] <- max.ma else
+      if (max.ma >= occs.max.ma) t.occs$max_ma[i] <- max.ma
+    if (length(occs.min.ma) == 0L)
+      t.occs$min_ma[i] <- min.ma else
+        if (min.ma <= occs.min.ma) t.occs$min_ma[i] <- min.ma
     # Assign to epochs
     Early <-
       as.character(epochs$interval_name[length(which(epochs$t_age < t.occs$max_ma[i]))])
