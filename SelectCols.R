@@ -35,15 +35,16 @@
 rm(list = ls())
 setwd("C:/Users/pnovack-gottshall/OneDrive - Benedictine University/Desktop/Databases/Maintenance & update R scripts")
 # setwd("C:/Users/pnovack-gottshall/OneDrive - Benedictine University/Documents/GSA (& NAPC)/2024NAPC/Higher taxa eco diversity")
-# setwd("C:/Users/pnovack-gottshall/Dropbox/Decapod size research/Analyses")
-# all <- read.delim(file = "AllCols.tab", stringsAsFactors = FALSE)
-all <- read.delim(file = "AllCols_Constant_PBDB.tab", stringsAsFactors = FALSE)
+# setwd("C:/Users/pnovack-gottshall/OneDrive - Benedictine University/Documents/GSA (& NAPC)/2025GSA/Decapod size")
+all <- read.delim(file = "AllCols.tab", stringsAsFactors = FALSE)
+# all <- read.delim(file = "AllCols_Constant_PBDB.tab", stringsAsFactors = FALSE)
 # all <- read.delim(file = "AllCols_Mode_PBDB.tab", stringsAsFactors = FALSE)
 # all <- read.delim(file = "AllCols_Mode.tab", stringsAsFactors = FALSE)
 # all <- read.delim(file = "AllCols_Constant.tab", stringsAsFactors = FALSE)
 # all <- read.delim(file = "AllCols_Mode_PBDB_June2024.tab", stringsAsFactors = FALSE)
 # all <- read.delim(file = "AllCols_Constant_PBDB_June2024.tab", stringsAsFactors = FALSE)
 head(all)
+tail(all)
 nrow(all)
 
 
@@ -78,15 +79,16 @@ write.csv(selected, file = "occs.csv", row.names = FALSE)
 
 
 # PropogateSizes.R columns:     ----------------------------------------------------
-cols <- c("IDNumber", "Phylum", "Subphylum", "Superclass", "Class", "Subclass", 
-          "Infraclass", "Superorder", "Order", "Suborder", "Infraorder",
-          "Section", "Subsection", "Superfamily", "Family", "Subfamily", "Tribe", 
-          "Genus", "Subgenus", "Species", "max_ma", "min_ma", "BodySizeScale", 
-          "RefGenusSize", "RefSpeciesSize", "Enterer", "DateEntered_Size", 
-          "SizeChanged", "History_Size", "BodyMeasureReference", "APLength", 
-          "TransverseLength", "DVLength", "PhotoAP", "PhotoTransverse", 
-          "PhotoDV", "APScale", "TransverseScale", "DVScale", "Est_AP", "Est_T", 
-          "Est_DV", "AbsStratDistance", "Est_AbsStratDistance")
+cols <- c("IDNumber", "PBDB_GSG_Number", "Phylum", "Subphylum", "Superclass", 
+          "Class", "Subclass", "Infraclass", "Superorder", "Order", "Suborder", 
+          "Infraorder", "Section", "Subsection", "Superfamily", "Family", 
+          "Subfamily", "Tribe", "Genus", "Subgenus", "Species", "max_ma", 
+          "min_ma", "BodySizeScale", "RefGenusSize", "RefSpeciesSize", 
+          "Enterer", "DateEntered_Size", "SizeChanged", "History_Size", 
+          "BodyMeasureReference", "APLength", "TransverseLength", "DVLength", 
+          "PhotoAP", "PhotoTransverse", "PhotoDV", "APScale", "TransverseScale", 
+          "DVScale", "Est_AP", "Est_T", "Est_DV", "AbsStratDistance", 
+          "Est_AbsStratDistance")
 wh.cols <- match(cols, colnames(all))
 selected <- all[, wh.cols]
 head(selected)
@@ -96,17 +98,14 @@ if (!identical(cols, colnames(selected)))
 # write.table(selected, file = "PreSizes_Constant_withPBDB.tab", row.names = FALSE, sep = "\t", quote = FALSE)
 # write.table(selected, file = "PreSizes_Mode_withPBDB.tab", row.names = FALSE, sep = "\t", quote = FALSE)
 # write.table(selected, file = "PreSizes.tab", row.names = FALSE, sep = "\t", quote = FALSE)
-# write.table(selected, file = "PreSizes_Constant_Ostracodes.tab", row.names = FALSE, sep = "\t", quote = FALSE)
-# write.table(selected, file = "PreSizes_Bradoriida&Aster&Echino.tab", row.names = FALSE, sep = "\t", quote = FALSE)
-
 
 
 
 # PropogateLifeHabits.R columns:     ----------------------------------------------------
-cols <- c("IDNumber", "Phylum", "Subphylum", "Superclass", "Class", "Subclass", 
-          "Infraclass", "Superorder", "Order", "Suborder", "Infraorder",
-          "Section", "Subsection", "Superfamily", "Family", "Subfamily", 
-          "Tribe", "Genus", "Subgenus", "Species", "EcologyScale", 
+cols <- c("IDNumber", "PBDB_GSG_Number", "Phylum", "Subphylum", "Superclass", 
+          "Class", "Subclass", "Infraclass", "Superorder", "Order", "Suborder", 
+          "Infraorder", "Section", "Subsection", "Superfamily", "Family", 
+          "Subfamily", "Tribe", "Genus", "Subgenus", "Species", "EcologyScale", 
           "RefGenusEco", "RefSpeciesEco", "DateEntered_Ecology", "SizeChanged", 
           "BodySizeScale", "History_Ecology", "AboveImmediate", "AbovePrimary", 
           "AbsFoodStratification", "AbsStratification", "AmbientFeeder", 
@@ -135,32 +134,27 @@ selected <- all[, wh.cols]
 head(selected)
 if (!identical(cols, colnames(selected)))
   stop("column names are not as specified!")
-write.table(selected, file = "PreLH_Constant_Ostracodes.tab", row.names = FALSE, sep = "\t", quote = FALSE)
-# write.table(selected, file = "PreLH_Isabel.tab", row.names = FALSE, sep = "\t", quote = FALSE)
-# write.table(selected, file = "PreLH_Mode_Ostracodes.tab", row.names = FALSE, sep = "\t", quote = FALSE)
-# write.table(selected, file = "PreLH_Constant_Bradoriida&Aster&Echino.tab", row.names = FALSE, sep = "\t", quote = FALSE)
+write.table(selected, file = "PreLH_mode.tab", row.names = FALSE, sep = "\t", quote = FALSE)
 # write.table(selected, file = "PreLH_constant.tab", row.names = FALSE, sep = "\t", quote = FALSE)
-# write.table(selected, file = "PreLH_constant_Bradoriida&Aster&Echino.tab", row.names = FALSE, sep = "\t", quote = FALSE)
-# write.table(selected, file = "PreLH_mode_Bradoriida&Aster&Echino.tab", row.names = FALSE, sep = "\t", quote = FALSE)
 # write.table(selected, file = "PreLH_constant_PBDB.tab", row.names = FALSE, sep = "\t", quote = FALSE)
 # write.table(selected, file = "PreLH_mode_PBDB.tab", row.names = FALSE, sep = "\t", quote = FALSE)
 
 
 # Per-character sorting for downstream analyses:     ----------------------------------------------------
-cols <- c("IDNumber", "Phylum", "Subphylum", "Class", "Subclass", "Order", 
-          "Suborder", "Superfamily", "Family", "Subfamily", "Genus", "Subgenus", 
-          "Species", "max_ma",	"min_ma", "EcologyScale", "BodySizeScale",
-          "AbsStratDistance", "BodyVolume", "BodyVolumeCode", "AbsStratification", 
-          "RelStratification", "AbsFoodStratification", "RelFoodStratification", 
-          "Mobility", "Sexual", "Asexual", "Biotic", "Lithic", "Fluidic", 
-          "HardSubstratum", "SoftSubstratum", "Insubstantial", "Attached", 
-          "FreeLiving", "AbovePrimary", "WithinPrimary", "AboveImmediate", 
-          "WithinImmediate", "SelfSupport", "Supported", "FeedingAbovePrimary", 
-          "FeedingWithinPrimary", "FeedingAboveImm", "FeedingWithinImm", 
-          "AmbientFeeder", "FilterFeeder", "FilterDensity", "AttachmentFeeder", 
-          "MassFeeder", "RaptorFeeder", "Autotroph", "Microbivore", "Herbivore", 
-          "Carnivore", "Incorporeal", "SolutionFeeder", "ParticleFeeder", 
-          "BulkFeeder")
+cols <- c("IDNumber", "PBDB_GSG_Number", "Phylum", "Subphylum", "Class", 
+          "Subclass", "Order", "Suborder", "Superfamily", "Family", "Subfamily", 
+          "Genus", "Subgenus", "Species", "max_ma",	"min_ma", "EcologyScale", 
+          "BodySizeScale", "AbsStratDistance", "BodyVolume", "BodyVolumeCode", 
+          "AbsStratification", "RelStratification", "AbsFoodStratification", 
+          "RelFoodStratification", "Mobility", "Sexual", "Asexual", "Biotic", 
+          "Lithic", "Fluidic", "HardSubstratum", "SoftSubstratum", 
+          "Insubstantial", "Attached", "FreeLiving", "AbovePrimary", 
+          "WithinPrimary", "AboveImmediate", "WithinImmediate", "SelfSupport", 
+          "Supported", "FeedingAbovePrimary", "FeedingWithinPrimary", 
+          "FeedingAboveImm", "FeedingWithinImm", "AmbientFeeder", 
+          "FilterFeeder", "FilterDensity", "AttachmentFeeder", "MassFeeder", 
+          "RaptorFeeder", "Autotroph", "Microbivore", "Herbivore", "Carnivore", 
+          "Incorporeal", "SolutionFeeder", "ParticleFeeder", "BulkFeeder")
 wh.cols <- match(cols, colnames(all))
 selected <- all[, wh.cols]
 head(selected)
