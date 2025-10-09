@@ -134,6 +134,7 @@ rm(list = ls())
 setwd("C:/Users/pnovack-gottshall/OneDrive - Benedictine University/Desktop/Databases/Maintenance & update R scripts")
 # setwd("C:/Users/pnovack-gottshall/OneDrive - Benedictine University/Documents/GSA (& NAPC)/2024NAPC/Higher taxa eco diversity")
 input <- read.delim(file = "PreLH_constant_Ostracodes.tab", colClasses = "character")
+# input <- read.delim(file = "PreLH_Isabel.tab", colClasses = "character")
 # input <- read.delim(file = "PreLH_mode_Ostracodes.tab", colClasses = "character")
 # input <- read.delim(file = "PreLH_constant_Bradoriida&Aster&Echino.tab", colClasses = "character")
 # input <- read.delim(file = "preLH_mode_Bradoriida&Aster&Echino.tab", colClasses = "character")
@@ -693,6 +694,7 @@ if (any(table(input$IDNumber) > 1)) {
 }
 
 ## EXPORT DATA -------------------------------------------------------------
+write.table(out, file = "PostLH_Isabel.tab", quote = FALSE, sep = "\t", row.names = FALSE)
 # write.table(out, file = "PostLH_constant_Ostracodes.tab", quote = FALSE, sep = "\t", row.names = FALSE)
 # write.table(out, file = "PostLH_mode_Ostracodes.tab", quote = FALSE, sep = "\t", row.names = FALSE)
 # write.table(out, file = "PostLH_constant_Bradoriida&Aster&Echino.tab", quote = FALSE, sep = "\t", row.names = FALSE)
