@@ -91,7 +91,7 @@ if (length(table(table(occs$Genus))) > 1L) {
   print(foo)
   cat("There are", length(foo), "entries above.\n")
   stop("The above genus entries are entered twice. Delete the outdated entry/entries?")
-  }
+}
 # Ignore the cases where multiple subgenera are included in same genus, where
 # there are ecologically quite different species in same genus, and homonyms.
 
