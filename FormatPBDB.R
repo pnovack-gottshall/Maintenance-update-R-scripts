@@ -66,47 +66,37 @@ library(parallel)    # v. 4.2.2
 
 # Because taxa may be incorrectly tagged, download "all" preservation categories
 # (body, trace, form), including "obsolete name variants"; then secondarily
-# (=manually, via code) remove the ichnofossils (tagged with flags = "I" or
+# (= manually, via code) remove the ichnofossils (tagged with flags = "I" or
 # "IF"). Include form taxa in life-habit database for now, as many are actually
 # "regular" taxa improperly flagged by data enterers as "form" taxa.
 
 # Make sure to include "all" names (including synonyms, misspellings, and other
-# invalid names), as these can be found in Sepkoski Compendium and other
-# databases. Include "obsolete name variants" but only propagate (sub)genera
-# that are tagged in the following categories: "nomen dubium" (because status
-# deserves further study rather than confirmed lack of validity) and "subjective
-# synonym of" because these opinions are subjective and may change in the
-# future.
-
-# Manually exclude (sub)genera that are currently coded in the other
-# "difference" categories: "corrected to", "invalid subgroup of", "misspelling
-# of", "nomen nudum", "nomen oblitum", "nomen vanum", "objective synonym of",
-# "obsolete variant of", "reassigned as", and "replaced by". These are genuine
-# errors or objectively invalid (sub)genera that are unlikely to be reversed by
-# future opinions. However, these names should be included in downstream
-# analyses (such as adding stratigraphic ranges from Sepkoski's Compendium), as
-# other data bases may include such obsolete names. "obsolete variant of" and
-# "reassigned as" are excluded because they are usually (always?) only used when
-# a subgenus is re-ranked as a genus or vice versa; these variants should
-# already be included above, and so including them here would simply add
-# duplicate entries.
-
-# Because the 'parent' of subjective synonyms and nomen dubia is their
-# accepted_name (and not a higher taxon), need to hold these genera until
-# everything else is propagated. To maintain consistency in the PBDB
-# "namespace," these names are set aside here. They will be added back in (1)
-# after updating the stratigraphic ranges (including with WoRMS for adding
-# extant ranges and with the Sepkoski Compendium), (2) after propagating the
-# body sizes (which rely on the stratigraphic ranges), and (3) after propagating
-# the life habits. Only then will we (4) copy the taxonomic classification of
-# their accepted parent, and (5) add a tag to the TaxonomyReference field that
-# copies the invalid opinion (i.e., "Possibly invalid (sub)genus.
-# Paratoernquistia may be a subjective synonym of Toernquistia.").
-
-# However, to avoid "parenting" issues (such as when a legitimate genus is
+# invalid names), as these can be found in Sepkoski's Compendium and other
+# databases. To avoid "parenting" issues (such as when a legitimate genus is
 # parented in a family tagged as an ichnofamily or in an obsolete naming
-# varient, or when a subgenus is parented into a nomen nudum genus), include all
-# taxa in the parenting algorithm.
+# variant, or when a subgenus is parented into a nomen nudum genus), also
+# include all taxa in the parenting algorithm. Exclude "obsolete name variants"
+# because they are almost certainly improper. If some (anticipated to be quite
+# few) become deemed acceptable in the future, it is sufficiently easy to add
+# them in, given their likely limited study. (Prior to July 2025, "subjective
+# synonyms" and "nomen dubium" were propagated but stored separately, in case
+# they were subsequently deemed valid. See GitHub
+# https://github.com/pnovack-gottshall/Maintenance-update-R-scripts to view now
+# obsolete code.)
+
+# Manually exclude (sub)genera that are currently coded in "difference"
+# categories: "corrected to", "invalid subgroup of", "misspelling of", "nomen
+# dubium", "nomen nudum", "nomen oblitum", "nomen vanum", "objective synonym
+# of", "obsolete variant of", "reassigned as", "replaced by", and "subjective
+# synonym of". These are nearly certainly genuine errors or properly invalid
+# (sub)genera that are unlikely to be reversed by future opinions. However,
+# these names should be included in downstream analyses (such as adding
+# stratigraphic ranges from Sepkoski's Compendium), as other databases may
+# include such obsolete names. "obsolete variant of" and "reassigned as" are
+# excluded because they are usually (always?) only used when a subgenus is
+# re-ranked as a genus or vice versa; these variants should already be included
+# above, and so including them here would simply add duplicate entries.
+
 
 
 
@@ -125,48 +115,62 @@ nrow(pbdb)
 # See https://paleobiodb.org/data1.2/taxa/list_doc.html for description of API
 # fields.
 
-# Confirm flags
+# Confirm flags (note "valid" names are not listed here, except for the base
+# name)
 table(pbdb$flags)
 # B = base taxon downloaded (here, Metazoa, which redirects to Animalia)
 # V = invalid taxon variants (replacements, misspellings, synonyms, etc)
 # I = ichnotaxa
 # F = form taxa (ignore here given many user errors in classifying these, and
-#     they represent a small number of taxa)
+#     represent a small number of taxa; known ones are manually removed below)
 
 
 ## Extract out trace fossils and invalid names, for (sub)genera only (keeping
 ## all taxon types for higher taxa to allow proper parenting).
-valid.gsgs <- 
-  which((pbdb$accepted_rank == "genus" | pbdb$accepted_rank == "subgenus")
-        & pbdb$difference == "")
-traces <- grep("I", pbdb$flags)
+
+# valid.gsgs <- which((pbdb$accepted_rank == "genus" | pbdb$accepted_rank == "subgenus") & pbdb$difference == "")
+# traces <- grep("I", pbdb$flags)
+
 # Not worth indexing on "V" because not all taxa with a "difference" are tagged
 # with "V". The following treatment is more efficient.
+
+# which.gsg <- setdiff(valid.gsgs, traces)
+
+# Note that sometime since June 2024 and July 2025, the 'difference' flags have
+# been changed. Until I receive confirmation on the new behavior, using the
+# following instead of the code above.
+
+valid.gsgs <- which((pbdb$accepted_rank == "genus" |
+                       pbdb$accepted_rank == "subgenus") &
+                      (pbdb$taxon_name == pbdb$accepted_name) &
+                      (pbdb$taxon_no == pbdb$accepted_no))
+traces <- grep("I", pbdb$flags)
 which.gsg <- setdiff(valid.gsgs, traces)
 
-# Valid (sub)genera now all forms or regular taxa, with no 'differences'
+# New option? It's not always easy to get a coherent list of all "valid" genera
+# in the PBDB. This code seems to work most effectively in identifying them
+# (while allowing some form taxa that may have been incorrectly tagged as
+# forms.)
+gsgs <- pbdb[which(pbdb$accepted_rank == "genus" |
+                     pbdb$accepted_rank == "subgenus"), ]
+gsgs.ordered <- gsgs[order(gsgs$flags, gsgs$difference), ]
+# traces <- grep("I", gsgs.ordered$flags)
+# which.gsg <- setdiff(as.integer(rownames(gsgs.ordered)), traces)
+which.first.valid.gsg <- unique(gsgs.ordered$accepted_no)
+valid.gsg.matches <- match(which.first.valid.gsg, gsgs.ordered$accepted_no)
+valid.gsgs <- pbdb[row.names(gsgs.ordered[valid.gsg.matches, ]), ]
+valid.gsgs <- valid.gsgs[which(valid.gsgs$flags == "" | valid.gsgs$flags == "F"), ]
+which.gsg <- as.integer(rownames(valid.gsgs))
+# This seems to catch the 5 known genera the older versions missed, so in right direction
+
+
+# Valid (sub)genera now are all form taxa or regular taxa, with no 'differences'
 table(pbdb[which.gsg, c("accepted_rank", "flags", "difference")])
 
 # Invalid (sub)genera are traces or differenced, but other taxa include everything
 table(pbdb[-which.gsg, c("accepted_rank", "flags", "difference")])[c(3, 12, 2, 8, 1), , 1]
 table(pbdb[-which.gsg, c("accepted_rank", "flags", "difference")])[c(3, 12, 2, 8, 1), , -1]
 
-# Save the allowed invalids (subjective synonyms and nomen dubia) for later use
-# (to maintain a consistent namespace during propagations).
-allowed_invalids <-
-  which((pbdb$accepted_rank == "genus" |
-           pbdb$accepted_rank == "subgenus")
-        & (pbdb$difference == "nomen dubium" |
-            pbdb$difference == "subjective synonym of"))
-pbdb_add_synonyms <- pbdb[setdiff(allowed_invalids, traces), ]
-nrow(pbdb_add_synonyms)
-table(pbdb_add_synonyms$flags) # form, variants, and form-variants
-
-# Confirm no duplicates with 'pbdb'
-table(duplicated(rownames(pbdb), rownames(pbdb_add_synonyms)))
-
-# Save for later
-# write.csv(pbdb_add_synonyms, file = "PBDB_synonyms_and_dubia.csv", row.names = FALSE)
 
 
 
@@ -178,12 +182,15 @@ table(duplicated(rownames(pbdb), rownames(pbdb_add_synonyms)))
 # gen.order = Vector of ordered PBDB genus (and subgenus) names.
 # which.gsg = Vector of indices for PBDB entries tagged as accepted genus or 
 #   subgenus names.
+# skip.unranked = Vector of unranked (non-marine) names to skip. (Note exception 
+#   to still include Aves within Theropoda/Saurischia/etc.)
 # pbdb = data frame of all PBDB occurrences.
 #
 # Output is a list, with each item the taxonomy for a single genus. Extends LAD
 # to 'Recent' if genus is extant and splits subgenus names into genus and
 # subgenus components.
-prep.PBDB <- function(g = 1, gen.order = NULL, which.gsg = NULL, pbdb = NULL) {
+prep.PBDB <- function(g = 1, gen.order = NULL, which.gsg = NULL, 
+                      skip.unranked = NULL, pbdb = NULL) {
   scales <- c("phylum", "subphylum", "superclass", "class", "subclass", 
               "infraclass", "superorder", "order", "suborder", "infraorder", 
               "section", "subsection", "superfamily", "family", "subfamily", 
@@ -204,9 +211,11 @@ prep.PBDB <- function(g = 1, gen.order = NULL, which.gsg = NULL, pbdb = NULL) {
   out$PBDBNumber <- pbdb$taxon_no[wh]
   out$max_ma <- as.numeric(pbdb$firstapp_max_ma[wh])
   out$min_ma <- as.numeric(pbdb$lastapp_min_ma[wh])
+
   # Implement 'Pull-of-the-Recent' extension:
   if (any(pbdb$is_extant[wh] == "extant"))
     out$min_ma <- 0
+  
   # Properly assign subgenera and genera:
   if (pbdb$accepted_rank[wh] == "subgenus") {
     split.subgenus <- strsplit(out$Genus, " ")[[1]]
@@ -217,13 +226,17 @@ prep.PBDB <- function(g = 1, gen.order = NULL, which.gsg = NULL, pbdb = NULL) {
   child_rank <- pbdb$accepted_rank[wh]
 
   # In rare cases (e.g., Devonocoryphe (Devonocoryphe)), a subgenus is parented
-  # to a nomen nudum genus. This creates a blank parent (all NAs). Here, we
+  # to an invalid "nomen" genus. This creates a blank parent (all NAs). Here, we
   # identify these cases and treat them separately.
   alt.parent <- pbdb[which(pbdb$taxon_no == pbdb$parent_no[wh]), ][1, ]
   ignore_this <- FALSE
-  if (all(is.na(parent)) & alt.parent$difference == "nomen nudum")
+  if (all(is.na(parent)) &
+      (alt.parent$difference == "nomen dubium" |
+       alt.parent$difference == "nomen nudum" |
+       alt.parent$difference == "nomen oblitum" |
+       alt.parent$difference == "nomen vanum"))
     ignore_this <- TRUE
-
+  
   # In cases where the priority opinion involves BOTH a correction AND elevation
   # of a subgenus to genus rank, the genus is orphaned (placed within a higher
   # taxon but not assigned a genus). Examples include Erioptera (Hoplolabis) and
@@ -233,27 +246,48 @@ prep.PBDB <- function(g = 1, gen.order = NULL, which.gsg = NULL, pbdb = NULL) {
   # a subgenus (which can sometimes happen when genera are later reranked as a
   # subgenus; E.g., Amphistrophiella (Amphistrophiella) parented as
   # Amphistrophia (Amphistrophiella)).
+  
   if (!ignore_this) {
     # The all is.na occurs in rare cases (e.g., Devonocoryphe (Devonocoryphe)),
     # when a subgenus is parented to a nomen nudum genus. In this case, we skip
     # the repeat loop below and remove the subgenus from the list of genera.
+    
     repeat {
+      
     # i.e., if parent is above genus and child is below genus (and there is no
     # genus), elevate the subgenus name to genus rank:
       if ((parent$accepted_rank != "genus" & parent$accepted_rank != "subgenus") &
           child_rank == "subgenus") {
         out$Genus <- out$Subgenus
         out$Subgenus <- ""
-        }
-      if (parent$accepted_rank %in% scales)
+      }
+
+      # If parent is a known unranked clade (excluding parents of birds), skip
+      if (parent$accepted_name %in% skip.unranked &
+          out$Class != "Aves")
+        ignore_this <- TRUE
+
+      # Assign parent name if a named rank
+      if (parent$accepted_rank %in% scales) {
         out[1, which(scales == parent$accepted_rank)] <-
           as.character(parent$accepted_name)
+        
+        # For taxa with large numbers of cladistics-based unranked taxa, it is
+        # common for a taxon to be parented to another name also deemed at that
+        # rank (e.g., class Trilobita parented to class Artiopoda and class
+        # Mammalia parented to class Osteichthyes). Redefining 'scales' forces
+        # this to that only use the first correctly "ranked" parent as moves up
+        # the parenting structure.
+        scales <- scales[1:(which(scales == parent$accepted_rank) - 1)]
+      }
+      
       # Override subgenus treatment if parent's rank is also subgenus
       if (parent$accepted_rank == "subgenus") {
         split.subgenus <- strsplit(parent$accepted_name, " ")[[1]]
         out$Genus <- as.character(split.subgenus[1])
         out$Subgenus <- as.character(gsub("[()]", "", split.subgenus[2]))
-        }
+      }
+      
       # update for new parenting
       parent <-
         pbdb[which(pbdb$accepted_no == parent$parent_no), ][1, ]
@@ -263,7 +297,7 @@ prep.PBDB <- function(g = 1, gen.order = NULL, which.gsg = NULL, pbdb = NULL) {
     }
   }
   
-  # Manually delete if parent is nomum nudum
+  # Manually delete if parent is "nomum" or assigned unranked to skip
   if (ignore_this)
     out[1, ] <- NA
   
@@ -276,7 +310,7 @@ prep.PBDB <- function(g = 1, gen.order = NULL, which.gsg = NULL, pbdb = NULL) {
 sort(table(pbdb$accepted_name[which.gsg]), decreasing = TRUE)[1:30]
 
 # Note different parents (one is a brachiopod and one is a gastropod)
-pbdb[which(pbdb$accepted_name == "Lowenstamia"), ]
+pbdb[which(pbdb$accepted_name == "Aaleniella"), ]
 
 
 
@@ -296,9 +330,15 @@ which.gsg <- setdiff(valid.gsgs, traces)
 cat("Processing", length(which.gsg), "(sub)genera\n")
 gen.order <- order(pbdb$accepted_name[which.gsg])
 gen.seq <- seq_along(gen.order)
+# Some non-marine taxa (especially tetrapods like dinosaurs) in the PBDB are
+# assigned unranked names. These can not easily be removed once built. When a
+# parent includes these names, skip processing them and move on to other genera.
+skip.unranked <- c("Dinosauromorpha", "Dinosauriformes", "Dinosauria", 
+                   "Eudinosauria", "Saurischia", "Ornithischia", "Theropoda", 
+                   "Coelurosauria")
 # Fast test batch:
-# gen.seq <- 1:1000
-
+# gen.seq <- 1:10000
+  
 # Set up computer cluster
 require(parallel)
 cpus <- parallel::detectCores() # Number of CPUs to cluster together
@@ -311,16 +351,19 @@ sfExportAll()				            # Export all libraries, files, & objects
 # Execute the function
 prep <- NA
 prep <- sfLapply(x = gen.seq, fun = prep.PBDB, gen.order = gen.order, 
-                 which.gsg = which.gsg, pbdb = pbdb) # Version without load-balancing
+                 which.gsg = which.gsg, skip.unranked = skip.unranked, 
+                 pbdb = pbdb) # Version without load-balancing
 sfStop()
 output <- data.table::rbindlist(prep)
-(Sys.time() - t.start0)  # ~ 13 minutes with 8 CPUs, ~7 minutes w/ 20 cores, 3 minutes w/ 112 cores
+(Sys.time() - t.start0)  # ~ 13 minutes with 8 CPUs, ~4 minutes w/ 20 cores, 3 minutes w/ 112 cores
 head(output)
 beepr::beep(3)
 
-# Remove subgenera parented to nomen nudum genus parents
+# Remove subgenera parented to "nomen" or non-marine unranked genus parents
 nrow(output)
-wh.remove <- sapply(gen.seq, function(gen.seq) all(is.na(output[gen.seq, 1:18])))
+gen.seq2 <- 1:nrow(output)
+wh.remove <- 
+  sapply(gen.seq2, function(gen.seq2) all(is.na(output[gen.seq2, 1:18])))
 output <- output[!wh.remove, ]
 nrow(output)
 
@@ -329,32 +372,31 @@ nrow(output)
 
 # This is just a temporary algorithm. Run UpdateAges&DivCurve.R for more
 # comprehensive code, which additionally (1) adds ranges for taxa in Sepkoski
-# Compendium, (2) interfaces with WoRMS to confirm extinct/extant status (and
-# setting min_ma to 0), and (3) updates the dates to the Gradstein (2020)
-# Geologic Time Scale (using lookup table of Peter Wagner).
+# Compendium, (2) (will someday) interfaces with WoRMS to confirm extinct/extant
+# status (and setting min_ma to 0), and (3) updates the dates to the Gradstein
+# (2020) Geologic Time Scale (using lookup table of Peter Wagner).
 strat_names <-
   read.csv("https://www.paleobiodb.org/data1.2/intervals/list.csv?all_records&vocab=pbdb")
-# 1 = eons, 2 = eras, 3 = periods, 4 (the default) = subperiods, and 5 = epochs.
 # strat_names <- read.csv("strat_names.csv")
-scale_level <- 4
-ages <- strat_names[which(strat_names$scale_level == scale_level),]
+head(strat_names)
+## Restrict to the default geochronological scale (ICS 2024) epochs.
+## Other options includes "eons", "eras", "periods", "epochs", and "ages", etc.
+epochs <- strat_names[which(strat_names$type == "epoch" &
+                              strat_names$scale_no == 1), ]
+## Add in Ediacaran, too:
 edia <- strat_names[which(strat_names$interval_name == "Ediacaran"), ]
-ages <- rbind(ages, edia)
-# Replace outdated Series 3 with Miaolingian (if using epochs)
-ages$interval_name <-
-  replace(ages$interval_name, which(ages$interval_name == "Series 3"), 
-          "Miaolingian")
-tail(ages[, 1:5])
+epochs <- rbind(epochs, edia)
+epochs[, 1:5]
 output$max_age <- character(1)
 output$min_age <- character(1)
 
-for(int in 1:nrow(ages)) {
-  wh.FAD <- which(output$max_ma > ages$min_ma[int] 
-                  & output$max_ma <= ages$max_ma[int])
-  wh.LAD <- which(output$min_ma >= ages$min_ma[int] 
-                  & output$min_ma < ages$max_ma[int])
-  output$max_age[wh.FAD] <- as.character(ages$interval_name[int])
-  output$min_age[wh.LAD] <- as.character(ages$interval_name[int])
+for(int in 1:nrow(epochs)) {
+  wh.FAD <- which(output$max_ma > epochs$t_age[int] 
+                  & output$max_ma <= epochs$b_age[int])
+  wh.LAD <- which(output$min_ma >= epochs$t_age[int] 
+                  & output$min_ma < epochs$b_age[int])
+  output$max_age[wh.FAD] <- as.character(epochs$interval_name[int])
+  output$min_age[wh.LAD] <- as.character(epochs$interval_name[int])
 }
 
 # Special work-around for singletons (only problematic for those that occur on a
@@ -429,6 +471,10 @@ beepr::beep()
 # (Ideally, make the entry with zero occurrences and no other parenting opinions
 # be the one to point to the more completely fleshed out genus.)
 
+
+homonyms <- sort(table(pbdb$accepted_name[which.gsg]), decreasing = TRUE)
+homonyms <- homonyms[which(as.integer(homonyms) > 1)]
+write.table(names(homonyms), file = "known_homonyms.csv", row.names = FALSE, col.names = FALSE)
 # All likely duplicates have been corrected (as of Nov. 21, 2022). The following
 # are confirmed (or very likely) homonyms (occurring within the same class):
 # Strophomena, Desmoceras, Aspidocrinus, Bicarinella, Billingsites,
@@ -445,6 +491,7 @@ beepr::beep()
 
 ## Post-process to focus on marine taxa and to standardize taxonomy with mine
 # x <- read.csv(file = "PBDBformatted.csv", header = TRUE, stringsAsFactors = FALSE)
+x <- output
 head(x)
 
 # Remove terrestrial and non-marine taxa, but include marine tetrapods. List
@@ -538,17 +585,17 @@ non.marine <- c("Arachnida", "Insecta", "Collembola", "Palaeophreatoicidae",
                 "Dimacrodontidae", "Driveriidae", "Dromatheriidae", "Dviniidae",
                 "Ecteniniidae", "Edaphosauridae", "Galesauridae", "Gorgonopidae",
                 "Haramiyaviidae", "Haramiyidae", "Homodontosauridae", 
-                "Ictidorhinidae", "Kuehneotheriidae", "Lumkuiidae", "Madysauridae",
-                "Mastersoniidae", "Nikkasauridae", "Ophiacodontidae", 
-                "Probainognathidae", "Procynosuchidae", "Sphenacodontidae",
-                "Tapinocephalidae", "Tappenosauridae", "Therioherpetidae",
+                "Ictidorhinidae", "Kuehneotheriidae", "Lumkuiidae", 
+                "Madysauridae", "Mastersoniidae", "Nikkasauridae", 
+                "Ophiacodontidae", "Probainognathidae", "Procynosuchidae", 
+                "Sphenacodontidae", "Tappenosauridae", "Therioherpetidae",
                 "Thrinaxodontidae", "Traversodontidae", "Trirachodontidae", 
                 "Tritheledontidae", "Tritylodontidae", "Varanopidae", 
                 "Gephyrostegida", "Gephyrostegidae", "Seymouriamorpha", 
                 "Kotlassioidea", "Seymourioidea", "Baphetoidea", "Baphetidae",
                 "Spathicephalidae", "Acanthostegidae", "Archeriidae", 
-                "Brachystelechidae", "Caerorhachidae", "Canowindridae", "Caseidae",
-                "Colosteidae", "Crassigyrinidae", "Diadectidae", 
+                "Brachystelechidae", "Caerorhachidae", "Canowindridae", 
+                "Caseidae", "Colosteidae", "Crassigyrinidae", 
                 "Elginerpetontidae", "Eoherpetontidae", "Eothyrididae", 
                 "Gymnarthridae", "Ichthyostegidae", "Limnoscelidae", 
                 "Mesosauridae", "Molgophidae", "Pantylidae", "Proterogyrinidae",
@@ -576,56 +623,53 @@ non.marine <- c("Arachnida", "Insecta", "Collembola", "Palaeophreatoicidae",
                 "Helicarionidae", "Urocyclidae", "Camaenidae", "Canariellidae",
                 "Cepolidae", "Elonidae", "Epiphragmophoridae", "Geomitridae",
                 "Helicodontidae", "Hygromiidae", "Labyrinthidae", "Polygyridae", 
-                "Pleurodontidae", "Sphincterochilidae", "Thysanophoridae", 
-                "Trichodiscinidae", "Trissexodontidae", "Xanthonychidae", 
-                "Ariantinae", "Murellinae", "Helicoidea", "Helicidae", 
-                "Allognathini", "Maculariini", "Thebini", "Helicini", "Limacoidea",
-                "Agriolimacidae", "Boettgerillidae", "Limacidae", "Vitrinidae",
-                "Oleacinoidea", "Oleacinidae", "Spiraxidae", "Orthalicoidea",
-                "Amphibulimidae", "Bothriembryontidae", "Bulimulidae", 
-                "Cyclodontinidae", "Megaspiridae", "Orthalicidae", "Simpulopsidae",
-                "Tomogeridae", "Parmacelloidea", "Parmacellidae", "Plectopyloidea",
+                "Sphincterochilidae", "Thysanophoridae", "Trichodiscinidae", 
+                "Trissexodontidae", "Xanthonychidae", "Ariantinae", 
+                "Murellinae", "Helicoidea", "Helicidae", "Allognathini", 
+                "Maculariini", "Thebini", "Helicini", "Limacoidea", 
+                "Agriolimacidae", "Boettgerillidae", "Oleacinoidea", 
+                "Oleacinidae", "Spiraxidae", "Orthalicoidea", "Amphibulimidae", 
+                "Bothriembryontidae", "Bulimulidae", "Cyclodontinidae", 
+                "Megaspiridae", "Orthalicidae", "Simpulopsidae", "Tomogeridae", 
+                "Parmacelloidea", "Parmacellidae", "Plectopyloidea",
                 "Plectopylidae", "Sculptariidae", "Punctoidea", "Charopidae", 
-                "Cystopeltidae", "Discidae", "Endodontidae", "Helicodiscidae", 
-                "Oopeltidae", "Oreohelicidae", "Punctidae", "Pupilloidea",
-                "Achatinellidae", "Agardhiellidae", "Amastridae", "Argnidae",
-                "Cerastidae", "Cochlicopidae", "Draparnaudiidae", "Enidae", 
-                "Fauxulidae", "Gastrocoptidae", "Lauriidae", "Odontocycladidae",
-                "Orculidae", "Pagodulinidae", "Partulidae", "Pleurodiscidae",
-                "Pupillidae", "Pyramidulidae", "Spelaeoconchidae", "Spelaeodiscidae",
-                "Strobilopsidae", "Valloniidae", "Vertiginidae", "Azecoidea", 
-                "Azecidae", "Arionoidei", "Arionoidea", "Anadenidae", 
-                "Ariolimacidae", "Arionidae", "Binneyidae", "Philomycidae", 
-                "Clausilioidei", "Limacoidei", "Oleacinoidei", "Haplotrematoidea",
-                "Haplotrematidae", "Orthalicoidei", "Chondrinoidea", "Chondrinidae",
-                "Truncatellinidae", "Dendropupoidea", "Anthracopupidae", 
+                "Cystopeltidae", "Discidae", "Helicodiscidae", "Oopeltidae", 
+                "Punctidae", "Achatinellidae", "Agardhiellidae", "Amastridae", 
+                "Argnidae", "Cerastidae", "Cochlicopidae", "Draparnaudiidae", 
+                "Enidae", "Fauxulidae", "Gastrocoptidae", "Lauriidae", 
+                "Odontocycladidae", "Orculidae", "Pagodulinidae", "Partulidae", 
+                "Pleurodiscidae", "Pyramidulidae", "Spelaeoconchidae", 
+                "Spelaeodiscidae", "Vertiginidae", "Azecoidea", "Azecidae", 
+                "Arionoidei", "Arionoidea", "Anadenidae", "Ariolimacidae", 
+                "Arionidae", "Binneyidae", "Philomycidae", "Clausilioidei", 
+                "Limacoidei", "Oleacinoidei", "Haplotrematoidea",
+                "Haplotrematidae", "Orthalicoidei", "Chondrinoidea", 
+                "Chondrinidae", "Truncatellinidae", "Anthracopupidae", 
                 "Dendropupidae", "Pupilloidea", "Pupilloidei", "Rhytidoidei", 
                 "Rhytidoidea", "Acavidae", "Caryodidae", "Clavatoridae", 
-                "Dorcasiidae", "Macrocyclidae", "Megomphicidae", "Odontostomidae",
-                "Rhyididae", "Strophocheilidae", "Vidaliellidae", "Succineoidei", 
-                "Athoracophoroidea", "Athoracophoridae", "Succineoidea", 
-                "Succineidae", "Sagdoidea", "Sagdidae", "Solaropsidae", 
+                "Dorcasiidae", "Macrocyclidae", "Megomphicidae", 
+                "Odontostomidae", "Rhyididae", "Strophocheilidae", 
+                "Vidaliellidae", "Succineoidei", "Athoracophoroidea", 
+                "Athoracophoridae", "Succineoidea", "Sagdoidea", "Solaropsidae", 
                 "Zachrysiidae", "Helicoidei", "Trigonochlamydidae", 
                 "Trochomorphoidea", "Chronidae", "Dyakiidae", "Euconulidae", 
                 "Geotrochidae", "Microcystidae", "Staffordiidae", 
-                "Trochomorphidae", "Zonitoidea", "Archaeozonitidae", "Zonitidae",
-                "Testacelloidea", "Testacellidae", "Urocoptoidea", "Cerionidae",
+                "Trochomorphidae", "Zonitoidea", "Archaeozonitidae", 
+                "Testacelloidea", "Testacellidae", "Urocoptoidea", "Cerionidae", 
                 "Epirobiidae", "Eucalodiidae", "Holospiridae", "Urocoptidae", 
                 "Acanthinulidae", "Grandipatulidae", "Grangerellidae", 
                 "Acroloxoidea", "Acroloxidae", "Lymnaeoidea", "Bulinidae",
-                "Burnupiidae", "Clivunellidae", "Lymnaeidae", "Physidae", 
-                "Planorbidae", "Hygrophila", "Chilinoidea", "Chilinidae", 
-                "Latiidae", "Lymnaeoidea", "Helminthoglyptidae", 
-                "Helminthoglyptinae", "Camaeninae", "Eloninae", "Klikiinae",
-                "Geomitrinae", "Helicellinae", "Ariantiinae", "Helcinae", 
-                "Murellinae", "Helicodintinae", "Lindholmiolinae", "Soosiinae",
-                "Hygromiinae", "Leptaxinae", "Metafruticolinae", "Trochulininae",
-                "Discolepinae", "Lucerninae", "Pleurodontinae", "Polygyrinae", 
-                "Triodopsinae", "Pseudoleptaxinae", "Sphincterochilinae",
-                "Miraverelliinae", "Trichodiscininae", "Gittenbergeriinae",
-                "Trissexodontinae", "Echinichinae", "Helminthoglyptinae", 
-                "Humboldtianinae", "Lysinoinae", "Monadeniinae", 
-                "Xanthonychinae", "Astacoidea", "Parastacoidea", 
+                "Burnupiidae", "Clivunellidae", "Hygrophila", "Chilinoidea", 
+                "Chilinidae", "Latiidae", "Helminthoglyptidae", "Camaeninae", 
+                "Eloninae", "Klikiinae", "Geomitrinae", "Helicellinae", 
+                "Ariantiinae", "Helcinae", "Helicodintinae", "Lindholmiolinae", 
+                "Soosiinae", "Hygromiinae", "Leptaxinae", "Metafruticolinae", 
+                "Trochulininae", "Discolepinae", "Lucerninae", "Pleurodontinae", 
+                "Polygyrinae", "Triodopsinae", "Pseudoleptaxinae", 
+                "Sphincterochilinae", "Miraverelliinae", "Trichodiscininae", 
+                "Gittenbergeriinae", "Trissexodontinae", "Echinichinae", 
+                "Helminthoglyptinae", "Humboldtianinae", "Lysinoinae", 
+                "Monadeniinae", "Xanthonychinae", "Astacoidea", "Parastacoidea", 
                 "Protastacoidea",  "Cambaroididae", "Atyidae", "Atyoidea",
                 "Anchialocarididae", "Trogloplacinae", "Euryrhynchidae", 
                 "Typhlocarididae", "Potamoidea", "Deckeniidae", "Potamidae", 
@@ -637,19 +681,54 @@ non.marine <- c("Arachnida", "Insecta", "Collembola", "Palaeophreatoicidae",
                 "Mediocyprinae", "Megalocypridinae", "Mytilocypridinae", 
                 "Ngarawinae", "Rudjakoviellinae", "Scottiinae", "Talicyprideinae", 
                 "Candonidae", "Candoninae", "Kliellidae", "Lota", "Aeglidae", 
-                "Aegloidea", "Aegla", "Pseudothelphusidae", "Pseudothelphusoidea",
-                "Epiloboceridae", "Odiomarinae", "Anchialocarididae", 
+                "Aegloidea", "Aegla", "Pseudothelphusidae", 
+                "Pseudothelphusoidea", "Epiloboceridae", "Odiomarinae", 
                 "Xiphocarididae", "Desmocarididae", "Johngarthia", "Bahiacaris", 
                 "Bechleja", "Yongjiacaris", "Pseudocaridinella", "Gecarcinus",
-                "Epigrapsus", "Tuerkayana")
+                "Epigrapsus", "Tuerkayana", "Cycloganoidei", "Hexapoda", 
+                "Glossata", "Eufolivora", "Temnospondyli", "Salientia",
+                "Proteida", "Gymnophiona", "Clitellata", "Pauropoda", 
+                "Chilopoda", "Poposauroidea", "Cotylosauria", "Amphibiosauria", 
+                "Antlerpeton", "Aytonerpeton", "Brittagnathus", 
+                "Tetrapodomorpha", "Densignathus", "Diploradus", "Doragnathus",
+                "Eldeceeon", "Gaiasia", "Harajicadectes", "Hynerpeton", 
+                "Jakubsonia", "Kirktonecta", "Koilops", "Livoniana", 
+                "Mesanerpeton", "Metaxygnathus", "Ossirarus", "Parmastega",
+                "Perittodus", "Qikiqtania", "Sigournea", "Silvanerpeton", 
+                "Sinostega", "Solenodonsaurus", "Spodichthys", "Tantallognathus",
+                "Theriodesmus", "Ventastega", "Westlothiana", "Characichnos",
+                "Althaspis", "Antarctilamna", "Apalolepis", "Axinaspis", 
+                "Baringaspis", "Boreania", "Boreaspis", "Bothriolepis", 
+                "Brachipteraspis", "Brachyacanthus", "Canonia", "Cardipeltis", 
+                "Cephalaspis", "Ciderius", "Climatius", "Corvaspis", "Cosmaspis", 
+                "Ctenaspis", "Davelaspis", "Dinaspidella", "Dobraspis", 
+                "Dobunnacanthus", "Doryaspis", "Ectinaspis", "Elpistostege", 
+                "Errivaspis", "Escharaspis", "Escuminaspis", "Euphanerops", 
+                "Euproprotapsis", "Eusthenopteron", "Euthacanthus", 
+                "Fleurantia", "Gigantaspis", "Gomphonchus", "Gustavaspis", 
+                "Gyracanthus", "Heightingtonaspis", "Hemicyclaspis", 
+                "Hildenaspis", "Hoelaspis", "Holoptychius", "Homalacanthus", 
+                "Homalaspidella", "Ilemoraspis", "Irregulareaspis", "Kiaeraspis", 
+                "Lampraspis", "Lanarkia", "Larnovaspis", "Lasanius", 
+                "Lepidaspis", "Levesquaspis", "Machairaspis", "Mesacanthus", 
+                "Miguashaia", "Miltaspis", "Mimetaspis", "Nectaspis", 
+                "Nikolivia", "Nodonchus", "Norselaspis", "Onchus", 
+                "Parameteoraspis", "Parexus", "Pattenaspis", "Phialaspis", 
+                "Plataspis", "Plectrodus", "Plourdosteus", "Podolaspis", 
+                "Protaspis", "Protodus", "Pteraspis", "Pterolepis", "Quebecius", 
+                "Rhinopteraspis", "Scaumenacia", "Scolenaspis", "Securiaspis", 
+                "Shielia", "Sinacanthus", "Tegaspis", "Traquairaspis", 
+                "Triazeugacanthus", "Turinia", "Uraniacanthus", "Uranolophus", 
+                "Vernicomacanthus", "Waengsjoeaspis", "Weigeltaspis", 
+                "Wheathillaspis", "Wladysagitta", "Zenaspis", "Zychaspisu")
 
 # Most tetrapods are terrestrial, so remove by default:
-tetrapods <- c("Mammalia", "Reptilia", "Amphibia")
+tetrapods <- c("Mammalia", "Reptilia", "Amphibia", "Aves", "Synapsida")
 
 # Then add back in the known marine tetrapods, the sole marine amphibian
-# (Trematosauridae), and some known marine xiphosuran, pterosaur, decapod, etc.
-# taxa that are otherwise typically non-marine (and may have been removed in
-# taxa above):
+# (Trematosauridae), and some known marine xiphosuran, pterosaur, decapod, bird,
+# etc. taxa that are otherwise typically non-marine (and may have been removed
+# in taxa above):
 marine.exceptions <- c("Chelonioidea", "Ophidiomorpha", "Mosasauroidea", 
                        "Mosasauria", "Thalattosauria", "Sauropterygia", 
                        "Ichthyopterygia", "Mesoeucrocodylia", "Pterosauria", 
@@ -715,7 +794,54 @@ marine.exceptions <- c("Chelonioidea", "Ophidiomorpha", "Mosasauroidea",
                        "Scleroparei", "Tarrasiiformes", "Trachichthyiformes",
                        "Anomalopidae", "Aesopichthyidae", "Centrolepidae",
                        "Elopsidae", "Lepidopidae", "Mesolepidae", "Mimiidae",
-                       "Scopelidae", "Protaegla", "Haumuriaegla")
+                       "Scopelidae", "Protaegla", "Haumuriaegla", 
+                       "Pachypleurosauria", "Eosauropterygia", "Hupehsuchia",
+                       "Nothosauria", "Placodontia", "Plesiosauria", 
+                       "Longipinnati", "Thalattosuchia", "Helveticosauroidea",
+                       "Besanosauridae", "Californosauridae", "Grippiidae", 
+                       "Guanlingsauridae", "Ichthyosauridae", "Leptonectidae", 
+                       "Merriamosauridae", "Mixosauridae", "Omphalosauridae", 
+                       "Ophthalmosauridae", "Parvinatatoridae", "Proteosauridae",
+                       "Quasianosteosauridae", "Saurosphargidae", 
+                       "Shastasauridae", "Shonisauridae", "Thaisauridae",
+                       "Utatsusauridae", "Eurysternidae", "Mosasauridae", 
+                       "Plesiochelyidae", "Ichthyosauria", "Chacaicosaurus", 
+                       "Cetarthrosaurus", "Guizhouichthyosaurus", 
+                       "Thalattoarchon", "Isfjordosaurus", "Latipinnatoidea", 
+                       "Mixosauria", "Nanchangasaurus", "Hudsonelpidia", 
+                       "Macgowania", "Dearcmhara", "Eurhinosaurus", 
+                       "Excalibosaurus", "Hauffiopteryx", "Leptonectes", 
+                       "Temnodontosaurus", "Suevoleviathan", "Shastosauroidea", 
+                       "Malawania", "Stenopterygius", "Macromyzon", 
+                       "Tulerpeton", "Casineria", "Gogonasus", "Kenichthys", 
+                       "Tinirau", "Tungsenia", "Dialipina", "Dialipiniformes",
+                       "Acanthodes", "Actinolepis", "Aestiaspis", "Aethaspis", 
+                       "Allocryptaspis", "Amaltheolepis", "Andreolepis", 
+                       "Anglaspis", "Aporemaspis", "Ateleaspis", "Auchenaspis", 
+                       "Balticaspis", "Benneviaspis", "Birkenia", "Brochoadmones", 
+                       "Bryantolepis", "Bryantonchus", "Cacheacanthus", 
+                       "Camptaspis", "Canadapteraspis", "Cassidiceps", 
+                       "Cheiracanthus", "Cheirolepis", "Cometicercus", 
+                       "Dartmuthia", "Dentapelta", "Diademaspis", "Didymaspis", 
+                       "Diplacanthus", "Drepanolepis", "Ectopacanthus", 
+                       "Elegestolepis", "Emerikodus", "Furcacauda", 
+                       "Glabrapelta", "Gladiobranchus", "Gomphodus", 
+                       "Hapilaspis", "Haplacanthus", "Helenolepis", "Hirella", 
+                       "Holonema", "Homostius", "Ischnacanthus", "Kalanaspis", 
+                       "Kartalaspis", "Kathemacanthus", "Laliacanthus", 
+                       "Loganellia", "Logania", "Lupopsyroides", "Lupopsyrus", 
+                       "Markacanthus", "Mimipiscis", "Moythomasia", "Nodocosta", 
+                       "Nostolepis", "Obtusacanthus", "Oeselaspis", "Orvikuina", 
+                       "Phoebodus", "Poraspis", "Porolepis", "Procephalaspis", 
+                       "Protacrodus", "Protopteraspis", "Pruemolepis", 
+                       "Psammolepis", "Psammosteus", "Ptychodictyon", 
+                       "Pycnosteus", "Rhadinacanthus", "Rhyncholepis", 
+                       "Romundina", "Saaremaaspis", "Saarolepis", "Schizosteus", 
+                       "Sclerodus", "Severaspis", "Simblaspis", "Skamolepis", 
+                       "Sphenonectris", "Stegobranchiaspis", "Superciliaspis", 
+                       "Tannuaspis", "Tartuosteus", "Tauraspis", "Thyestes", 
+                       "Tremataspis", "Unarkaspis", "Watsonacanthus", 
+                       "Witaaspis")
 # Pterosaur genus list from Dean, Mannion, and Butler (2016, Palaeontology,
 # Appendix S1) and family list from Bestwick, Unwin, Butler, Henderson, and
 # Purnell (2018, Biological Reviews). Birds provided from Alex Clark (Field
@@ -725,16 +851,17 @@ marine.exceptions <- c("Chelonioidea", "Ophidiomorpha", "Mosasauroidea",
 
 # Extract the known marine taxa (in lineages that are typically non-marine):
 sq <- 1:nrow(x)
-marine.vert.exceptions <- x[sapply(sq, function(sq) any(marine.exceptions %in% x[sq, ])), ]
+marine.vert.exceptions <- 
+  x[sapply(sq, function(sq) any(marine.exceptions %in% x[sq, ])), ]
 
 # Remove the non-marine taxa, and all tetrapopds, including marine tetrapods (in
 # case of tetrapods that were not coded as members of Tetrapoda in the PBDB):
-marine.typical <- x[!sapply(sq, function(sq) any(c(non.marine, tetrapods, 
-                                                   marine.exceptions) %in% x[sq, ])), ]
+marine.typical <- 
+  x[!sapply(sq, function(sq) any(c(non.marine, tetrapods) %in% x[sq, ])), ]
 
 # Combine the typical marine taxa plus the known marine tetrapods, etc.:
 marine.taxa <- rbind(marine.typical, marine.vert.exceptions)
-sort(table(marine.taxa$Class))
+sort(table(marine.taxa$Class), decreasing = FALSE)
 nrow(x)
 nrow(marine.taxa)
 beepr::beep()
@@ -788,7 +915,7 @@ known.forms <- c("Aptychus", "Cornaptychus", "Crassaptychus", "Granulaptychus",
                  "Scopidae", "Anhingidae", "Borvocarbo", "Leucocarbo", 
                  "Limicorallus", "Microcarbo", "Hydrocorax", "Miocorax",
                  "Nambashag", "Nectornis", "Oligocorax", "Paracorax", 
-                 "Valenticarbo")
+                 "Valenticarbo", "Testudoolithus", "Tiantaioolithus")
 wh.forms <- which(marine.taxa$Genus %in% known.forms | 
                     marine.taxa$Subgenus %in% known.forms)
 marine.taxa <- marine.taxa[-wh.forms, ]
@@ -800,6 +927,8 @@ wh.anaptychus <- which(marine.taxa$Genus == "Anaptychus" &
                          marine.taxa$Class == "Cephalopoda")
 if (length(wh.anaptychus) > 0L)
   marine.taxa <- marine.taxa[-wh.anaptychus,]
+
+nrow(marine.taxa)
 
 # Save object
 # write.csv(marine.taxa, file = "PBDBformatted_NoTerr.csv", row.names = FALSE)
