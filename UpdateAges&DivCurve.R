@@ -25,7 +25,7 @@ library(beepr)
 # pbdb.all <- read.csv("https://www.paleobiodb.org/data1.2/taxa/list.csv?base_name=Metazoa&interval=Phanerozoic&show=app&show=acconly&vocab=pbdb")
 # If want forams too, use base_name=Metazoa,Retaria
 # https://paleobiodb.org/data1.2/taxa/list.csv?base_name=Decapoda&rank=min_subgenus&variant=all&show=app
-pbdb.all <- read.csv("pbdb_data.csv")
+pbdb.all <- read.csv("pbdb_data_AllMetazoaTaxa.csv")
 # pbdb.all <- read.csv("decapoda_pbdb_data.csv")
 head(pbdb.all)
 
@@ -49,7 +49,9 @@ which(table(pbdb$taxon_name) > 1L)
 ## Use the following columns: IDNumber, Phylum, Class, Order, Superfamily,
 ## Family, Genus, Subgenus, Species, max_age, max_ma, min_age, t_age
 occs <- read.csv("occs.csv", header = TRUE)
+# occs <- read.csv("occs_Mode_PBDB.csv", header = TRUE)
 head(occs)
+str(occs)
 
 ph.tbl <- table(occs$Phylum)
 sort(ph.tbl, decreasing = FALSE)
@@ -75,7 +77,12 @@ is.factor(occs$min_age)
 # occs$max_age <- as.factor(as.character(occs$max_age))
 # occs$min_age <- as.factor(as.character(occs$min_age))
 
-head(occs)
+# Confirm that IDNumber and PBDB_GSG_Number are numerics
+is.numeric(occs$IDNumber)
+is.numeric(occs$PBDB_GSG_Number)
+# If not, usually means there was a hidden tab on some data field. Check source
+# file and rebuilt, if necessary.
+
 
 ## Any duplicated ID numbers?
 which(table(occs$IDNumber) > 1)
@@ -183,7 +190,7 @@ for (int in 2:length(all.names)) {
   max_ma <- gradstein_2020_emended$time_scale$ma_lb[wh.gradstein]
   t_age <- gradstein_2020_emended$time_scale$ma_ub[wh.gradstein]
   
-  # Special case for int = 233 ("T"), not in gradstein object
+  # Special case for int = 233 ("T"), not in Gradstein object
   if (int == 233 & length(wh.gradstein) == 0L) {
     wh.tertiary <- which(gradstein_2020_emended$time_scale$interval == "Tertiary")
     max_ma <- gradstein_2020_emended$time_scale$ma_lb[wh.tertiary]
@@ -253,18 +260,22 @@ any(occs$Genus[wh.no.ID] %in% sepkoski_compendium$Genus_23)
 
 Gen <- sort(unique(occs$PBDB_GSG_Number))
 for (i in 1:length(Gen)) {
-  # for(i in 72:length(Gen)) {
+  # for (i in 27558:length(Gen)) {
   gen.pbdb <- max.ma <- min.ma <- Early <- Late <- Sepkoski.max.ma <- 
     Sepkoski.min.ma <- NA
   override <- not.in.pbdb <- not.in.Sepkoski <- homonym <- FALSE
   gen <- Gen[i]
-  if(i %in% index) cat("processing genus ", i, "\n")
+  if (i %in% index) cat("processing genus ", i, "\n")
   
   # Extract the rows for this taxon in occs, pbdb, and Sepkoski:
   wh.occs.G <- which(occs$PBDB_GSG_Number == gen)
   wh.pbdb.G <- which(pbdb$taxon_no == gen)
   wh.Sepkoski.G <- which(sepkoski_compendium$pbdb_taxon_no == gen)
-
+  
+  # Sometimes two genera got entangled in Sepkoski's Compendium. IF so, issue a warning to double check
+  if (length(wh.Sepkoski.G) > 1L)
+    stop("check the duplicate entry of genus 'i'")
+  
   # Check for duplicate ID numbers (which should not happen):
   if (length(wh.pbdb.G) > 1L) stop("check 'i' if there's a duplicate PBDB ID number")
   
@@ -328,57 +339,72 @@ for (i in 1:length(Gen)) {
     gen.pbdb <- pbdb[wh.pbdb.G, ]
     max.ma <- gen.pbdb$firstapp_max_ma
     min.ma <- gen.pbdb$lastapp_min_ma
+    
+    # Flag any discrepancies in extinct / extant tags (if in PBDB)
+    if (occs$min_age[wh.occs.G][1] == "Recent" & gen.pbdb$is_extant == "extinct")
+      cat("+ Confirm extinct/extant status for", occs$Genus[wh.occs.G][1], ", PBDB # ", gen, "\n")
+    
+    if (occs$min_age[wh.occs.G][1] != "Recent" & gen.pbdb$is_extant == "extant") 
+      cat("+ Confirm extinct/extant status for", occs$Genus[wh.occs.G][1], ", PBDB # ", gen, "\n")
+    
+    # Implement pull-of-the-Recent (if extant in PBDB)
+    if (occs$min_age[wh.occs.G][1] == "Recent" | gen.pbdb$is_extant == "extant") {
+      Late <- "Recent"
+      min.ma <- 0
+    }
+    
+    # Adding [1] index because occasionally two species in same genus are
+    # entered in life habit / size database.
+    
   }
   
   # Same, using Sepkoski's Compendium (and using offset window), if there
   if (use.Sepkoski & !not.in.Sepkoski) {
+    
     gen.Sepkoski <- sepkoski_compendium[wh.Sepkoski.G, ]
+
+    # Could add [1] below in case of multiple occurrences in Compendium, but
+    # better not to until confirm all instances of duplications are correct.
     Sepkoski.max.ma <- gen.Sepkoski$max_ma
     Sepkoski.min.ma <- gen.Sepkoski$min_ma
+    
     # Default to Sepkoski if not in PBDD
     if (is.na(max.ma))
       max.ma <- Sepkoski.max.ma
     if (is.na(min.ma))
       min.ma <- Sepkoski.min.ma
-    # And expand if within offset window (but not if more than that, implying
-    # the record when Sepkoski compiled his ranges are now potentialy suspect)
-    if (Sepkoski.max.ma > max.ma &
-        (Sepkoski.max.ma - max.ma <= Sepkoski.offset))
-      max.ma <- Sepkoski.max.ma
-    if (Sepkoski.min.ma < min.ma  &
-        (min.ma - Sepkoski.min.ma <= Sepkoski.offset))
-      min.ma <- Sepkoski.min.ma
+    
+    # Only expand if there are values in Sepkoski to expand with:
+    if ((!is.na(min.ma) & !is.na(max.ma))
+        & (!is.na(Sepkoski.min.ma) & !is.na(Sepkoski.max.ma))) {
+      # And expand if within offset window (but not if more than that, implying
+      # the record when Sepkoski compiled his ranges are now potentialy suspect)
+      if (Sepkoski.max.ma > max.ma &
+          (Sepkoski.max.ma - max.ma <= Sepkoski.offset))
+        max.ma <- Sepkoski.max.ma
+      if (Sepkoski.min.ma < min.ma  &
+          (min.ma - Sepkoski.min.ma <= Sepkoski.offset))
+        min.ma <- Sepkoski.min.ma
+    }
+    
+    # Assign to epochs (overriding if previously assigned), but only if a range
+    # exists
+    if (!is.na(max.ma) & !is.na(min.ma)) {
+      Early <-
+        as.character(epochs$interval_name[length(which(epochs$t_age < max.ma))])
+      Late <-
+        as.character(epochs$interval_name[length(which(epochs$t_age <= min.ma))])
+    }
+    
+    occs$max_ma[wh.occs.G] <- max.ma
+    occs$max_age[wh.occs.G] <- Early
+    
+    occs$min_ma[wh.occs.G] <- min.ma
+    occs$min_age[wh.occs.G] <- Late
+    
   }
-  
-  # Flag any discrepancies in extinct / extant tags
-  if (occs$min_age[wh.occs.G] == "Recent" & gen.pbdb$is_extant == "extinct")
-    cat("+ Confirm extinct/extant status for", occs$Genus[wh.occs.G], ", PBDB # ", gen, "\n")
-
-  if (occs$min_age[wh.occs.G] != "Recent" & gen.pbdb$is_extant == "extant") 
-    cat("+ Confirm extinct/extant status for", occs$Genus[wh.occs.G], ", PBDB # ", gen, "\n")
-  
-  # Assign to epochs (overriding if previously assigned), but only if a range
-  # exists
-  if (!is.na(max.ma) & !is.na(min.ma)) {
-    Early <-
-      as.character(epochs$interval_name[length(which(epochs$t_age < max.ma))])
-    Late <-
-      as.character(epochs$interval_name[length(which(epochs$t_age <= min.ma))])
-  }
-  occs$max_ma[wh.occs.G] <- max.ma
-  occs$max_age[wh.occs.G] <- Early
-  
-  # Implement pull-of-the-Recent
-  if (occs$min_age[wh.occs.G] == "Recent" | gen.pbdb$is_extant == "extant") {
-    Late <- "Recent"
-    min.ma <- 0
-  }
-  
-  occs$min_ma[wh.occs.G] <- min.ma
-  occs$min_age[wh.occs.G] <- Late
-  
 }
-
+  
 beepr::beep(3)
 
 
@@ -387,6 +413,7 @@ beepr::beep(3)
 # because of manual entry errors by me in cases where a genus does not have
 # occurrences in the PBDB. Thanks for Dave Bapst for pointing out error, which
 # is triggered if try to build a time-tree.
+any(occs$max_ma < occs$min_ma)
 if (any(occs$max_ma < occs$min_ma)) {
   cat(occs$Genus[which(occs$max_ma < occs$min_ma)])
   stop("Prior genera have the FAD and LAD switched.)")
