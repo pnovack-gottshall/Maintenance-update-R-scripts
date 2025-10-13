@@ -46,6 +46,7 @@ all <- read.delim(file = "AllCols.tab", stringsAsFactors = FALSE)
 head(all)
 tail(all)
 nrow(all)
+str(all)
 
 
 ## CHOOSE SELECTED COLUMN SET -----------------------------------------------------
@@ -73,7 +74,7 @@ head(selected)
 if (!identical(cols, colnames(selected)))
   stop("column names are not as specified!")
 write.csv(selected, file = "occs.csv", row.names = FALSE)
-# write.csv(selected, file = "occs_Constant_PBDB.csv", row.names = FALSE)
+# write.csv(selected, file = "occs_Mode_PBDB.csv", row.names = FALSE)
 
 
 
