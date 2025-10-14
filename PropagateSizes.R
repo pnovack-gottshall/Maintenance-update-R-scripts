@@ -118,11 +118,11 @@
 
 # (7) Sort the BodySizeScale = 'Sp/Subg/Gen' rows (AND ONLY THESE ROWS!) by:
 
-#     (a) Number of PhotoX columns (with largest first) so entries with complete 
-#         (all 3) size measurements are first and most incomplete are last. 
-#         That way those entries with best scales and more-complete sizes are 
-#         checked first, and so later entries can use the largest available pool 
-#         of relatives.
+#     (a) Number of PhotoX columns (with largest values first) so entries with 
+#         complete (all 3) size measurements are first and most incomplete are 
+#         last. That way those entries with best scales and more-complete sizes 
+#         are checked first, and so later entries can use the largest available 
+#         pool of relatives.
 
 #     (b) Sort item by AbsStratDist (with largest values first) so entries with 
 #         estimated AbsStratDists are considered first to propagate to those 
@@ -158,7 +158,7 @@ rm(pre.input)
 input <- read.delim(file = "preSizes.tab", stringsAsFactors = FALSE, colClasses = colCl)
 # input <- read.delim(file = "preSizes_Decapods.tab", stringsAsFactors = FALSE, colClasses = colCl)
 # input <- read.delim(file = "PreSizes_Constant_withPBDB.tab", stringsAsFactors = FALSE)
-# pre.input <- read.delim(file = "PreSizes_Mode_withPBDB.tab", stringsAsFactors = FALSE)
+# input <- read.delim(file = "PreSizes_Mode_withPBDB.tab", stringsAsFactors = FALSE)
 scales <- c("Species", "Subgenus", "Genus", "Tribe", "Subfamily", "Family", 
             "Superfamily", "Subsection", "Section", "Infraorder", "Suborder", 
             "Order", "Superorder", "Infraclass", "Subclass", "Class", 
@@ -184,9 +184,9 @@ str(input)
 
 # TROUBLESHOOT: Make sure the "SizeChanged" and 4 "Est_X" (including
 # Est_AbsStratDistance) columns are input as characters and not logicals or all
-# NAs. If a column is blank, it is classed by default as a logical (which causes
-# errors below) and replaced with NAs. If needed (such as when there are no
-# "check"ed entries; i.e., when did a clean propagation), use next lines to
+# NAs. (If a column is blank, it is classed by default as a logical (which
+# causes errors below) and replaced with NAs.) If needed (such as when there are
+# no "check"ed entries; i.e., when did a clean propagation), use next lines to
 # force to proper class. Note that it is fine for AbsStratDist to have NAs for
 # missing values (so long as the column is treated as a numeric). It is also
 # advisable to confirm the PhotoX and XLength columns are input as numerics.
@@ -464,7 +464,7 @@ if (record.log) cat("Changes made to body sizes on", today, ":\n\n", file = reco
 (start.t <- Sys.time())
 
 for (i in 1:nrow(out)) {
-  # for (i in 29220:nrow(out)) {
+  # for (i in 50798:nrow(out)) {
   
   if (i %in% index)
     cat("record", i, "of", nrow(out), ":", out$Genus[i], out$Species[i], "\n")
