@@ -4,7 +4,8 @@
 ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ##
 ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ##
 ##
-## !!!NONE!!!
+##  Code does not propagate subgenera correctly. Ex., a subgenus in Balanus
+##  (Balanus) should be propagated to genus Balanus instead of subfamily.
 ##
 ##  triple check that the new (June 2024) switch in lines 590-593 works as 
 ##  intended
@@ -133,23 +134,21 @@
 rm(list = ls())
 setwd("C:/Users/pnovack-gottshall/OneDrive - Benedictine University/Desktop/Databases/Maintenance & update R scripts")
 # setwd("C:/Users/pnovack-gottshall/OneDrive - Benedictine University/Documents/GSA (& NAPC)/2024NAPC/Higher taxa eco diversity")
-input <- read.delim(file = "PreLH_constant_Ostracodes.tab", colClasses = "character")
-# input <- read.delim(file = "PreLH_Isabel.tab", colClasses = "character")
-# input <- read.delim(file = "PreLH_mode_Ostracodes.tab", colClasses = "character")
-# input <- read.delim(file = "PreLH_constant_Bradoriida&Aster&Echino.tab", colClasses = "character")
-# input <- read.delim(file = "preLH_mode_Bradoriida&Aster&Echino.tab", colClasses = "character")
+input <- read.delim(file = "PreLH_mode_PBDB.tab", colClasses = "character")
 # input <- read.delim(file = "preLH_constant.tab", colClasses = "character")
 # input <- read.delim(file = "preLH_mode.tab", colClasses = "character")
-# input <- read.delim(file = "preLH_mode_PBDB.tab", colClasses = "character")
 # input <- read.delim(file = "preLH_constant_PBDB.tab", colClasses = "character")
-scales <- c("Species", "Subgenus", "Genus", "Subfamily", "Family", "Superfamily", 
-  "Suborder", "Order", "Subclass", "Class", "Subphylum", "Phylum", "", NA)
+scales <- c("Species", "Subgenus", "Genus", "Tribe", "Subfamily", "Family", 
+            "Superfamily", "Subsection", "Section", "Infraorder", "Suborder", 
+            "Order", "Superorder", "Infraclass", "Subclass", "Class", 
+            "Superclass", "Subphylum", "Phylum", "", NA)
 scales <- factor(scales, levels = scales, ordered = TRUE)
 input$EcologyScale <- factor(input$EcologyScale, levels = scales, ordered = TRUE)
 input$BodySizeScale <- factor(input$BodySizeScale, levels = scales, ordered = TRUE)
 out <- input      # Work with 'out', saving 'input' for reference
 str(input)
 head(input)
+nrow(input)
 table(input$EcologyScale)
 
 ## Any duplicated ID numbers?
@@ -167,7 +166,7 @@ if (any(table(input$IDNumber) > 1)) {
 # x = data frame of all data
 # i = index (row number for taxon entry being considered)
 # start = taxonomic level to start (default = subfamily, with 1 = species and 
-#   14 = NA). Note should never be '1' or else 'relatives' will include 
+#   21 = NA). Note should never be '1' or else 'relatives' will include 
 #   unrelated taxa sharing the same species epithet
 # end = taxonomic level to end (default = NA, running higher up through all
 #    levels, including unknowns)
@@ -175,12 +174,14 @@ if (any(table(input$IDNumber) > 1)) {
 # ref.g.col = column for reference genus name
 # ref.sp.col = column for reference species epithet name
 # eco.col = columns to check for life habit traits
-find.rels <- function(x, i, min.rels = 1, start = 4, end = 12, ref.g.col = 15, 
+find.rels <- function(x, i, min.rels = 1, start = 4, end = 19, ref.g.col = 15, 
   ref.sp.col = 16, eco.col = 21:59) {
   if (start == 1L)
     stop("'start' must be greater than 1 (species-level)")
-  scales <- c("Species", "Subgenus", "Genus", "Subfamily", "Family", "Superfamily", 
-    "Suborder", "Order", "Subclass", "Class", "Subphylum", "Phylum")
+  scales <- c("Species", "Subgenus", "Genus", "Tribe", "Subfamily", "Family", 
+              "Superfamily", "Subsection", "Section", "Infraorder", "Suborder", 
+              "Order", "Superorder", "Infraclass", "Subclass", "Class", 
+              "Superclass", "Subphylum", "Phylum", "", NA)
   scales <- factor(scales, levels = scales, ordered = TRUE)
   others <- x[-i, ] # Entry cannot be its own relative
   low.res <- NA
@@ -320,8 +321,8 @@ better.all.equal <- function(a, b) {
 
 
 ## Examples --------------------------------------------------------------------
-cols <- 21:59 # LH cols
-est.cols <- 60:98 # Est_X cols
+cols <- 29:67 # LH cols
+est.cols <- 68:106 # Est_X cols
 # Coral Stylophyllum, brachiopods Dallithyris and Murravia, asteroid Schuchertia
 i <- which(out$Genus == "Schuchertia")[1] 
 out[i, cols]
@@ -330,9 +331,6 @@ out[i, cols]
 combined.any.missing(missings, estimateds)
 (r <- find.rels(input, i))
 rels <- r$rels
-(cs.c <- consensus(rels = rels, cols = cols, method = "constant"))
-(cs.m <- consensus(rels = rels, cols = cols, method = "mode"))
-rbind(out[i, cols], cs.c, cs.m)
 r$eco.sc
 
 # Compare proxy methods:
@@ -436,18 +434,17 @@ colnames(input)[eco.col[size.col]]    #  Four size-related stratification states
 colnames(input)[-c(eco.col, est.col)] #  IDNumber   < ---- >  History_Ecology
 
 # Which consensus method ('constant' or 'mode' to use for propagating from relatives
-method <- "constant"
-# method <- "mode"
+method <- "mode"
+# method <- "constant"
 interactive <- TRUE   # If want to watch updates in real time
 # interactive <- FALSE
 if (interactive) par("ask" = TRUE) else par("ask" = FALSE)
-ncs <- 14:98          # For printing interactive data
 (start.t <- Sys.time())
 
-for(i in 1:nrow(out)) {
-# for(i in 4665:nrow(out)) {
-
-    if (i %in% index)
+for (i in 1:nrow(out)) {
+# for (i in 50826:nrow(out)) {
+  
+  if (i %in% index)
     cat("record", i, "of", nrow(out), ":", out$Genus[i], out$Species[i], "\n")
   
   # Ignore if no higher taxonomic information at all
@@ -468,14 +465,14 @@ for(i in 1:nrow(out)) {
   if (this.scale > "Genus") {
     
     rels <- find.rels(x = input, i = i, eco.col = eco.col, start = 4, 
-                      end = min(12, which(scales == this.scale)))
+                      end = min(19, which(scales == this.scale)))
 
     # Before rejecting for having no relatives, consider whether the
     # 'EcologyScale' was incorrect (i.e., perhaps the higher taxonomic
     # assignments have changed) and there actually are other relatives (coded at
     # species, subgenus, and genus-scale) available to use
     if (nrow(rels$rels) < 1L)
-      rels <- find.rels(x = input, i = i, eco.col = eco.col, start = 4, end = 12)
+      rels <- find.rels(x = input, i = i, eco.col = eco.col, start = 4, end = 19)
     
     # But reject (with a warning) if there truly are no available relatives
     nr <- nrow(rels$rels)
@@ -492,7 +489,7 @@ for(i in 1:nrow(out)) {
     # When proxies are consensus across multiple higher taxa, use the higher
     # taxon as the reference taxon (or the sole related species if there is only
     # one reference relative)
-    if (nr > 1L){
+    if (nr > 1L) {
       out$RefGenusEco[i] <- rels$rels[1, which(colnames(rels$rels) == rels$eco.sc)]
       out$RefSpeciesEco[i] <- "indet."
     } else {
@@ -549,106 +546,120 @@ for(i in 1:nrow(out)) {
   # whether any Order Agnostida reproduced sexually or asexually, but all extant
   # Phylum Arthropoda reproduce sexually.)
   
-  repeat {
+  # But only proceed if there exist at least 5 relatives in the same class or
+  # higher. (Otherwise it crashes because there are no relatives to work with,
+  # in cases where higher taxa are UNCERTAIN.)
+  
+  rels <- find.rels(x = input, i = i, eco.col = eco.col, start = 16, end = 19)
+  
+  # Issue a warning when there are no available relatives
+  nr <- nrow(rels$rels)
+  if (nr < 1L)
+    warning(paste("no suitable relatives exist for taxon", input$Genus[i], "\n"))
 
-    if (input$BodySizeScale[i] <= "Genus") {
-      still.missing <-
-        combined.any.missing(any.missing(out[i, ], eco.col[-size.col]),
-                             any.est(out[i, ], est.col[-size.col]))
-    } else {
-      still.missing <-
-        combined.any.missing(any.missing(out[i, ], eco.col),
-                             any.est(out[i, ], est.col))
-    }
-    
-    # Add a 'break' to end 'repeat' loop when no more missing states, or have
-    # exhausted all possible 'higher' relatives:
-    if (!still.missing$any | higher.rels$eco.sc == "Phylum")
-      break
-
-    # Remove FilterDensity (column 37) from propagation if definitively known to
-    # NOT be a filter feeder (but allow to be propagated if unknown whether
-    # might be)
-    if (37 %in% still.missing$which & out$FilterFeeder[i] == "0" & 
-        !is.na(out$FilterFeeder[i])) {
-      still.missing$which <-
-        still.missing$which[-which(still.missing$which == "37")]
-      if (length(still.missing$which) < 1L)
-        still.missing$any <- FALSE
-    }
-    
-    # If FilterDensity was the only missing state (and not relevant from prior
-    # check), then 'break'
-    if (!still.missing$any)
-      break
-      
-    # Identify consensus states among higher taxa:
-    if (still.missing$any) {
-      start.scale <- max(which(scales == as.character(out$EcologyScale[i])), 
-                         (which(scales == as.character(higher.rels$eco.sc))) + 1)
-      higher.rels <- find.rels(x = input, i = i, eco.col = eco.col, min.rels = 5, 
-                               start = start.scale, end = 12)
-      # Only proceed if there are relatives to work with (maintaining prior
-      # scale states, which will be unchanged from prior scale, so essentially
-      # ignored):
-      if (nrow(higher.rels$rels) > 0L) {
-        higher.cs <- consensus(rels = higher.rels$rels, cols = still.missing$which, 
-                               method = method, na.rm = TRUE)
-      }
-
-      # Ignore if the consensus is missing or NA: 
-      l.cs <- seq_along(still.missing$which)
-      wh.changed <- !sapply(l.cs, function(l.cs) is.na(higher.cs[l.cs]) | 
-                      higher.cs[l.cs] == "")
-      
-      # Fill in consensus states
-      if (any(wh.changed))
-        out[i, still.missing$which[wh.changed]] <- higher.cs[wh.changed]
-      
-    }
-    
-    # 'Check' whether the size-related characters were changed:
-    size.changed.yet.again <-
-      ncol(better.all.equal(input[i, eco.col[size.col]],
-                            out[i, eco.col[size.col]])) >= 1L
-    if (size.changed.yet.again)
-      out$SizeChanged[i] <- "Check"
-    
-    # If changed, tag any changes as "Estimated" (or remove if no longer
-    # estimated) and add changes to history:
-    if (any(wh.changed)) {
-      char.changed <-
-        colnames(better.all.equal(input[i, eco.col], out[i, eco.col]))
-      changed.col <- match(char.changed, colnames(input[i, eco.col]))
-      out[i, est.col[changed.col]] <- "Estimated"
-      dropped <-
-        is.na(out[i, eco.col[changed.col]]) | out[i, eco.col[changed.col]] == ""
-      if (any(dropped))
-        out[i, est.col[changed.col[which(dropped)]]] <- ""
-
-      # Note: Those "entered" today will be propagated at a level > genus, and
-      # so there is no need to continue documenting previous history of
-      # life-habit proxies. Remainder of changes (not tagged with updated date)
-      # are updating empty cells using appropriate higher taxa, either for a
-      # genus/species entry or for higher taxon proxy. In these cases, it is
-      # valuable to record the history of estimations.
-      if (out$DateEntered_Ecology[i] != today) {
-        out$History_Ecology[i] <- paste0(length(which(wh.changed)), 
-                            " additional states updated ", today,
-                            " based on consensus of ", 
-                            tolower(higher.rels$eco.sc), " ", 
-                            out[i, which(colnames(out) == higher.rels$eco.sc)], 
-                            ". ", out$History_Ecology[i])
+  if (nr > 0L) {
+    repeat {
+  
+      if (input$BodySizeScale[i] <= "Genus") {
+        still.missing <-
+          combined.any.missing(any.missing(out[i, ], eco.col[-size.col]),
+                               any.est(out[i, ], est.col[-size.col]))
       } else {
-        out$History_Ecology[i] <- paste0(length(which(wh.changed)), 
-                            " additional states updated ", today,
-                            " based on consensus of ", 
-                            tolower(higher.rels$eco.sc), " ", 
-                            out[i, which(colnames(out) == higher.rels$eco.sc)], ".")
+        still.missing <-
+          combined.any.missing(any.missing(out[i, ], eco.col),
+                               any.est(out[i, ], est.col))
       }
+      
+      # Add a 'break' to end 'repeat' loop when no more missing states, or have
+      # exhausted all possible 'higher' relatives:
+      if (!still.missing$any | higher.rels$eco.sc == "Phylum")
+        break
+  
+      # Remove FilterDensity (column 45) from propagation if definitively known to
+      # NOT be a filter feeder (but allow to be propagated if unknown whether
+      # might be)
+      if (45 %in% still.missing$which & out$FilterFeeder[i] == "0" & 
+          !is.na(out$FilterFeeder[i])) {
+        still.missing$which <-
+          still.missing$which[-which(still.missing$which == "45")]
+        if (length(still.missing$which) < 1L)
+          still.missing$any <- FALSE
+      }
+      
+      # If FilterDensity was the only missing state (and not relevant from prior
+      # check), then 'break'
+      if (!still.missing$any)
+        break
+        
+      # Identify consensus states among higher taxa:
+      if (still.missing$any) {
+        start.scale <- max(which(scales == as.character(out$EcologyScale[i])), 
+                           (which(scales == as.character(higher.rels$eco.sc))) + 1)
+        higher.rels <- find.rels(x = input, i = i, eco.col = eco.col, min.rels = 5, 
+                                 start = start.scale, end = 19)
+        # Only proceed if there are relatives to work with (maintaining prior
+        # scale states, which will be unchanged from prior scale, so essentially
+        # ignored):
+        if (nrow(higher.rels$rels) > 0L) {
+          higher.cs <- consensus(rels = higher.rels$rels, cols = still.missing$which, 
+                                 method = method, na.rm = TRUE)
+        }
+  
+        # Ignore if the consensus is missing or NA: 
+        l.cs <- seq_along(still.missing$which)
+        wh.changed <- !sapply(l.cs, function(l.cs) is.na(higher.cs[l.cs]) | 
+                        higher.cs[l.cs] == "")
+        
+        # Fill in consensus states
+        if (any(wh.changed))
+          out[i, still.missing$which[wh.changed]] <- higher.cs[wh.changed]
+        
+      }
+      
+      # 'Check' whether the size-related characters were changed:
+      size.changed.yet.again <-
+        ncol(better.all.equal(input[i, eco.col[size.col]],
+                              out[i, eco.col[size.col]])) >= 1L
+      if (size.changed.yet.again)
+        out$SizeChanged[i] <- "Check"
+      
+      # If changed, tag any changes as "Estimated" (or remove if no longer
+      # estimated) and add changes to history:
+      if (any(wh.changed)) {
+        char.changed <-
+          colnames(better.all.equal(input[i, eco.col], out[i, eco.col]))
+        changed.col <- match(char.changed, colnames(input[i, eco.col]))
+        out[i, est.col[changed.col]] <- "Estimated"
+        dropped <-
+          is.na(out[i, eco.col[changed.col]]) | out[i, eco.col[changed.col]] == ""
+        if (any(dropped))
+          out[i, est.col[changed.col[which(dropped)]]] <- ""
+  
+        # Note: Those "entered" today will be propagated at a level > genus, and
+        # so there is no need to continue documenting previous history of
+        # life-habit proxies. Remainder of changes (not tagged with updated date)
+        # are updating empty cells using appropriate higher taxa, either for a
+        # genus/species entry or for higher taxon proxy. In these cases, it is
+        # valuable to record the history of estimations.
+        if (out$DateEntered_Ecology[i] != today) {
+          out$History_Ecology[i] <- paste0(length(which(wh.changed)), 
+                              " additional states updated ", today,
+                              " based on consensus of ", 
+                              tolower(higher.rels$eco.sc), " ", 
+                              out[i, which(colnames(out) == higher.rels$eco.sc)], 
+                              ". ", out$History_Ecology[i])
+        } else {
+          out$History_Ecology[i] <- paste0(length(which(wh.changed)), 
+                              " additional states updated ", today,
+                              " based on consensus of ", 
+                              tolower(higher.rels$eco.sc), " ", 
+                              out[i, which(colnames(out) == higher.rels$eco.sc)], ".")
+        }
+      }
+      
     }
     
-  }
+    }
   
   # Interactive mode (to observe how states are being propagated)
   if (interactive) {
@@ -694,14 +705,9 @@ if (any(table(input$IDNumber) > 1)) {
 }
 
 ## EXPORT DATA -------------------------------------------------------------
-write.table(out, file = "PostLH_Isabel.tab", quote = FALSE, sep = "\t", row.names = FALSE)
-# write.table(out, file = "PostLH_constant_Ostracodes.tab", quote = FALSE, sep = "\t", row.names = FALSE)
-# write.table(out, file = "PostLH_mode_Ostracodes.tab", quote = FALSE, sep = "\t", row.names = FALSE)
-# write.table(out, file = "PostLH_constant_Bradoriida&Aster&Echino.tab", quote = FALSE, sep = "\t", row.names = FALSE)
-# write.table(out, file = "PostLH_mode_Bradoriida&Aster&Echino.tab", quote = FALSE, sep = "\t", row.names = FALSE)
 # write.table(out, file = "PostLH_constant.tab", quote = FALSE, sep = "\t", row.names = FALSE)
 # write.table(out, file = "PostLH_mode.tab", quote = FALSE, sep = "\t", row.names = FALSE)
-# write.table(out, file = "PostLH_withPBDB_mode.tab", quote = FALSE, sep = "\t", row.names = FALSE)
+write.table(out, file = "PostLH_withPBDB_mode.tab", quote = FALSE, sep = "\t", row.names = FALSE)
 # write.table(out, file = "PostLH_withPBDB_constant.tab", quote = FALSE, sep = "\t", row.names = FALSE)
 
 # (1) Open in Excel to confirm looks acceptable. Delete (matching entire cell
