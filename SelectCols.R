@@ -167,16 +167,16 @@ write.table(selected, file = "Taxa_Mode.tab", row.names = FALSE, sep = "\t",
 
 
 # Alternative: Per-character sorting for downstream analyses:     ----------------------------------------------------
-cols <- c("Phylum", "Subphylum", "Class", "Subclass", "Order", 
-          "Suborder", "Superfamily", "Family", "Subfamily", "Genus", "Subgenus", 
-          "Species", "max_ma",	"min_ma", "Fossilization", "Environment", 
-          "EcologyScale", "BodySizeScale", "AbsStratDistance", "BodyVolume", 
-          "BodyVolumeCode", "AbsStratification", "RelStratification", 
-          "AbsFoodStratification", "RelFoodStratification", "Mobility", 
-          "Sexual", "Asexual", "Biotic", "Lithic", "Fluidic", "HardSubstratum", 
-          "SoftSubstratum", "Insubstantial", "Attached", "FreeLiving", 
-          "AbovePrimary", "WithinPrimary", "AboveImmediate", "WithinImmediate", 
-          "SelfSupport", "Supported", "FeedingAbovePrimary", 
+cols <- c("IDNumber", "PBDB_GSG_Number", "Phylum", "Subphylum", "Class", 
+          "Subclass", "Order", "Suborder", "Superfamily", "Family", "Subfamily", 
+          "Genus", "Subgenus", "Species", "max_ma",	"min_ma", "Fossilization", 
+          "Environment", "EcologyScale", "BodySizeScale", "AbsStratDistance", 
+          "BodyVolume", "BodyVolumeCode", "AbsStratification", 
+          "RelStratification", "AbsFoodStratification", "RelFoodStratification", 
+          "Mobility", "Sexual", "Asexual", "Biotic", "Lithic", "Fluidic", 
+          "HardSubstratum", "SoftSubstratum", "Insubstantial", "Attached", 
+          "FreeLiving", "AbovePrimary", "WithinPrimary", "AboveImmediate", 
+          "WithinImmediate", "SelfSupport", "Supported", "FeedingAbovePrimary", 
           "FeedingWithinPrimary", "FeedingAboveImm", "FeedingWithinImm", 
           "AmbientFeeder", "FilterFeeder", "FilterDensity", "AttachmentFeeder", 
           "MassFeeder", "RaptorFeeder", "Autotroph", "Microbivore", "Herbivore", 
@@ -189,5 +189,5 @@ if (!identical(cols, colnames(selected)))
   stop("column names are not as specified!")
 write.table(selected, file = "Taxa_Mode.tab", row.names = FALSE, sep = "\t", quote = FALSE)
 write.table(selected, file = "Taxa_Isabel.tab", row.names = FALSE, sep = "\t", quote = FALSE)
-# write.table(selected, file = "AllPBDBTaxa_Mode_June2024.tab", row.names = FALSE, sep = "\t", quote = FALSE)
+# write.table(selected, file = "AllPBDBTaxa_Mode_Oct2025.tab", row.names = FALSE, sep = "\t", quote = FALSE)
 # write.table(selected, file = "AllPBDBTaxa_Constant_June2024.tab", row.names = FALSE, sep = "\t", quote = FALSE)
