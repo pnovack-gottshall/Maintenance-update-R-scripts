@@ -26,6 +26,20 @@
 ## seems to scoop in those (like Hesperornithiformes, Pelecaniformes,
 ## Charadriiformes, and Suliformes), but may need to test other work-arounds.
 
+## When there are (sug)genera that have subsequently been reranked to genus or
+## subgenus rank, duplicate genera (with different PBDB taxon_no) can sometimes
+## get added. The easiest way to fix is to remove duplicates, but would be
+## better to confirm that only the current one is retained.
+
+## SEE CODE IN ConfirmExtantInWoRMS.R for easy way to use WoRMS to ID extant
+## non-marine genera! Probably best to save this as its own file rather than
+## include below in the really long list. While at it, do the same with the
+## prior long list.
+
+## 1. Consider adding a tag to the TaxonomyReference field to document form taxa,
+#     nomina dubia, etc. (Would require adding this field to 'output'.)
+
+
 ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
@@ -81,8 +95,8 @@ library(parallel)    # v. 4.2.2
 # them in, given their likely limited study. (Prior to July 2025, "subjective
 # synonyms" and "nomen dubium" were propagated but stored separately, in case
 # they were subsequently deemed valid. See GitHub
-# https://github.com/pnovack-gottshall/Maintenance-update-R-scripts to view now
-# obsolete code.)
+# https://github.com/pnovack-gottshall/Maintenance-update-R-scripts to view 
+# now-obsolete code.)
 
 # Manually exclude (sub)genera that are currently coded in "difference"
 # categories: "corrected to", "invalid subgroup of", "misspelling of", "nomen
@@ -161,7 +175,8 @@ valid.gsg.matches <- match(which.first.valid.gsg, gsgs.ordered$accepted_no)
 valid.gsgs <- pbdb[row.names(gsgs.ordered[valid.gsg.matches, ]), ]
 valid.gsgs <- valid.gsgs[which(valid.gsgs$flags == "" | valid.gsgs$flags == "F"), ]
 which.gsg <- as.integer(rownames(valid.gsgs))
-# This seems to catch the 5 known genera the older versions missed, so in right direction
+# This seems to catch the 5 known genera the older versions missed, so in right
+# direction.
 
 
 # Valid (sub)genera now are all form taxa or regular taxa, with no 'differences'
@@ -408,7 +423,7 @@ output$min_age[wh.singleton] <- output$max_age[wh.singleton]
 wh.Recent.FAD <- which(output$max_ma == 0)
 wh.Recent.LAD <- which(output$min_ma == 0)
 output$max_age[wh.Recent.FAD] <- "Recent"
-output$min_age[wh.Recent.FAD] <- "Recent"
+output$min_age[wh.Recent.LAD] <- "Recent"
 
 head(output)
 
@@ -719,7 +734,7 @@ non.marine <- c("Arachnida", "Insecta", "Collembola", "Palaeophreatoicidae",
                 "Sinacanthus", "Tegaspis", "Traquairaspis", "Triazeugacanthus", 
                 "Turinia", "Uraniacanthus", "Uranolophus", "Vernicomacanthus", 
                 "Waengsjoeaspis", "Weigeltaspis", "Wheathillaspis", 
-                "Wladysagitta", "Zenaspis", "Zychaspisu")
+                "Wladysagitta", "Zenaspis", "Zychaspisu", "Cypridopsis")
 
 # Most tetrapods are terrestrial, so remove by default:
 tetrapods <- c("Mammalia", "Reptilia", "Amphibia", "Aves", "Synapsida")
@@ -916,7 +931,10 @@ known.forms <- c("Aptychus", "Cornaptychus", "Crassaptychus", "Granulaptychus",
                  "Scopidae", "Anhingidae", "Borvocarbo", "Leucocarbo", 
                  "Limicorallus", "Microcarbo", "Hydrocorax", "Miocorax",
                  "Nambashag", "Nectornis", "Oligocorax", "Paracorax", 
-                 "Valenticarbo", "Testudoolithus", "Tiantaioolithus")
+                 "Valenticarbo", "Testudoolithus", "Tiantaioolithus", 
+                 "Anthinocrinidae", "Floricrinus", "Anthinocrinus", 
+                 "Kasachstanocrinus", "Urushicrinus", "Pentagonomischidae",
+                 "Ricebocrinus", "Pentagonopentagonalis", "Bystrowicrinus")
 wh.forms <- which(marine.taxa$Genus %in% known.forms | 
                     marine.taxa$Subgenus %in% known.forms)
 marine.taxa <- marine.taxa[-wh.forms, ]
