@@ -154,29 +154,26 @@ table(pbdb$flags)
 # been changed. Until I receive confirmation on the new behavior, using the
 # following instead of the code above.
 
-valid.gsgs <- which((pbdb$accepted_rank == "genus" |
-                       pbdb$accepted_rank == "subgenus") &
-                      (pbdb$taxon_name == pbdb$accepted_name) &
-                      (pbdb$taxon_no == pbdb$accepted_no))
-traces <- grep("I", pbdb$flags)
-which.gsg <- setdiff(valid.gsgs, traces)
-
-# New option? It's not always easy to get a coherent list of all "valid" genera
-# in the PBDB. This code seems to work most effectively in identifying them
+# This code seems to work most effectively in identifying "them"valid" genera
 # (while allowing some form taxa that may have been incorrectly tagged as
 # forms.)
-gsgs <- pbdb[which(pbdb$accepted_rank == "genus" |
-                     pbdb$accepted_rank == "subgenus"), ]
+gsgs <- pbdb[which((pbdb$accepted_rank == "genus" |
+                      pbdb$accepted_rank == "subgenus") &
+                     (pbdb$taxon_name == pbdb$accepted_name) &
+                     (pbdb$taxon_no == pbdb$accepted_no)), ]
 gsgs.ordered <- gsgs[order(gsgs$flags, gsgs$difference), ]
-# traces <- grep("I", gsgs.ordered$flags)
-# which.gsg <- setdiff(as.integer(rownames(gsgs.ordered)), traces)
 which.first.valid.gsg <- unique(gsgs.ordered$accepted_no)
 valid.gsg.matches <- match(which.first.valid.gsg, gsgs.ordered$accepted_no)
 valid.gsgs <- pbdb[row.names(gsgs.ordered[valid.gsg.matches, ]), ]
 valid.gsgs <- valid.gsgs[which(valid.gsgs$flags == "" | valid.gsgs$flags == "F"), ]
 which.gsg <- as.integer(rownames(valid.gsgs))
 # This seems to catch the 5 known genera the older versions missed, so in right
-# direction.
+# direction. Examples of those with issues across different propagations:
+# Alanisicystis, Mandalacystis, Quinquecaudex, and Neocrinus, but still two
+# versions of Bolboporites (which now redirect to each other, as Sepkoski listed
+# the genus twice, as an uncertain cnidarian). A common ingredient in each is
+# that there exist objective synonyms, mis-spellings, or other alternatives of
+# the same name.
 
 
 # Valid (sub)genera now are all form taxa or regular taxa, with no 'differences'
@@ -223,6 +220,8 @@ prep.PBDB <- function(g = 1, gen.order = NULL, which.gsg = NULL,
                     stringsAsFactors = FALSE)
   out$Genus <- as.character(pbdb$accepted_name[which.gsg][gen.order[g]])
   wh <- which.gsg[gen.order[g]]
+  # Because valid.gsgs extracts taxa where the accepted_no = taxon_no, following
+  # line is equivalent to using accepted_no
   out$PBDBNumber <- pbdb$taxon_no[wh]
   out$max_ma <- as.numeric(pbdb$firstapp_max_ma[wh])
   out$min_ma <- as.numeric(pbdb$lastapp_min_ma[wh])
@@ -324,8 +323,8 @@ prep.PBDB <- function(g = 1, gen.order = NULL, which.gsg = NULL,
 # Identify possibly problematic homonym genera
 sort(table(pbdb$accepted_name[which.gsg]), decreasing = TRUE)[1:30]
 
-# Note different parents (one is a brachiopod and one is a gastropod)
-pbdb[which(pbdb$accepted_name == "Aaleniella"), ]
+# Note different parents (one is a brachiopod and one is a decapod)
+pbdb[which(pbdb$accepted_name == "Varuna"), ]
 
 
 
@@ -337,14 +336,20 @@ require(snowfall)
 (t.start0 <- Sys.time())
 
 # Initialize
-valid.gsgs <- 
-  which((pbdb$accepted_rank == "genus" | pbdb$accepted_rank == "subgenus")
-        & pbdb$difference == "")
-traces <- grep("I", pbdb$flags)
-which.gsg <- setdiff(valid.gsgs, traces)
+gsgs <- pbdb[which((pbdb$accepted_rank == "genus" |
+                      pbdb$accepted_rank == "subgenus") &
+                     (pbdb$taxon_name == pbdb$accepted_name) &
+                     (pbdb$taxon_no == pbdb$accepted_no)), ]
+gsgs.ordered <- gsgs[order(gsgs$flags, gsgs$difference), ]
+which.first.valid.gsg <- unique(gsgs.ordered$accepted_no)
+valid.gsg.matches <- match(which.first.valid.gsg, gsgs.ordered$accepted_no)
+valid.gsgs <- pbdb[row.names(gsgs.ordered[valid.gsg.matches, ]), ]
+valid.gsgs <- valid.gsgs[which(valid.gsgs$flags == "" | valid.gsgs$flags == "F"), ]
+which.gsg <- as.integer(rownames(valid.gsgs))
 cat("Processing", length(which.gsg), "(sub)genera\n")
 gen.order <- order(pbdb$accepted_name[which.gsg])
 gen.seq <- seq_along(gen.order)
+
 # Some non-marine taxa (especially tetrapods like dinosaurs) in the PBDB are
 # assigned unranked names. These can not easily be removed once built. When a
 # parent includes these names, skip processing them and move on to other genera.
@@ -370,7 +375,7 @@ prep <- sfLapply(x = gen.seq, fun = prep.PBDB, gen.order = gen.order,
                  pbdb = pbdb) # Version without load-balancing
 sfStop()
 output <- data.table::rbindlist(prep)
-(Sys.time() - t.start0)  # ~ 13 minutes with 8 CPUs, ~4 minutes w/ 20 cores, 3 minutes w/ 112 cores
+(Sys.time() - t.start0)  # ~ 13 minutes with 8 CPUs, ~5 minutes w/ 20 cores, 3 minutes w/ 112 cores
 head(output)
 beepr::beep(3)
 
@@ -387,12 +392,12 @@ nrow(output)
 
 # This is just a temporary algorithm. Run UpdateAges&DivCurve.R for more
 # comprehensive code, which additionally (1) adds ranges for taxa in Sepkoski
-# Compendium, (2) (will someday) interfaces with WoRMS to confirm extinct/extant
-# status (and setting min_ma to 0), and (3) updates the dates to the Gradstein
-# (2020) Geologic Time Scale (using lookup table of Peter Wagner).
-strat_names <-
-  read.csv("https://www.paleobiodb.org/data1.2/intervals/list.csv?all_records&vocab=pbdb")
-# strat_names <- read.csv("strat_names.csv")
+# Compendium, (2) interfaces with WoRMS to confirm extinct/extant status (and
+# setting min_ma to 0, if extant), and (3) updates the Compendium dates from
+# Gradstein, et al. (2020) to the 2024 ICS Geologic Time Scale.
+
+# strat_names <- read.csv("https://www.paleobiodb.org/data1.2/intervals/list.csv?all_records&vocab=pbdb")
+strat_names <- read.csv("strat_names.csv")
 head(strat_names)
 ## Restrict to the default geochronological scale (ICS 2024) epochs.
 ## Other options includes "eons", "eras", "periods", "epochs", and "ages", etc.
@@ -455,19 +460,22 @@ for(d in 1:length(mults)) {
   sus.gen <- names(mults[d])
   suspicious <- output[which(output$Genus == sus.gen), ]
   classes <- unique(suspicious$Class)
+  
+  # Identify likely subgenera:
   if (length(classes) == 1L)
-    # Identify likely subgenera:
     if (return.subgenera & all(sapply(sq, function(sq)
       nrow(unique(suspicious[, Phylum:Genus])) == 1)) &
       suspicious$Subgenus[1] == "" & all(suspicious$Subgenus[-1] != ""))
       cat("OK: Genus", names(mults[d]), "has", nrow(suspicious) - 1, 
           "subgenera.\n", file = file.name, append = TRUE)
+
   # Identify likely problematic duplicated entries:
   if (any(sapply(sq, function(sq) 
     nrow(unique(suspicious[, Phylum:Genus])) != 1)) & length(classes) == 1L)
     cat("WARNING: Genus", names(mults[d]), 
         "may be a duplicate genus entry. Investigate and override in PBDB if true.\n", 
         file = file.name, append = TRUE)
+  
   # Identify likely legitimate homonyms:
   if (length(classes) == 2L)
     cat("OK: Genus", names(mults[d]), 
@@ -947,10 +955,66 @@ wh.anaptychus <- which(marine.taxa$Genus == "Anaptychus" &
 if (length(wh.anaptychus) > 0L)
   marine.taxa <- marine.taxa[-wh.anaptychus,]
 
+nrow(x)
 nrow(marine.taxa)
 
+## Remove duplicates
+
+# Note 341 duplicated PBDBNumbers
+PBDBNumber.duplicates <- duplicated(marine.taxa$PBDBNumber)
+table(table(marine.taxa$PBDBNumber))
+# To observe them
+PBDBNumber.dups <- marine.taxa[PBDBNumber.duplicates == TRUE, ]
+PBDBNumber.dups <- PBDBNumber.dups[order(PBDBNumber.dups), ]
+head(PBDBNumber.dups[, c(1, 4, 8, 17:18, 20)])
+# Note they are true duplicates!
+marine.taxa[which(marine.taxa$PBDBNumber == "7374"), ]
+marine.taxa[which(marine.taxa$PBDBNumber == "510947"), ]
+# And typically added at the end
+summary(which(PBDBNumber.duplicates == TRUE))
+# So let's delete them:
+marine.taxa.no.dups <- marine.taxa[-which(PBDBNumber.duplicates == TRUE), ]
+nrow(marine.taxa.no.dups)
+
+
+# Use work-around to reduce chances of genuine homonyms (matching only when all
+# higher taxonomy is identical)
+duplicates <- duplicated(marine.taxa.no.dups[, 1:18])
+
+# There are still 22 likely duplicates (but with different PBDB Numbers)
+length(which(duplicates == TRUE))
+
+# Extract out duplicates and view them in sorted manner
+gen.dups <- marine.taxa.no.dups[which(duplicates == TRUE), ]
+gen.dups <- gen.dups[order(gen.dups$Phylum, gen.dups$Class, gen.dups$Order), ]
+head(gen.dups[, c(1, 4, 8, 17:18, 20)])
+
+
+# Note they are true duplicates (and not homonyms)!
+for(g in 1:nrow(gen.dups)) {
+  print(marine.taxa[which(marine.taxa$Genus == gen.dups$Genus[g] &
+                            marine.taxa$Subgenus == gen.dups$Subgenus[g]), c(1, 4, 8, 17:18, 20)])
+  cat("\n\n")
+}
+# Most occur from duplicates in Sepkoski's Compendium that were subsequently
+# merged as "objective synonyms" and in nearly (but not all) cases, the
+# currently used PBDB Number is the first one listed. So we can delete the
+# subsequent duplicates. Other cases include rerankings (e.g., a Sepkoski genus
+# now deemed a subgenus), and in these cases there is less predictability in
+# which row to use. But using the first row ought to be acceptable (and better
+# than including duplicates).
+
+# So let's delete them:
+marine.taxa.no.dups <- marine.taxa.no.dups[-which(duplicates == TRUE), ]
+
+nrow(x)
+nrow(marine.taxa)
+nrow(marine.taxa.no.dups)
+
+
+
 # Save object
-# write.csv(marine.taxa, file = "PBDBformatted_NoTerr.csv", row.names = FALSE)
+# write.csv(marine.taxa.no.dups, file = "PBDBformatted_NoTerr.csv", row.names = FALSE)
 # x <- read.csv(file = "PBDBformatted_NoTerr.csv", header = TRUE, stringsAsFactors = FALSE)
 
 
@@ -966,7 +1030,6 @@ nrow(marine.taxa)
 # data sets, as the size propogations are the same for both.
 
 # (2) Open here and run following code to remove duplicated genus entries. 
-#  NEED TO FIX SO THAT DOESN'T REMOVE HOMONYMS!!!!
 
 rm(list = ls())
 setwd("C:/Users/pnovack-gottshall/OneDrive - Benedictine University/Desktop/Databases/Maintenance & update R scripts")
@@ -975,10 +1038,18 @@ setwd("C:/Users/pnovack-gottshall/OneDrive - Benedictine University/Desktop/Data
 # pre <- read.delim(file = "PreSizes_Mode_withPBDB.tab", stringsAsFactors = FALSE)
 head(pre)
 tail(pre)
+str(pre)
 dim(pre)
-duplicate.G <- duplicated(pre$Genus)
+duplicate.G <- duplicated(pre$PBDB_GSG_Number)
 table(duplicate.G)
-post <- pre[!duplicate.G, ]
+# Note many of these are false positives, for genera not in PBDB (and therefore
+# lacking PBDBNumbers)
+pre$PBDB_GSG_Number[which(duplicate.G == TRUE)[1:100]]
+# Only remove duplicates in the new additions (not inside the 'core' database,
+# which occasionally have intentional duplicates of the same genus)
+nrow.core <- 4875
+new.Gs <- duplicate.G[(nrow.core + 1):nrow(pre)]
+post <- pre[c(seq.int(nrow.core), (nrow.core + which(new.Gs == FALSE))), ]
 dim(post)
 # write.table(post, file = "PreSizes_Constant_withPBDB.tab", quote = FALSE, sep = "\t", row.names = FALSE)
 # write.table(post, file = "PreSizes_Mode_withPBDB.tab", quote = FALSE, sep = "\t", row.names = FALSE)
