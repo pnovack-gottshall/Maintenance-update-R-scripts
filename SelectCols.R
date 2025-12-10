@@ -34,8 +34,7 @@
 
 rm(list = ls())
 setwd("C:/Users/pnovack-gottshall/OneDrive - Benedictine University/Desktop/Databases/Maintenance & update R scripts")
-# setwd("C:/Users/pnovack-gottshall/OneDrive - Benedictine University/Documents/GSA (& NAPC)/2024NAPC/Higher taxa eco diversity")
-# setwd("C:/Users/pnovack-gottshall/OneDrive - Benedictine University/Documents/GSA (& NAPC)/2025GSA/Decapod size")
+# setwd("C:/Users/pnovack-gottshall/OneDrive - Benedictine University/Documents/GSA (& NAPC)/2025PalAss/Analyses")
 all <- read.delim(file = "AllCols.tab", stringsAsFactors = FALSE)
 # all <- read.delim(file = "AllCols_Constant_PBDB.tab", stringsAsFactors = FALSE)
 # all <- read.delim(file = "AllCols_Mode_PBDB.tab", stringsAsFactors = FALSE)
@@ -95,7 +94,6 @@ selected <- all[, wh.cols]
 head(selected)
 if (!identical(cols, colnames(selected)))
   stop("column names are not as specified!")
-# write.table(selected, file = "PreSizes_Decapods.tab", row.names = FALSE, sep = "\t", quote = FALSE)
 # write.table(selected, file = "PreSizes_Constant_withPBDB.tab", row.names = FALSE, sep = "\t", quote = FALSE)
 # write.table(selected, file = "PreSizes_Mode_withPBDB.tab", row.names = FALSE, sep = "\t", quote = FALSE)
 # write.table(selected, file = "PreSizes.tab", row.names = FALSE, sep = "\t", quote = FALSE)

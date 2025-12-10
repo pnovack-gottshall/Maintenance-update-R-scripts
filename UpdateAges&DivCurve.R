@@ -604,7 +604,7 @@ occs$min_age[wh.Recent.LAD] <- "Recent"
 # still be used for size and life-habit propagations).
 
 head(occs)
-
+tail(occs)
 
 # write.csv(occs, file = "PBDBDates_New.csv", row.names = FALSE)
 
