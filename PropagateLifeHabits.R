@@ -4,9 +4,6 @@
 ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ##
 ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ## ERRORS TO FIX! ##
 ##
-##  Code does not propagate subgenera correctly. Ex., a subgenus in Balanus
-##  (Balanus) should be propagated to genus Balanus instead of subfamily.
-##
 ##  triple check that the new (June 2024) switch in lines 590-593 works as 
 ##  intended
 ##
@@ -328,7 +325,7 @@ i <- which(out$Genus == "Schuchertia")[1]
 out[i, cols]
 (missings <- any.missing(out[i, ], cols))
 (estimateds <- any.est(out[i,], est.cols))
-combined.any.missing(missings, estimateds)
+combined.any.missing(missings, estimateds)st
 (r <- find.rels(input, i))
 rels <- r$rels
 r$eco.sc
@@ -442,7 +439,7 @@ if (interactive) par("ask" = TRUE) else par("ask" = FALSE)
 (start.t <- Sys.time())
 
 for (i in 1:nrow(out)) {
-# for (i in 50826:nrow(out)) {
+# for (i in 49082:nrow(out)) {
   
   if (i %in% index)
     cat("record", i, "of", nrow(out), ":", out$Genus[i], out$Species[i], "\n")
@@ -460,11 +457,22 @@ for (i in 1:nrow(out)) {
   rels <- cs <- eco.sc <- char.changed <- NA
   higher.rels <- list(rels = NULL, eco.sc = "Species")
   wh.changed <- FALSE
+  
+  # Tag if taxon is a subgenus. (Should use measured congenerics as relatives,
+  # if so)
+  is.subgenus <- ifelse(out$Subgenus[i] != "", TRUE, FALSE)
+  
+  # Set starting rank for finding relatives (genus if subgenus or tribe if
+  # anything else)
+  scale.start <- ifelse(is.subgenus, which(scales == "Genus"), 
+                        which(scales == "Tribe"))
+  
 
-  # Propogate (and update, if needed) life habit codings, if higher taxon
+  # Propogate (and update, if needed) life habit codings, if higher taxon (or
+  # empty). Note a missing scale is still "greater than genus."
   if (this.scale > "Genus") {
     
-    rels <- find.rels(x = input, i = i, eco.col = eco.col, start = 4, 
+    rels <- find.rels(x = input, i = i, eco.col = eco.col, start = scale.start, 
                       end = min(19, which(scales == this.scale)))
 
     # Before rejecting for having no relatives, consider whether the
@@ -472,7 +480,8 @@ for (i in 1:nrow(out)) {
     # assignments have changed) and there actually are other relatives (coded at
     # species, subgenus, and genus-scale) available to use
     if (nrow(rels$rels) < 1L)
-      rels <- find.rels(x = input, i = i, eco.col = eco.col, start = 4, end = 19)
+      rels <- find.rels(x = input, i = i, eco.col = eco.col, start = scale.start, 
+                        end = 19)
     
     # But reject (with a warning) if there truly are no available relatives
     nr <- nrow(rels$rels)
@@ -546,11 +555,11 @@ for (i in 1:nrow(out)) {
   # whether any Order Agnostida reproduced sexually or asexually, but all extant
   # Phylum Arthropoda reproduce sexually.)
   
-  # But only proceed if there exist at least 5 relatives in the same class or
+  # But only proceed if there exist at least 5 relatives in the same order or
   # higher. (Otherwise it crashes because there are no relatives to work with,
   # in cases where higher taxa are UNCERTAIN.)
   
-  rels <- find.rels(x = input, i = i, eco.col = eco.col, start = 16, end = 19)
+  rels <- find.rels(x = input, i = i, eco.col = eco.col, start = 12, end = 19)
   
   # Issue a warning when there are no available relatives
   nr <- nrow(rels$rels)
