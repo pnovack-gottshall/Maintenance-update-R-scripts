@@ -138,10 +138,9 @@
 rm(list = ls())
 setwd("C:/Users/pnovack-gottshall/OneDrive - Benedictine University/Desktop/Databases/Maintenance & update R scripts")
 # setwd("C:/Users/pnovack-gottshall/OneDrive - Benedictine University/Documents/GSA (& NAPC)/2024NAPC/Higher taxa eco diversity")
-# setwd("C:/Users/pnovack-gottshall/OneDrive - Benedictine University/Documents/GSA (& NAPC)/2025GSA/Decapod size")
+# setwd("C:/Users/pnovack-gottshall/OneDrive - Benedictine University/Documents/GSA (& NAPC)/2025PalAss/Analyses")
 
 pre.input <- read.delim(file = "preSizes.tab", stringsAsFactors = FALSE)
-# pre.input <- read.delim(file = "preSizes_Decapods.tab", stringsAsFactors = FALSE)
 # pre.input <- read.delim(file = "PreSizes_Constant_withPBDB.tab", stringsAsFactors = FALSE)
 # pre.input <- read.delim(file = "PreSizes_Mode_withPBDB.tab", stringsAsFactors = FALSE)
 
@@ -156,7 +155,6 @@ colCl[est.cols] <- "character"
 rm(pre.input)
 
 input <- read.delim(file = "preSizes.tab", stringsAsFactors = FALSE, colClasses = colCl)
-# input <- read.delim(file = "preSizes_Decapods.tab", stringsAsFactors = FALSE, colClasses = colCl)
 # input <- read.delim(file = "PreSizes_Constant_withPBDB.tab", stringsAsFactors = FALSE)
 # input <- read.delim(file = "PreSizes_Mode_withPBDB.tab", stringsAsFactors = FALSE)
 scales <- c("Species", "Subgenus", "Genus", "Tribe", "Subfamily", "Family", 
@@ -283,9 +281,10 @@ find.rel <- function(x, i, start = 4, end = 21, photo.cols = NULL,
     nr <- nrow(rels)
     if (nr == 0L & all.3 == FALSE) {
       # If not, do any relatives have at least 1 measured measurement?
-      part.complete <- !sapply(sq, function(sq) any(is.na(poss.rels[sq,photo.cols])) ||
-                                 any(poss.rels[sq,photo.cols] == ""))
-      rels <- poss.rels[part.complete,]
+      part.complete <- !sapply(sq, function(sq) 
+        any(is.na(poss.rels[sq, photo.cols])) || 
+          any(poss.rels[sq, photo.cols] == ""))
+      rels <- poss.rels[part.complete, ]
       nr <- nrow(rels)
     }
     if (nr > 0L) break
@@ -464,7 +463,8 @@ if (record.log) cat("Changes made to body sizes on", today, ":\n\n", file = reco
 (start.t <- Sys.time())
 
 for (i in 1:nrow(out)) {
-  # for (i in 50798:nrow(out)) {
+  # Errors typically occur when there are no available relatives
+  # for (i in 49072:nrow(out)) {
   
   if (i %in% index)
     cat("record", i, "of", nrow(out), ":", out$Genus[i], out$Species[i], "\n")
@@ -474,10 +474,14 @@ for (i in 1:nrow(out)) {
   
   # Ignore if already coded at species, subgenus or genus level AND complete
   this.scale <- out$BodySizeScale[i]
+  
+  # Tag if taxon is a subgenus. (Should use measured congenerics as relatives,
+  # if so.)
+  is.subgenus <- ifelse(out$Subgenus[i] != "", TRUE, FALSE)
+  
   # Set starting rank for finding relatives (genus if subgenus or tribe if
   # anything else)
-  scale.start <- ifelse(this.scale == "Subgenus",
-                        which(scales == "Genus"),
+  scale.start <- ifelse(is.subgenus, which(scales == "Genus"), 
                         which(scales == "Tribe"))
   missing <- any.missing(out[i, ], photo.cols, est.cols)
   number.missing <- length(missing$which)
@@ -485,9 +489,7 @@ for (i in 1:nrow(out)) {
   # Note prior line should NOT check Est_AbsStratDistance here. Checks below
   # instead.
   
-  
-  if (!missing$any & !missing.strat & (this.scale == "Species" | 
-                                       this.scale == "Subgenus" | this.scale == "Genus")) next
+  if (!missing$any & !missing.strat & (this.scale <= "Genus")) next
   
   # Next line sets 'rels' to be NULL rather than blank matrix (which is a
   # better behavior for below)
@@ -577,14 +579,13 @@ for (i in 1:nrow(out)) {
                                                                                     rel$size.sc)]), "of", rel$rel$BodyMeasureReference)
   }
   
-  
-  
-  # If entry is NOT at genus-or-better level (i.e., subfamily or greater) [OR,
-  # if is reported at genus or better level, but missing all 3 measurements],
-  # find closest-aged relative and drop in all 3 measurements, maintain original
-  # date entered, and update metadata (and erasing history, in case previously
-  # entered incorrectly). NOTE THIS REFERS TO PREVIOUSLY UPDATED DATA IN CASE
-  # THERE IS A MORE SUITABLE RELATIVE, USING all.3 = FALSE.
+ 
+  # If entry is NOT at genus-or-better level (i.e., tribe, subfamily, or
+  # greater) [OR, if is reported at genus or better level, but missing all 3
+  # measurements], find closest-aged relative and drop in all 3 measurements,
+  # maintain original date entered, and update metadata (and erasing history, in
+  # case previously entered incorrectly). NOTE THIS REFERS TO PREVIOUSLY UPDATED
+  # DATA IN CASE THERE IS A MORE SUITABLE RELATIVE, USING all.3 = FALSE.
   if (this.scale > "Genus" |
       (this.scale <= "Genus" & number.missing == 3L)) {
     rel <- find.rel(x = out, i = i, start = scale.start, end = scale.end, 
