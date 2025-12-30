@@ -159,7 +159,7 @@ selected <- all[, wh.cols]
 head(selected)
 if (!identical(cols, colnames(selected)))
   stop("column names are not as specified!")
-write.table(selected, file = "Taxa_Mode.tab", row.names = FALSE, sep = "\t", 
+write.table(selected, file = "Taxa_Mode_PBDB.tab", row.names = FALSE, sep = "\t", 
             quote = FALSE)
 
 
