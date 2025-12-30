@@ -63,13 +63,13 @@ gsgs <- pbdb[which(pbdb$accepted_rank == "genus" |
 gsgs.ordered <- gsgs[order(gsgs$flags, gsgs$difference), ]
 which.first.valid.gsg <- unique(gsgs.ordered$accepted_no)
 valid.gsg.matches <- match(which.first.valid.gsg, gsgs.ordered$accepted_no)
-valid.gsgs <- pbdb[row.names(gsgs.ordered[valid.gsg.matches, ]), ]
-valid.gsgs <- valid.gsgs[which(valid.gsgs$flags == "" | valid.gsgs$flags == "F"), ]
+x <- pbdb[row.names(gsgs.ordered[valid.gsg.matches, ]), ]
+x <- x[which(x$flags == "" | x$flags == "F"), ]
 # Note processing this way removes tagged trace fossils (but keeps some forms,
 # just in case not tagged correctly)
-table(valid.gsgs$flags)
+table(x$flags)
 # And there are no discrepancies between original name and accepted name:
-identical(valid.gsgs$taxon_name, valid.gsgs$accepted_name)
+identical(x$taxon_name, x$accepted_name)
 
 # Clean up memory
 rm("pbdb")
@@ -81,8 +81,8 @@ gc()
 index <- seq(0, 100000, by = 5000)
 
 # To store mismatches: (Use NA so easy to na.omit rows not flagged)
-extant.status <- data.frame(taxon = valid.gsgs$taxon_name,
-                            rank = valid.gsgs$taxon_rank, 
+extant.status <- data.frame(taxon = x$taxon_name,
+                            rank = x$taxon_rank, 
                             PBDB.status = NA, Sepkoski.status = NA,
                             WoRMS.status = NA, flag = NA)
 
@@ -115,7 +115,7 @@ for (g in 1:nrow(extant.status)) {
                          sepkoski_compendium$Genus == subgenus)
   
   # Update extinct/extant status
-  extant.status$PBDB.status[g] <- valid.gsgs$is_extant[g]
+  extant.status$PBDB.status[g] <- x$is_extant[g]
   
   if (any(in.Sepkoski > 0L)) {
     seps <- sepkoski_compendium[in.Sepkoski, ]
@@ -141,17 +141,7 @@ for (g in 1:nrow(extant.status)) {
   # includes extant taxa. (Cases tagged as NA seem to be unaccepted names).
   if (any(in.WoRMS > 0L)) {
     extant.status$WoRMS.status[g] <- "extant"
-    
-    # the following is deprecated, but maintaining as an example solution if
-    # later want to add automatic flagging of 'isMarine'
-    
-    # WoRMS.taxonID <- WoRMS$taxonID[in.WoRMS]
-    # extant.status$WoRMS.status[g] <- ifelse(any(extant.WoRMS$isMarine[which(extant.WoRMS$taxonID == WoRMS.taxonID)] == 1), "marine", "non-marine")
   }
-  
-  
-  
-
 }
 
 beepr::beep(3)
@@ -201,3 +191,102 @@ homonyms <-
 homonyms[order(homonyms$taxon), 1:5]
 
 
+
+
+
+
+## FIND GENERA IN WoRMS THAT LACK ANY MARINE SPECIES ###########################
+
+# Logic: Only need to evaluate valid GSGs in the PBDB (because no relevant
+# fossil record otherwise). Not considering brackish as non-marine (but also not
+# removing taxa tagged exclusively that way).
+
+# NOTE that unlike using the code above, here using the output from FormatPBDB.R
+# (which removes non-marines, etc.) to reduce the list of false positivies.
+
+# Import list of PBDB genera (and subgenera), after first pass having removed
+# non-marines
+x <- read.csv(file = "PBDBformatted_NoTerr.csv", header = TRUE, stringsAsFactors = FALSE)
+
+library(doParallel)
+library(foreach)
+# Set up cluster
+CPUs <- parallel::detectCores(logical = TRUE)
+(cl <- parallel::makeCluster(CPUs))
+doParallel::registerDoParallel(cl)
+
+results <- NA
+
+(t.start <- Sys.time())
+marine.status <- foreach(g = 1:nrow(x), .combine = rbind) %dopar% {
+  
+  WoRMS.marine <- WoRMS2.marine <- WoRMS.nonmarine <- WoRMS2.nonmarine <-
+    WoRMS.habitat <- flag <- NA
+  
+  # Note ignoring subgenera
+  taxon <- x$Genus[g]
+  
+  # Check whether potential homonym (need to manually check, if so), but only checking for genus (and not subgenera)
+  if (taxon %in% x$Genus[-g])
+    flag <- "possible homonym: check manually"
+  
+  # Check whether in WoRMS
+  in.WoRMS <- which(WoRMS$genus == taxon)
+  in.WoRMS2 <- which(extinct.WoRMS$Genus == taxon)
+  
+  # In WoRMS, the presence in marine, brackish, fresh, and terrestrial habitats
+  # is tagged as 1 (and absence as 0 and unknown as NULL).
+  if (any(in.WoRMS2 > 0L)) {
+    WoRMS2.marine <- any(grep("1", extinct.WoRMS[in.WoRMS2, "Marine"]))
+    WoRMS2.nonmarine <- 
+      any(grep("1", extinct.WoRMS[in.WoRMS2, 
+                                  c("Fresh", "Terrestrial")]))
+  }
+  
+  # In WoRMS, the presence in isMarine, isBrackish, isFresh, and isTerrestrial
+  # habitats is tagged as 1 (and absence as 0 and unknown as NA).
+  if (any(in.WoRMS > 0L)) {
+    WoRMS.GenusID <- WoRMS$taxonID[in.WoRMS]
+    WoRMS.marine <-
+      any(extant.WoRMS$isMarine[which(extant.WoRMS$taxonID %in% WoRMS.GenusID)] == 1)
+    WoRMS.nonmarine <-
+      any(extant.WoRMS[which(extant.WoRMS$taxonID %in% WoRMS.GenusID), 
+                       c("isFreshwater", "isTerrestrial")])
+  }
+  
+  # Tag non-marine first so can override if also marine occurrences (but
+  # defaulting to NA if unknown)
+  if (any(c(WoRMS.nonmarine, WoRMS2.nonmarine), na.rm = TRUE))
+    WoRMS.habitat <- "non-marine"
+  if (any(c(WoRMS.marine, WoRMS2.marine), na.rm = TRUE))
+    WoRMS.habitat <- "marine"
+  
+  # Export in dataframe for combining
+  data.frame(Genus = taxon, Subgenus = x$Subgenus[g], Family = x$Family[g],
+             Class = x$Class[g], WoRMS.habitat = WoRMS.habitat, flag = flag)
+  
+}
+Sys.time() - t.start               # 5 minutes with 20 cores
+parallel::stopCluster(cl)
+beepr::beep(3)
+
+head(marine.status)
+tail(marine.status)
+
+table(marine.status$WoRMS.habitat)
+
+(non.mars <- marine.status[which(marine.status$WoRMS.habitat == "non-marine"), ])
+  
+sort(table(non.mars$Class))
+
+# Save output (including marine and non-marine taxa)
+# write.csv(x = marine.status, file = "nonmarine_WoRMS_genera.csv", row.names = FALSE)
+
+# Then go through the PBDB occurrences for those tagged as non-marine to confirm
+# their ancestral occurrences were similarly non-marine. This is necessary
+# because we know many lineages originated in marine settings before expanding
+# into freshwater and terrestrial ones. (E.g., Feldmann, 1984 with earliest
+# aeglid Haumuriaegla.) The following taxa (mostly genera) are presumed false
+# positives (occurring in marine settings).
+
+# 
