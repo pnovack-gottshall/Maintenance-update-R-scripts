@@ -215,7 +215,7 @@ CPUs <- parallel::detectCores(logical = TRUE)
 (cl <- parallel::makeCluster(CPUs))
 doParallel::registerDoParallel(cl)
 
-results <- NA
+marine.status <- NA
 
 (t.start <- Sys.time())
 marine.status <- foreach(g = 1:nrow(x), .combine = rbind) %dopar% {
@@ -263,7 +263,8 @@ marine.status <- foreach(g = 1:nrow(x), .combine = rbind) %dopar% {
   
   # Export in dataframe for combining
   data.frame(Genus = taxon, Subgenus = x$Subgenus[g], Family = x$Family[g],
-             Class = x$Class[g], WoRMS.habitat = WoRMS.habitat, flag = flag)
+             Order = x$Order[g], Class = x$Class[g], 
+             WoRMS.habitat = WoRMS.habitat, flag = flag)
   
 }
 Sys.time() - t.start               # 5 minutes with 20 cores
