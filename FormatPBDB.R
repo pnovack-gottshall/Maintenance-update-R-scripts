@@ -529,8 +529,19 @@ head(x)
 # Branchiopoda (= conchostrans, notostracans, cladocerans, etc.), all known
 # arachnid taxa (because many arachnids are getting listed in the xiphosuran
 # download), and a variety of fishes, tetrapods, and others. WoRMS relied on
-# heavily for extant taxa.
+# heavily for extant taxa. "Fish" genera (in paraphyletic sense) compiled from
+# several publications: Schnetz, et al. (2024 Paleobiology, Paleozoic
+# chondrichthyans), Sallan and Coates (2010 PNAS, Devonian fishes), Sallan et
+# al. (2018 Science, mid Paleozoic "fishes"), and Romano, et al. (2016
+# Biological Reviews, Permo-Triassic bony fishes). Note only genera restricted
+# to freshwater environments are listed herein; euryhaline genera thought to
+# have lived in both freshwater, brackish, and unambiguously marine settings are
+# included as "marine." (Some early tetrapod genera may also be listed herein,
+# innoculously because removed later, and a few early tetrapods that were
+# genuinely marine will be added in last.) Thanks to Lauren Sallen for advice on
+# identifying these.
 non.marine <- read.csv(file = "non_marines.csv", header = FALSE)[, 1]
+length(non.marine)
 non.marine[1:40]
 
 # Most tetrapods are terrestrial, so remove by default:
@@ -538,17 +549,23 @@ tetrapods <- c("Mammalia", "Reptilia", "Amphibia", "Aves", "Synapsida")
 
 # Then add back in the known marine tetrapods, the sole marine amphibian
 # (Trematosauridae), and some known marine xiphosuran, pterosaur, decapod, bird,
-# etc. taxa that are otherwise typically non-marine (and may have been removed
-# in taxa above):
+# early tetrapod, etc. taxa that are otherwise typically non-marine (and may
+# have been removed in taxa above). WoRMS relied on heavily for extant taxa.
 marine.exceptions <- read.csv(file = "marine_exceptions.csv", header = FALSE)[, 1]
+length(marine.exceptions)
 marine.exceptions[1:40]
+
+# Confirm no conflicts. (Marine.exceptions lists what gets added and non.marine
+# removes them)
+if (any(non.marine %in% marine.exceptions) == TRUE)
+  stop("Reconcile the conflict between the taxa in 'marine.exceptions' and 'non.marine'\n")
+# non.marine[which(non.marine %in% marine.exceptions)]
 
 # Pterosaur genus list from Dean, Mannion, and Butler (2016, Palaeontology,
 # Appendix S1) and family list from Bestwick, Unwin, Butler, Henderson, and
 # Purnell (2018, Biological Reviews). Birds provided from Alex Clark (Field
 # Museum). Early panarthropods ('lopopods', onychophorans, etc.) from Aria and
-# Caron (2024) and  Smith and Ortega-Hernandez (2014). Only marine osteostracan 
-# Sclerodus from Denison (1956) and others added based on PBDB occurrences.
+# Caron (2024) and  Smith and Ortega-Hernandez (2014).
 
 # Extract the known marine taxa (in lineages that are typically non-marine):
 sq <- 1:nrow(x)
@@ -559,8 +576,12 @@ marine.vert.exceptions <-
 # case of tetrapods that were not coded as members of Tetrapoda in the PBDB):
 marine.typical <- 
   x[!sapply(sq, function(sq) any(c(non.marine, tetrapods) %in% x[sq, ])), ]
+# Note this will cause some duplicates (from adding in exceptions that weren't
+# tetrapods). This is acceptable to ensure they are not missed, as they will be
+# removed below.
 
-# Combine the typical marine taxa plus the known marine tetrapods, etc.:
+# Combine the typical marine taxa plus add back in the known marine tetrapods,
+# etc.:
 marine.taxa <- rbind(marine.typical, marine.vert.exceptions)
 sort(table(marine.taxa$Class), decreasing = FALSE)
 nrow(x)
@@ -570,12 +591,27 @@ beepr::beep()
 # Remove confirmed form taxa (ammonoid aptychi and dissociated crinoid
 # columnals, holdfasts, and anal sacs). Including these "genera" would
 # artificially inflate standing genus richness. (Also including some non-marine
-# pterosaurs and birds that the code above does not remove. Birds provided from
-# Alex Clark at Field Museum).
+# pterosaurs, birds, and other tetrapods that the code above does not remove.
+# Birds provided from Alex Clark at Field Museum.) Because Sepkoski treated
+# "Problematica" (= incertae sedis) in his list of animal higher taxa, the PBDB
+# maintains that "all" Problematica (including plants, algae, and Archean
+# prokaryotes) are sometimes included as Animalia. This list also adds in the
+# obvious incertae sedis non-animals (like acritarchs, Gunflintia,
+# Sinosabellidites, plus "plant" genera listed in Andrews (1970, Index of
+# Generic Names of Fossil Plants).
 known.forms <- read.csv(file = "known_forms.csv", header = FALSE)[, 1]
+length(known.forms)
 known.forms[1:40]
 
-wh.forms <- which(marine.taxa$Genus %in% known.forms | 
+# Confirm no conflicts. (Marine.exceptions lists what gets added and known.forms
+# removes them.) Note it's OK for some duplicates in known.forms and non.marine
+# because ensures not included in the marine list.
+if (any(known.forms %in% marine.exceptions) == TRUE)
+  stop("Reconcile the conflict between the taxa in 'marine.exceptions' and 'known.forms'\n")
+
+wh.forms <- which(marine.taxa$Order %in% known.forms | 
+                    marine.taxa$Family %in% known.forms | 
+                    marine.taxa$Genus %in% known.forms | 
                     marine.taxa$Subgenus %in% known.forms)
 marine.taxa <- marine.taxa[-wh.forms, ]
 
@@ -585,19 +621,29 @@ marine.taxa <- marine.taxa[-wh.forms, ]
 wh.anaptychus <- which(marine.taxa$Genus == "Anaptychus" &
                          marine.taxa$Class == "Cephalopoda")
 if (length(wh.anaptychus) > 0L)
-  marine.taxa <- marine.taxa[-wh.anaptychus,]
+  marine.taxa <- marine.taxa[-wh.anaptychus, ]
 
+# Special rule for non-animal "Problematica" genera listed in Andrews (1970)
+# that are homonyms of valid marine animal genera.
+wh.problematica <- which((marine.taxa$Genus == "Hexagonaria" &
+                         marine.taxa$Phylum == "Problematica") |
+                           (marine.taxa$Genus == "Itieria" &
+                              marine.taxa$Phylum == "Problematica") |
+                           (marine.taxa$Genus == "Lenaella" &
+                              marine.taxa$Phylum == "Problematica"))
+if (length(wh.problematica) > 0L)
+  marine.taxa <- marine.taxa[-wh.problematica, ]
 nrow(x)
 nrow(marine.taxa)
 
 ## Remove duplicates
 
-# Note 341 duplicated PBDBNumbers
+# Note 313 duplicated PBDBNumbers (typically caused by the 'cbind' above)
 PBDBNumber.duplicates <- duplicated(marine.taxa$PBDBNumber)
 table(table(marine.taxa$PBDBNumber))
 # To observe them
-PBDBNumber.dups <- marine.taxa[PBDBNumber.duplicates == TRUE, ]
-PBDBNumber.dups <- PBDBNumber.dups[order(PBDBNumber.dups), ]
+PBDBNumber.dups <- marine.taxa[PBDBNumber.duplicates, ]
+PBDBNumber.dups <- PBDBNumber.dups[order(PBDBNumber.dups$Genus), ]
 head(PBDBNumber.dups[, c(1, 4, 8, 17:18, 20)])
 # Note they are true duplicates!
 marine.taxa[which(marine.taxa$PBDBNumber == "7374"), ]
@@ -609,18 +655,17 @@ marine.taxa.no.dups <- marine.taxa[-which(PBDBNumber.duplicates == TRUE), ]
 nrow(marine.taxa.no.dups)
 
 
-# Use work-around to reduce chances of genuine homonyms (matching only when all
+# Use work-around to reduce chances of genuine homonyms (matching only when ALL
 # higher taxonomy is identical)
 duplicates <- duplicated(marine.taxa.no.dups[, 1:18])
 
-# There are still 22 likely duplicates (but with different PBDB Numbers)
+# There are still 21 likely duplicates (but with different PBDB Numbers)
 length(which(duplicates == TRUE))
 
 # Extract out duplicates and view them in sorted manner
 gen.dups <- marine.taxa.no.dups[which(duplicates == TRUE), ]
 gen.dups <- gen.dups[order(gen.dups$Phylum, gen.dups$Class, gen.dups$Order), ]
 head(gen.dups[, c(1, 4, 8, 17:18, 20)])
-
 
 # Note they are true duplicates (and not homonyms)!
 for(g in 1:nrow(gen.dups)) {
@@ -642,8 +687,6 @@ marine.taxa.no.dups <- marine.taxa.no.dups[-which(duplicates == TRUE), ]
 nrow(x)
 nrow(marine.taxa)
 nrow(marine.taxa.no.dups)
-
-
 
 # Save object
 # write.csv(marine.taxa.no.dups, file = "PBDBformatted_NoTerr.csv", row.names = FALSE)
@@ -768,12 +811,13 @@ dim(post)
 
 #  d. ADD new taxonomic names for following:
 
-#       (i)    Class Hyolitha (in Phylum Hyolitha) for Orders Hyolithida and
+#       (i)    Class Hyolitha (in Phylum Hyolitha) for orders Hyolithida and
 #                Orthothecida.
 #       (ii)   Class Dipnomorpha for orders Dipnoi and Dipnotetrapodomorpha.
-#       (iii)  Class Tentaculita / Phylum Tentaculita for Order Tentaculitida.
-#       (iv)   Phylum Annelida for Class Palaeoscolecida.
-#       (v)    Phylum Agmata for Order Volborthellida.
+#       (iii)  Class Tentaculita / phylum Tentaculita for order Tentaculitida.
+#       (iv)   Phylum Annelida for class Palaeoscolecida.
+#       (v)    Class Agmata for Order Volborthellida and family Salterellidae 
+#                (now in phylum Cnidaria, cf., Vayda, et al., 2025).
 #       (vi)   Add name UNCERTAIN for any phylum, class, order, or family that is 
 #                blank.
 #       (vii)  Change phylum Problematica to UNCERTAIN.
