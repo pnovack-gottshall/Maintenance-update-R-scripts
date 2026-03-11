@@ -282,7 +282,8 @@ prep.PBDB <- function(g = 1, gen.order = NULL, which.gsg = NULL,
 
       # If parent is a known unranked clade (excluding parents of birds), skip
       if (parent$accepted_name %in% skip.unranked &
-          out$Class != "Aves")
+          (all(!(c(out$Class == "Aves", out$Subclass == "Enantiornithes", 
+                 out$Subclass == "Ornithurae")))))
         ignore_this <- TRUE
 
       # Assign parent name if a named rank
@@ -638,7 +639,7 @@ nrow(marine.taxa)
 
 ## Remove duplicates
 
-# Note 313 duplicated PBDBNumbers (typically caused by the 'cbind' above)
+# Note 314 duplicated PBDBNumbers (typically caused by the 'cbind' above)
 PBDBNumber.duplicates <- duplicated(marine.taxa$PBDBNumber)
 table(table(marine.taxa$PBDBNumber))
 # To observe them
@@ -752,15 +753,6 @@ dim(post)
 #       (ii)  echinoderms Blastoidea and Parablastoidea
 #       (iii) vertebrates Placodermi and Thelodonti
 
-#   - Elevate subclasses Cirripedia and Ascothoracida to class rank and elevate 
-#     the cirriped infraclasses Afrothoracica, Rhizocephala, and Thoracica to 
-#     subclass. Although not consistent with PBDB and WoRMS (which treat as 
-#     subclasses within class Thecostraca), I am choosing this option because (1)
-#     ascothoracids are ecologically quite distinct from typical cirripeds (and 
-#     essentially lack a fossil record) and (2) I do not include the rank of
-#     infraclass in my core database. In other words, when dealing fossils, the 
-#     cirripeds are practically synonymous with thecostracans.
-
 #   - LOWER class Opisthobranchia to order rank (and placing them in subclass
 #     Heterobranchia), such that Opisthobranchia is an order and their orders 
 #     are suborders.
@@ -835,15 +827,17 @@ dim(post)
 #       (v)    fish order Birkeniida to Birkeniiformes
 #       (vi)   annelid subclass Aciculata to Errantia
 #       (vii)  starfish class (or infraclass) Neoasteroidea to Ambuloasteroidea
-#       (viii) bryozoan order Trepostomida to Trepostomata 
-#       (vix)  bryozoan order Cystoporida to Cystoporata 
-#       (x)    bryozoan order Ctenostomata to Ctenostomatida 
-#       (xi)   bryozoan order Cyclostomata to Cyclostomatida 
-#       (xii)  diploporitan superfamily Glyptosphaeritida to 
+#       (viii) bryozoan order Cryptostomata to Cryptostomida 
+#       (ix)   bryozoan order Ctenostomata to Ctenostomatida 
+#       (x)    bryozoan order Cyclostomata to Cyclostomatida
+#       (vi)   bryozoan order Cystoporata to Cystoporida  
+#       (vii)  bryozoan order Fenestrata to Fenestrida 
+#       (viii) bryozoan order Trepostomida and Trepostomata to Trepostomatida
+#       (xiv)  diploporitan superfamily Glyptosphaeritida to 
 #              Glyptosphaeritidacea (in order UNCERTAIN) 
 #              (See below for details on other diploporitans)
-#       (xiii) Superfamily Mosasauria to superfamily Mosasauroidea
-#       (xix)  tentaculite class Tentaculitoidea to Tentaculita
+#       (xv)   Superfamily Mosasauria to superfamily Mosasauroidea
+#       (xvi)  tentaculite class Tentaculitoidea to Tentaculita
 
 #  f. Bivalve classification primarily follows that of Carter, et al. (2011), 
 #     the basis of the forthcoming Treatise). For outdated names (i.e., 
@@ -854,19 +848,21 @@ dim(post)
 #     Superfamily Grammysioidea (Families Grammysiidae and Sanguinolitidae) and 
 #     Superfamily Lyrodesmatoidea (Family Lyrodesmatidae) are in Order UNCERTAIN 
 #     and Subclass Heteroconchia. Order Pterioida is in Subclass Pteromorphia.
-#     (This has the effect of making my propogation algorithm more conservative
-#     because smaller ranks are treated as larger, more inclusive ones.) Elevate
-#     "cohorts" Mytilomorphi, Ostreomorphi, Uniomorphi, and Cardiomorphi to rank
-#     superorder.
+#     Treat "cohorts" Mytilomorphi, Ostreomorphi, Uniomorphi, and 
+#     Cardiomorphi to rank superorder. (For Ostreomorphi and others above, this 
+#     has the effect of making my propogation algorithm more conservative 
+#     because smaller ranks are treated as larger, more inclusive ones.) 
 
 #  g. For opisthobranch and pulmonate gastropods, use a modified version of 
-#     Bouchet and Rocroi (2005), that is also consistent with how WoRMS treats 
+#     Bouchet and Rocroi (2005), which is also consistent with how WoRMS treats 
 #     their clade names. Treat Heterobranchia as the subclass that includes the 
-#     orders Allogastropoda (= lower Heterobranchia, including Architectibranchia 
-#     as a suborder), Opisthobranchia, and Pulmonata, and treat their major 
-#     subgroups as suborders. Treat Sepkoski's Order Heterostrophia as 
-#     Opisthobranchia incertae sedis and his Order Cephalaspida as opisthobranch 
-#     Suborder Cephalaspidea. Treat Suborder Bellerophontina as Order Bellerophontida
+#     orders Allogastropoda (paraphyletic, = 'lower Heterobranchia', including 
+#     Architectibranchia as a suborder), Opisthobranchia, and Pulmonata, and 
+#     treat their major subgroups as suborders. Treat Sepkoski's Order 
+#     Heterostrophia as Opisthobranchia incertae sedis and his Order 
+#     Cephalaspida as opisthobranch suborder Cephalaspidea. Treat suborder 
+#     Bellerophontina as order Bellerophontida. See "Gastropod taxononomy.docx"
+#     for standardized taxonomic structure used.
 
 #  h. For certain vertebrate groups whose taxonomy is often cladistically based
 #     on unranked taxa, use the following ranks. Treat Order Ichthyosauria as
@@ -882,7 +878,7 @@ dim(post)
 #  i. Use (only) the following subphylum names for (primarily marine) taxa:
 
 #       (i)  Arthropods: Arachnomorpha, Chelicerata, Crustacea, and 
-#            Artiopoda (=Trilobita + Nektaspidida + Vicissicaudata + Agnostida)
+#            Artiopoda (= Trilobita + Nektaspidida + Vicissicaudata + Agnostida)
 
 #       (ii) Echinoderms: Subphyla for echinoderms are largely informal, often 
 #            paraphyletic, and an area of much debate. For consistency, using 
@@ -898,8 +894,12 @@ dim(post)
 
 #            (3) Blastozoa  (classes Blastoidea, Parablastoidea, Paracrinoidea, 
 #                Soluta, and Crinoidea plus paraphyletic-to-polyphyletic informal 
-#                classes 'diploporita', 'eocrinoidea', 'rhombifera' and treating 
-#                class Coronoidea as order Coronata within blastoids)
+#                classes 'diploporita', 'eocrinoidea' (downranking 
+#                Lepidocystoidea as suborder within Imbricata), 'rhombifera' 
+#                and treating class Coronoidea as within blastoids). Eocrinoids
+#                come in elliptical and flattened thecal forms. To propagate 
+#                sizes (shapes) properly, creating "orders" UNCERTAIN-Flat and 
+#                UNCERTAIN-Round, when the shape is known.
 
 #            (4) Remaining classes (non-radials Stylophora, Cincta, Ctenocystoidea
 #                and radials Helicoplacoidea, Helicocystoids [Helicocystis], 
@@ -908,9 +908,9 @@ dim(post)
 #                placed in subphylum UNCERTAIN
 
 #  j. For tetrapods, do not use the larger fish-inclusive Dipnotetrapodomorpha
-#     as subclass (and Dipnomorpha for class). Instead, use Subclass Eutheria
+#     as subclass (and Dipnomorpha for class). Instead, use Subclass Theria
 #     (etc.) for mammals (whales, sirenians, etc.); and place whales in Order 
-#     Artiodactyla instead of Cetacea. Use Subclass Eureptilia for reptiles 
+#     Cetacea (and NOT Artiodactyla). Use Subclass Eureptilia for reptiles 
 #     (plesiosaurs, ichthyosaurs, squamate mosasaurs, thalattosaurs, etc.). 
 #     Use Subclass Testudinata for turtles. Use Subclass Aequorlitornithes 
 #     for most birds (within Class Aves).
@@ -940,8 +940,8 @@ dim(post)
 #     indicates a known order).
 
 #  n. Treat the Elasmobranchii and Holocephali as subclasses within Class 
-#     Chondrichthyes. (And following Coates, et al. 2017 treat Symmoriiformes 
-#     as holocephalans.) And treat the Batoidea as a superorder (and thus 
+#     Chondrichthyes. (And following Coates, et al. 2017, treat Symmoriiformes 
+#     as holocephalans.) Treat the Batoidea as a superorder (and thus 
 #     unranked here) of elasmobranch.
 
 #  o. Follow Maletz (2014, basis of forthcoming Treatise revision) in treating
@@ -991,16 +991,16 @@ dim(post)
 #     Bdelloidea are both a rotifer class and a xiphosuran superfamily.
 
 #  w. Because the most recent crinoid classification (Wright, et al. 2017)
-#     contains only two subclasses (camerates and pentacrinoids) for all crinoids
-#     (and infraclass Inadunata is essentially equivalent to subclass
-#     Pentacrinoidea), elevate the parvclasses Disparida and Cladida to infraclass
-#     rank, but maintaining the order names. Allowed pentacrinoid subclasses
-#     include the stem inadunates, Disparida, Porocrinoidea, Flexibilia,
-#     Cyathoformes, Ampelocrinida (possibly paraphyletic), and Articulata. Subclass
-#     Eucamerata orders include the Diplobathrida, Monobathrida, and "stem
-#     eucamarates". (This has the effect of making my propogation algorithm more
-#     conservative because smaller ranks are treated as larger, more inclusive
-#     ones.)
+#     contains only two subclasses (camerates and pentacrinoids) for all 
+#     crinoids (and infraclass Inadunata is essentially equivalent to subclass
+#     Pentacrinoidea), elevate the parvclasses Disparida and Cladida to 
+#     infraclass rank, but maintaining the order names. Allowed pentacrinoid 
+#     subclasses include the stem inadunates, Disparida, Porocrinoidea, 
+#     Flexibilia, Cyathoformes, Ampelocrinida (possibly paraphyletic), and 
+#     Articulata. Subclass Eucamerata orders include the Diplobathrida, 
+#     Monobathrida, and "stem eucamarates". (This has the effect of making my
+#     propogation algorithm more conservative because smaller ranks are treated 
+#     as larger, more inclusive ones.) See "Crinoid taxonomy.docx" for summary.
 
 #  x. Following Sheffield and Sumrall (2019), place the diploporitans in
 #     Glyptosphaeritidacea and Asteroblastida in Class 'diploporitan' because they
@@ -1104,7 +1104,7 @@ dim(post)
 #     PBDBD. We need more ostracode workers!
 
 # ag. For phosphatocopine crustaceans, follow Zhang, et al. (2010) and Siveter, 
-#     et al. (2003) in treating Euphosphatocopida (=original Phosphatocopina) 
+#     et al. (2003) in treating Euphosphatocopida (= original Phosphatocopina) 
 #     as a subclade within Phosphatocopida. Given the lack of consistency in 
 #     what rank these names apply, treat Euphosphatocopida as an order and 
 #     Phosphatocopida as a class.
@@ -1134,13 +1134,13 @@ dim(post)
 #     (2) For presumably paraphyletic jaw-less vertebrates ("Agnatha"), 
 #         ignoring infraphylum Agnatha and maintaining PBDB superclasses 
 #         Anaspidomorphi (= class Anaspida) Cyclostomata (= classes Myxini, 
-#         Petromyzontida), Osteostracomorphi (= classes Cephalaspidomorphi, 
-#         Galeaspida, Osteostraci, and Pituriaspida [for order Pituriaspida]), 
-#         Pteraspidomorphi (= class Pteraspidomorpha), and Thelodontomorphi 
-#         (= class Thelodonti).
+#         Petromyzontida), Osteostracomorphi (= classes Galeaspidomorphi (= 
+#         Galeaspida), Osteostraci (= Cephalaspidomorphi), and Pituriaspida 
+#         (for order Pituriaspida), Pteraspidomorphi (= class Pteraspidomorpha),
+#         and Thelodontomorphi (= class Thelodonti).
 
 #     (3) Ignoring superclass (PBDB) / infraphylum (WoRMS) Gnathostomata, 
-#         and re-ranking class (PBDB) / parvphylum (oRMSW) Chondrichthyes as 
+#         and re-ranking class (PBDB) / parvphylum (WoRMS) Chondrichthyes as 
 #         superclass.  The superclass includes (after elevating subclasses to 
 #         classes, as in WORMS and, in part, van der Laan, 2019): Acanthodii, 
 #         Elasmobranchii (= s.s.s. of Neoselachii, the subclass used in WoRMS), 
@@ -1155,15 +1155,17 @@ dim(post)
 #         is used to include classes Cladistia (= infraclasses Cladistia) and 
 #         Actinopteri (= subclasses Chondrostei and Neopterygii). Most 
 #         subdivisions in van der Laan (2019) have been entered in the PBDB as 
-#         unranked clades. In most cases, these are reassigned to superorder 
-#         rank.
+#         unranked clades. In most cases, these are here reassigned to 
+#         superorder rank. Percomorphaceae is down-ranked to superfamily.
 
 #     (5) Superclass Sarcopterygii (a gigaclass in WoRMS and subclass in PBDB)
 #         is used to include classes Coelacanthimorpha (= subclasses Actinistia)
-#         and Dipnomorpha (=subclass Dipnotetrapodomorpha)
+#         and Dipnomorpha (= subclass Dipnotetrapodomorpha)
 
 #     (6) Modifying Nelson, et al. (2016), assigning class Placodermi in 
-#         subclass Placodermiomorphi (who considers this an unranked clade).
+#         superclass Placodermiomorphi (who considers this an unranked clade). 
+#         See Placoderm_taxonomy.docx for conventions in handling unranked 
+#         clades Antiarchi and Arthrodira.
 
 #     (7) Assigning all tetrapods to superclass Tetrapoda (= classes Amphibia,
 #         Aves, Mammalia, and Reptilia).
@@ -1191,8 +1193,23 @@ dim(post)
 #     classification) and WoRMS. Follow convention in WoRMS (but not 
 #     consistently in PBDB) to treat suborders Neocheilostomina, 
 #     Neocheilostomatina, Anasca, Ascophora, and Ascophorina all as junior 
-#     synonyms of suborder Flustrina. And to treat suborder Malicostega as 
-#     junior synonym of Membranipora.
+#     synonyms of suborder Flustrina. And to treat suborder Malacostegina as 
+#     junior synonym of Membraniporina.
+
+# ao. For stenolaemates, see above for updated suffixes (following convention in 
+#     WoRMS generally to end with -ida). Treat order Rhabdomesida as suborder 
+#     Rhabdomesina in order Cryptostomida. Assign suborder Esthonioporina to
+#     order Esthonioporata.
+
+# ap. Treat problematic cambroernids (= unranked Cambroernida of Yang, et al., 
+#     2020) as class Cambroernida in phylum UNCERTAIN. The "class" includes
+#     Eldoniidae and genera Cheungkongella, Herpetogaster, Phlogites and 
+#     Yanjiahella, which Nanglu, et al. (2023) align with the cambroernids.
+
+# aq. Treat yunnanozoans, banffozoans, and vetulicolians as stem chordates, but 
+#     maintain traditional intermediate ranks (family, order, class) until 
+#     more clearly studied. Downrank "phylum" Vetulicolia as a subphylum until
+#     better resolved.
 
 # (6) Run code as usual in "PropogateSizes.R" or "PropogateLifeHabits.R", but
 # resaving as postX_withPBDB" file name. Make sure to add new IDNumbers to the
