@@ -52,10 +52,10 @@ str(all)
 
 
 # IDBadHigherTaxa columns:     ----------------------------------------------------
-cols <- c("IDNumber", "PBDB_GSG_Number", "Phylum", "Subphylum", "Superclass", 
-          "Class", "Subclass", "Infraclass", "Superorder", "Order", "Suborder", 
-          "Infraorder", "Section", "Subsection", "Superfamily", "Family", 
-          "Subfamily", "Tribe")
+cols <- c("Phylum", "Subphylum", "Superclass", "Class", "Subclass", 
+          "Infraclass", "Superorder", "Order", "Suborder", "Infraorder", 
+          "Section", "Subsection", "Superfamily", "Family", "Subfamily", 
+          "Tribe")
 wh.cols <- match(cols, colnames(all))
 selected <- all[, wh.cols]
 head(selected)
