@@ -7,17 +7,19 @@ setwd("C:/Users/pnovack-gottshall/OneDrive - Benedictine University/Desktop/Data
 ## Run relevant code in SelectCols.R for IDBadHigherTaxa.R to obtain following
 ## output.
 
-# Input file with following columns (Phylum, Subphylum, Class, Subclass, Order,
-# Suborder, Superfamily, Family, Subfamily), making sure headers are included
-# x <- read.csv(file = "HigherTaxa.csv", header = TRUE)
-x <- read.csv(file = "HigherTaxa_PBDB.csv", header = TRUE)
+# Input file with following columns (Phylum, Subphylum, Superclass, Class,
+# Subclass, Infraclass, Superorder, Order, Suborder, Infraorder, Section,
+# Subsection, Superfamily, Family, Subfamily, Tribe), making sure headers are
+# included
+x <- read.csv(file = "HigherTaxa.csv", header = TRUE)
+#x <- read.csv(file = "HigherTaxa_PBDB.csv", header = TRUE)
 head(x)
 attach(x)
 
 
 ## (1) Identify superfamilies with same root that differ only in suffix (-acea
 ##     vs. -oidea)
-tax <- levels(Superfamily)
+tax <- unique(Superfamily)
 t.acea <- grep("acea$", tax, value = TRUE)
 root.acea <- sub("acea$", "", t.acea)
 t.oidea <- grep("oidea$", tax, value = TRUE)
@@ -29,30 +31,38 @@ same.root
 
 
 ## (2) Identify taxa given different ranks in my taxonomy and in the PBDB.
-# Known exceptions (see FormatPBDB_Cluster.R for additional details):
-#    a. Ignore UNCERTAINS.
+
+# Many of these duplicates are redundant, but not all are. Known exceptions (see
+# FormatPBDB.R for additional details):
+#    a. Ignore UNCERTAINS and blanks
 #    b. Accept Tommotiida as both class and order given taxonomic
 #       ambiguity.
-#    c. Accept Hyolitha as both phylum and class given taxonomic
-#       ambiguity.
-#    d. Change order Cephalodiscida to Cephalodiscoidea (in class 
-#       Cephalodiscida), per WoRMS.
-#    e. Bdelloidea is valid as both a rotifer class and a xiphosuran 
-#       superfamily.
-#    f. Articulata is valid as both a crinoid subclass and a bryozoan suborder.
-#    g. Nautiloidea and Orthoceratoidea are both valid as both a cephalopod 
-#       subclass and superfamily.
-#    h. Stolonifera is valid as both a bryozoan suborder and a cnidarian order,
-#       and am allowing Phymosomatoida as both an echinoid order and suborder.
-#    i. Accept Aglaspidida as both subclass and order given recent practice
-#       (e.g., Ortega-Hernandez, et al., 2013 and Lerosey-Aubril, et al, 2017).
+#    c. Accept Hyolitha, Kimberellomorpha, Petalonamae, and Tentaculita as both 
+#       phylum and class given taxonomic ambiguity.
+#    d. Accept Holocephali as both class and subclass.
+#    e. Accept Cladistia as both class and infraclass.
+#    f. Accept Nektaspidida, Tuzoida, Tommotiida, and Parablastoidea as both
+#       class and order.
+#    g. Accept Chondrostei and Actinistia as both subclass and infraclass.
+#    h. Accept Aglaspidida,  Paleoloricata, Homoctenida, and Tentaculitida as 
+#       both subclass and order.
+#    i. Accept Orthoceratoidea as both subclass and superfamily.
+#    j. Accept Cladoselachimorpha as both infraclass and superorder.
+#    k. Accept Cocculiniformia as both superorder and order.
+#    l. Accept Palaeostomata as both superorder (of many orders) and suborder 
+#       (of cyclostomes)
+#    m. Accept Stolonifera (for bryozoan and cnidarian), Phymosomatoida, and
+#       Orchocladina as both order and suborder.
+#    n. Accept Pilosa as both order and infraorder.
+#    o. Accept Stenothecoida as both order and superfamily.
+#    p. Accept Lepadoidea and Cassidulina as both suborder and superfamily.
 
-for (rank in 1:8) {
-  for (subrank in (rank + 1):9) {
-    same <- which(levels(x[[subrank]]) %in% levels(x[[rank]]))
-    if(length(same) > 0L) {
+for (rank in 1:(ncol(x) - 1)) {
+  for (subrank in (rank + 1):ncol(x)) {
+    same <- which(unique(x[[subrank]]) %in% unique(x[[rank]]))
+    if (length(same) > 0L) {
       cat("match in", colnames(x)[rank], "and", colnames(x)[subrank], ":\n")
-      cat(levels(x[[subrank]])[same], "\n")
+      cat(unique(x[[subrank]])[same], "\n")
       cat("\n")
     }
   }
