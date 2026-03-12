@@ -986,9 +986,11 @@ dim(post)
 #     Neogastropoda as a suborder in order Hypsogastropoda / subclass 
 #     Caenogastropoda.
 
-#  v. Do not override the following higher taxonomic homonyms! There are two
-#     families Ctenodontidae, one a bivalve and the other a dipnoi fish. The
-#     Bdelloidea are both a rotifer class and a xiphosuran superfamily.
+#  v. Do not override the following higher taxonomic homonyms! They are distinct:
+#     
+#     (i)   Families Ctenodontidae (bivalve and dipnoi fish)
+#     (ii)  Bdelloidea are a rotifer class and a xiphosuran superfamily
+#     (iii) Stolonifera are bryozoan suborder and octocoral order. 
 
 #  w. Because the most recent crinoid classification (Wright, et al. 2017)
 #     contains only two subclasses (camerates and pentacrinoids) for all 
@@ -1013,27 +1015,28 @@ dim(post)
 #  y. Following Kroh and Smith (2010) for taxonomy of echinoids (opinions also
 #     entered into PBDB), but adding superfamily and/or suborder rankings (which
 #     they often avoided) in cases where an order is assigned and infraorder
-#     subclades are assigned. Reducing following order Camarodonta infraorders to
-#     suborders: Temnopleuridea (with families Temnopleuridae, Trigonocidaridae,
+#     subclades are assigned. Maintaining order Camarodonta infraorders: 
+#     Temnopleuridea (with families Temnopleuridae, Trigonocidaridae,
 #     Zeoglopleuridae, and Glyphocyphidae) and Echinidea (with superfamily
 #     Odontophora with families Toxopneustidae, Strongylocentrotidae, and
 #     Echinometridae, and superfamily UNCERTAIN with families Echinidae and
 #     Parechinidae) and suborder/superfamily UNCERTAIN (with family Parasaleniidae).
-#     For suborder Scutellina, reduce infraorders Laganiformes (including
-#     Fibulariidae = Echinocyamidae and Laganidae = Laganinae and Neolaganinae) and
-#     Scutelliformes (including Taiwanasteridae, Protoscutellidae [in stem group],
-#     Echinarachniidae, Dendrasteridae, Rotulidae, Scutellidae, Eoscutellidae,
-#     Scutasteridae, Abertellidae, Astriclypeidae, Monophorasteridae, and
-#     Mellitidae) to superfamily rank; family Scutellinidae is then in superfamily
-#     UNCERTAIN as stem Scutellina. Treat unranked clade Meridosternata as a
-#     suborder of Holasteroida and reduce infraorders Cardiasterina (= Stegasterina
-#     (including Stegasteridae and Cardiasteridae = Cardiotaxinae) and Urechinina
-#     (including echinoid homonym Corystidae replaced by Corystusidae, Calymnidae,
-#     Carnarechinidae, Urechinidae, Plexechinidae, and Pourtelasiidae) to
-#     superfamily rank [note that the corystusids and calymnids are not listed this
-#     way on page 173 but clearly an error based on cladogram in fig. 2]; families
-#     Echinocorythidae and Holasteridae are then in superfamily UNCERTAIN as stem
-#     Meridosternata and families Stenonasteridae, Hemipneustidae, and
+#     For suborder Scutellina, maintain infraorders Laganiformes (including
+#     Fibulariidae = Echinocyamidae and Laganidae = Laganinae and Neolaganinae) 
+#     and Scutelliformes (including Taiwanasteridae, Protoscutellidae [in stem 
+#     group], Echinarachniidae, Dendrasteridae, Rotulidae, Scutellidae, 
+#     Eoscutellidae, Scutasteridae, Abertellidae, Astriclypeidae, 
+#     Monophorasteridae, and Mellitidae) to superfamily rank; family 
+#     Scutellinidae is then in superfamily UNCERTAIN as stem Scutellina. Treat 
+#     unranked clade Meridosternata as a suborder of Holasteroida with  
+#     infraorders Cardiasterina (= Stegasterina (including Stegasteridae and 
+#     Cardiasteridae = Cardiotaxinae) and Urechinina (including echinoid 
+#     homonym Corystidae replaced by Corystusidae, Calymnidae,
+#     Carnarechinidae, Urechinidae, Plexechinidae, and Pourtelasiidae) [note 
+#     that the corystusids and calymnids are not listed this way on page 173 
+#     but clearly an error based on cladogram in fig. 2]; families
+#     Echinocorythidae and Holasteridae are then in superfamily UNCERTAIN as 
+#     stem Meridosternata and families Stenonasteridae, Hemipneustidae, and
 #     Pseudholasteridae are in superfamily and suborder UNCERTAIN as stem
 #     holasteroids.
 
@@ -1179,7 +1182,9 @@ dim(post)
 #     Crisuliporidae), Cancellata, Cerioporina, Fasciculina (with families
 #     Actinoporidae, Frondiporidae, Hastingsiidae, Semiceidae, Siphoniotyphlidae,
 #     and Theonoidae), Hederellida (with families Hederellidae and Reptariidae),
-#     Palaeostomata, Paleotubuliporina, Rectangulata, and Tubuliporina.
+#     Palaeostomata (with families Corynotrypidae, Crownoporidae, 
+#     Flabellotrypidae, and Sagenellidae), Paleotubuliporina, Rectangulata, and 
+#     Tubuliporina.
 
 # am. Problematic Ediacarans: Following Erwin, et al. (2011), treating unranked 
 #     Dickinsoniomorpha as a class; placing as stem member of phylum Placozoa 
