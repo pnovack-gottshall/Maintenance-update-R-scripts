@@ -32,31 +32,6 @@ same.root
 
 ## (2) Identify taxa given different ranks in my taxonomy and in the PBDB.
 
-# Many of these duplicates are redundant, but not all are. Known exceptions (see
-# FormatPBDB.R for additional details):
-#    a. Ignore UNCERTAINS and blanks
-#    b. Accept Tommotiida as both class and order given taxonomic
-#       ambiguity.
-#    c. Accept Hyolitha, Kimberellomorpha, Petalonamae, and Tentaculita as both 
-#       phylum and class given taxonomic ambiguity.
-#    d. Accept Holocephali as both class and subclass.
-#    e. Accept Cladistia as both class and infraclass.
-#    f. Accept Nektaspidida, Tuzoida, Tommotiida, and Parablastoidea as both
-#       class and order.
-#    g. Accept Chondrostei and Actinistia as both subclass and infraclass.
-#    h. Accept Aglaspidida,  Paleoloricata, Homoctenida, and Tentaculitida as 
-#       both subclass and order.
-#    i. Accept Orthoceratoidea as both subclass and superfamily.
-#    j. Accept Cladoselachimorpha as both infraclass and superorder.
-#    k. Accept Cocculiniformia as both superorder and order.
-#    l. Accept Palaeostomata as both superorder (of many orders) and suborder 
-#       (of cyclostomes)
-#    m. Accept Stolonifera (for bryozoan and cnidarian), Phymosomatoida, and
-#       Orchocladina as both order and suborder.
-#    n. Accept Pilosa as both order and infraorder.
-#    o. Accept Stenothecoida as both order and superfamily.
-#    p. Accept Lepadoidea and Cassidulina as both suborder and superfamily.
-
 for (rank in 1:(ncol(x) - 1)) {
   for (subrank in (rank + 1):ncol(x)) {
     same <- which(unique(x[[subrank]]) %in% unique(x[[rank]]))
@@ -67,100 +42,274 @@ for (rank in 1:(ncol(x) - 1)) {
     }
   }
 }
+# Known exceptions (see FormatPBDB.R for additional details):
+#    a. Ignore UNCERTAINS and blanks
+#    b. Accept Hyolitha, Kimberellomorpha, Petalonamae, and Tentaculita as both 
+#       phylum and class given taxonomic ambiguity.
+#    c. Accept Holocephali as both class and subclass.
+#    d. Accept Cladistia as both class and infraclass.
+#    e. Accept Nektaspidida, Tuzoida, Tommotiida, and Parablastoidea as both
+#       class and order.
+#    f. Accept Chondrostei and Actinistia as both subclass and infraclass.
+#    g. Accept Aglaspidida,  Paleoloricata, Homoctenida, and Tentaculitida as 
+#       both subclass and order.
+#    h. Accept Orthoceratoidea as both subclass and superfamily.
+#    i. Accept Cladoselachimorpha as both infraclass and superorder.
+#    j. Accept Cocculiniformia as both superorder and order.
+#    k. Accept Palaeostomata as both superorder (of many bryozoan orders) and 
+#       suborder (of cyclostomes)
+#    l. Accept Stolonifera (for bryozoan and cnidarian), Phymosomatoida, and 
+#       Orchocladina as both order and suborder.
+#    m. Accept Pilosa as both order and infraorder.
+#    n. Accept Cambridioidea as both order and superfamily.
+#    o. Accept Lepadoidea and Cassidulina as both suborder and superfamily.
 
 
 ## (3) Identify taxa placed inconsistently within higher taxa.
-# Ignore "UNCERTAIN," which is inherently allowed to be polyphyletic.
-# Ignore Class Tommotiida, which is known to be either paraphyletic or
-#      polyphyletic.
+
+# Ignore "UNCERTAIN" and "", which are inherently allowed to be polyphyletic.
 
 # Subphylum
-tax <- levels(Subphylum)
+tax <- unique(Subphylum)
+wh.ignore <- which(tax %in% c("UNCERTAIN", ""))
+tax <- tax[-wh.ignore]
 for(i in 1:length(tax)) {
-  if(i==1) cat("Subphyla:\n")
-  wh <- which(Subphylum==tax[i])
-  if(length(wh)==1L) next
+  if (i == 1)
+    cat("Subphyla:\n")
+  wh <- which(Subphylum == tax[i])
+  if (length(wh) == 1L)
+    next
   higher <- unique(x[wh, 1])
-  if(length(higher)==1L) next
-  cat(as.character(tax[i]), "\n")
+  if (length(higher) == 1L)
+    next
+  cat(as.character(tax[i]), ": ", as.character(higher), "\n")
+}
+
+# Superclass
+tax <- unique(Superclass)
+wh.ignore <- which(tax %in% c("UNCERTAIN", ""))
+tax <- tax[-wh.ignore]
+for (i in 1:length(tax)) {
+  if (i == 1)
+    cat("Superclasses:\n")
+  wh <- which(Superclass == tax[i])
+  if (length(wh) == 1L)
+    next
+  higher <- unique(x[wh, 1:2])
+  if (nrow(higher) == 1L)
+    next
+  cat(as.character(tax[i]), ": ", as.character(higher), "\n")
 }
 
 # Class
-tax <- levels(Class)
-for(i in 1:length(tax)) {
-  if(i==1) cat("Classes:\n")
-  wh <- which(Class==tax[i])
-  if(length(wh)==1L) next
-  higher <- unique(x[wh, 2])
-  if(length(higher)==1L) next
-  cat(as.character(tax[i]), "\n")
+tax <- unique(Class)
+wh.ignore <- which(tax %in% c("UNCERTAIN", ""))
+tax <- tax[-wh.ignore]
+for (i in 1:length(tax)) {
+  if (i == 1)
+    cat("Classes:\n")
+  wh <- which(Class == tax[i])
+  if (length(wh) == 1L)
+    next
+  higher <- unique(x[wh, 1:3])
+  if (nrow(higher) == 1L)
+    next
+  cat(as.character(tax[i]), ": ", as.character(higher), "\n\n")
 }
+# Ignore class Tommotiida, which is known to be either paraphyletic or
+#      polyphyletic (and generally considered as various stem brachiopods).
 
 # Subclass
-tax <- levels(Subclass)
-for(i in 1:length(tax)) {
-  if(i==1) cat("Subclasses:\n")
-  wh <- which(Subclass==tax[i])
-  if(length(wh)==1L) next
-  higher <- unique(x[wh, 1:3])
-  if(nrow(higher)==1) next
-  cat(as.character(tax[i]), "\n")
-}
-
-# Orders
-tax <- levels(Order)
-for(i in 1:length(tax)) {
-  if(i==1) cat("Orders:\n")
-  wh <- which(Order==tax[i])
-  if(length(wh)==1L) next
+tax <- unique(Subclass)
+wh.ignore <- which(tax %in% c("UNCERTAIN", ""))
+tax <- tax[-wh.ignore]
+for (i in 1:length(tax)) {
+  if (i == 1)
+    cat("Subclasses:\n")
+  wh <- which(Subclass == tax[i])
+  if (length(wh) == 1L)
+    next
   higher <- unique(x[wh, 1:4])
-  if(nrow(higher)==1) next
-  cat(as.character(tax[i]), "\n")
+  if (nrow(higher) == 1)
+    next
+  cat(as.character(tax[i]), ": ", as.character(higher), "\n\n")
 }
 
-# Below orders, more efficient to work upwards from subfamily up ranks (because
-# can correct multiple ranks at same time).
-
-# Subfamilies
-tax <- levels(Subfamily)
-for(i in 1:length(tax)) {
-  if(i==1) cat("Subfamilies:\n")
-  wh <- which(Subfamily==tax[i])
-  if(length(wh)==1L) next
-  higher <- unique(x[wh, 1:8])
-  if(nrow(higher)==1) next
-  cat(as.character(tax[i]), "\n")
-}
-
-# Families
-tax <- levels(Family)
-for(i in 1:length(tax)) {
-  if(i==1) cat("Families:\n")
-  wh <- which(Family==tax[i])
-  if(length(wh)==1L) next
-  higher <- unique(x[wh, 1:7])
-  if(nrow(higher)==1) next
-  cat(as.character(tax[i]), "\n")
-}
-
-# Superfamilies
-tax <- levels(Superfamily)
-for(i in 1:length(tax)) {
-  if(i==1) cat("Superfamilies:\n")
-  wh <- which(Superfamily==tax[i])
-  if(length(wh)==1L) next
-  higher <- unique(x[wh, 1:6])
-  if(nrow(higher)==1) next
-  cat(as.character(tax[i]), "\n")
-}
-
-# Suborders
-tax <- levels(Suborder)
-for(i in 1:length(tax)) {
-  if(i==1) cat("Suborders:\n")
-  wh <- which(Suborder==tax[i])
-  if(length(wh)==1L) next
+# Infraclass
+tax <- unique(Infraclass)
+wh.ignore <- which(tax %in% c("UNCERTAIN", ""))
+tax <- tax[-wh.ignore]
+for (i in 1:length(tax)) {
+  if (i == 1)
+    cat("Infraclasses:\n")
+  wh <- which(Infraclass == tax[i])
+  if (length(wh) == 1L)
+    next
   higher <- unique(x[wh, 1:5])
-  if(nrow(higher)==1) next
-  cat(as.character(tax[i]), "\n")
+  if (nrow(higher) == 1)
+    next
+  cat(as.character(tax[i]), ": ", as.character(higher), "\n\n")
+}
+
+# Superorder
+tax <- unique(Superorder)
+wh.ignore <- which(tax %in% c("UNCERTAIN", ""))
+tax <- tax[-wh.ignore]
+for (i in 1:length(tax)) {
+  if (i == 1)
+    cat("Superorders:\n")
+  wh <- which(Superorder == tax[i])
+  if (length(wh) == 1L)
+    next
+  higher <- unique(x[wh, 1:6])
+  if (nrow(higher) == 1)
+    next
+  cat(as.character(tax[i]), ": ", as.character(higher), "\n\n")
+}
+
+# Order
+tax <- unique(Order)
+wh.ignore <- which(tax %in% c("UNCERTAIN", ""))
+tax <- tax[-wh.ignore]
+for (i in 1:length(tax)) {
+  if (i == 1)
+    cat("Orders:\n")
+  wh <- which(Order == tax[i])
+  if (length(wh) == 1L)
+    next
+  higher <- unique(x[wh, 1:7])
+  if (nrow(higher) == 1)
+    next
+  cat(as.character(tax[i]), ": ", as.character(higher), "\n\n")
+}
+# Ignore order Tommotiida, which is known to be either paraphyletic or
+#      polyphyletic (and generally considered as various stem brachiopods).
+
+# Suborder
+tax <- unique(Suborder)
+wh.ignore <- which(tax %in% c("UNCERTAIN", ""))
+tax <- tax[-wh.ignore]
+for (i in 1:length(tax)) {
+  if (i == 1)
+    cat("Suborders:\n")
+  wh <- which(Suborder == tax[i])
+  if (length(wh) == 1L)
+    next
+  higher <- unique(x[wh, 1:8])
+  if (nrow(higher) == 1)
+    next
+  cat(as.character(tax[i]), ": ", as.character(higher), "\n\n")
+}
+
+# Infraorder
+tax <- unique(Infraorder)
+wh.ignore <- which(tax %in% c("UNCERTAIN", ""))
+tax <- tax[-wh.ignore]
+for (i in 1:length(tax)) {
+  if (i == 1)
+    cat("Infraorders:\n")
+  wh <- which(Infraorder == tax[i])
+  if (length(wh) == 1L)
+    next
+  higher <- unique(x[wh, 1:8])
+  if (nrow(higher) == 1)
+    next
+  cat(as.character(tax[i]), ": ", as.character(higher), "\n\n")
+}
+
+# Section
+tax <- unique(Section)
+wh.ignore <- which(tax %in% c("UNCERTAIN", ""))
+tax <- tax[-wh.ignore]
+for (i in 1:length(tax)) {
+  if (i == 1)
+    cat("Sections:\n")
+  wh <- which(Section == tax[i])
+  if (length(wh) == 1L)
+    next
+  higher <- unique(x[wh, 1:8])
+  if (nrow(higher) == 1)
+    next
+  cat(as.character(tax[i]), ": ", as.character(higher), "\n\n")
+}
+
+
+# Subsection
+tax <- unique(Subsection)
+wh.ignore <- which(tax %in% c("UNCERTAIN", ""))
+tax <- tax[-wh.ignore]
+for (i in 1:length(tax)) {
+  if (i == 1)
+    cat("Subsections:\n")
+  wh <- which(Subsection == tax[i])
+  if (length(wh) == 1L)
+    next
+  higher <- unique(x[wh, 1:8])
+  if (nrow(higher) == 1)
+    next
+  cat(as.character(tax[i]), ": ", as.character(higher), "\n\n")
+}
+
+# Superfamily
+tax <- unique(Superfamily)
+wh.ignore <- which(tax %in% c("UNCERTAIN", ""))
+tax <- tax[-wh.ignore]
+for (i in 1:length(tax)) {
+  if (i == 1)
+    cat("Superfamilies:\n")
+  wh <- which(Superfamily == tax[i])
+  if (length(wh) == 1L)
+    next
+  higher <- unique(x[wh, 1:8])
+  if (nrow(higher) == 1)
+    next
+  cat(as.character(tax[i]), ": ", as.character(higher), "\n\n")
+}
+
+# Family
+tax <- unique(Family)
+wh.ignore <- which(tax %in% c("UNCERTAIN", ""))
+tax <- tax[-wh.ignore]
+for (i in 1:length(tax)) {
+  if (i == 1)
+    cat("Families:\n")
+  wh <- which(Family == tax[i])
+  if (length(wh) == 1L)
+    next
+  higher <- unique(x[wh, 1:8])
+  if (nrow(higher) == 1)
+    next
+  cat(as.character(tax[i]), ": ", as.character(higher), "\n\n")
+}
+
+# Subfamily
+tax <- unique(Subfamily)
+wh.ignore <- which(tax %in% c("UNCERTAIN", ""))
+tax <- tax[-wh.ignore]
+for (i in 1:length(tax)) {
+  if (i == 1)
+    cat("Subfamilies:\n")
+  wh <- which(Subfamily == tax[i])
+  if (length(wh) == 1L)
+    next
+  higher <- unique(x[wh, 1:8])
+  if (nrow(higher) == 1)
+    next
+  cat(as.character(tax[i]), ": ", as.character(higher), "\n\n")
+}
+
+# Tribe
+tax <- unique(Tribe)
+wh.ignore <- which(tax %in% c("UNCERTAIN", ""))
+tax <- tax[-wh.ignore]
+for (i in 1:length(tax)) {
+  if (i == 1)
+    cat("Tribes:\n")
+  wh <- which(Tribe == tax[i])
+  if (length(wh) == 1L)
+    next
+  higher <- unique(x[wh, 1:8])
+  if (nrow(higher) == 1)
+    next
+  cat(as.character(tax[i]), ": ", as.character(higher), "\n\n")
 }
