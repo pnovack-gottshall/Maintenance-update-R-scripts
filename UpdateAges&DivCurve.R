@@ -530,9 +530,9 @@ for (i in 1:length(Gen)) {
         }
 
         # Special rule to ignore expansion window if PBDB, Sepkoski, and WoRMS
-        # all concur extant:
-        if (gen.pbdb$is_extant == "extant" & gen.Sepkoski$min_ma == 0 &
-            length(wh.WoRMS.G) > 0L) {
+        # all concur extant (skips in one or more is missing):
+        if (isTRUE(gen.pbdb$is_extant == "extant" & gen.Sepkoski$min_ma == 0 &
+            length(wh.WoRMS.G) > 0L)) {
           min.ma <- 0
           occs$min_age[wh.occs.G] <- "Recent"
         }
@@ -650,7 +650,7 @@ head(occs)
 
 
 # Get midpoint age for PBDB subperiods
-mids <- apply(epochs[ ,9:10], 1, mean)
+mids <- apply(epochs[ ,c("t_age", "b_age")], 1, mean)
 divs <- data.frame(interval = epochs$interval_name, base = epochs$b_age,
                    top = epochs$t_age, midpt = mids, div = NA)
 
