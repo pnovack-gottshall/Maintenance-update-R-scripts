@@ -563,10 +563,11 @@ if (any(non.marine %in% marine.exceptions) == TRUE)
 # non.marine[which(non.marine %in% marine.exceptions)]
 
 # Pterosaur genus list from Dean, Mannion, and Butler (2016, Palaeontology,
-# Appendix S1) and family list from Bestwick, Unwin, Butler, Henderson, and
-# Purnell (2018, Biological Reviews). Birds provided from Alex Clark (Field
-# Museum). Early panarthropods ('lopopods', onychophorans, etc.) from Aria and
-# Caron (2024) and  Smith and Ortega-Hernandez (2014).
+# Appendix S1) and Longrich, et al. (2018, PLOS Biology) and family list from
+# Bestwick, Unwin, Butler, Henderson, and Purnell (2018, Biological Reviews).
+# Birds provided from Alex Clark (Field Museum). Early panarthropods
+# ('lopopods', onychophorans, etc.) from Aria and Caron (2024) and  Smith and
+# Ortega-Hernandez (2014).
 
 # Extract the known marine taxa (in lineages that are typically non-marine):
 sq <- 1:nrow(x)
@@ -899,7 +900,11 @@ dim(post)
 #                and treating class Coronoidea as within blastoids). Eocrinoids
 #                come in elliptical and flattened thecal forms. To propagate 
 #                sizes (shapes) properly, creating "orders" UNCERTAIN-Flat and 
-#                UNCERTAIN-Round, when the shape is known.
+#                UNCERTAIN-Round, when the shape is known. Following Waters and
+#                Macurda (2026), treating polyphyletic Spiraculata as informal 
+#                infraclass 'spiriculates' with superorders Stomatoblastida and
+#                Tubuloblastida and fissiculates elevated to superorder 
+#                Fissiculata. 
 
 #            (4) Remaining classes (non-radials Stylophora, Cincta, Ctenocystoidea
 #                and radials Helicoplacoidea, Helicocystoids [Helicocystis], 
@@ -1005,12 +1010,12 @@ dim(post)
 #     as larger, more inclusive ones.) See "Crinoid taxonomy.docx" for summary.
 
 #  x. Following Sheffield and Sumrall (2019), place the diploporitans in
-#     Glyptosphaeritidacea and Asteroblastida in Class 'diploporitan' because they
-#     are now polyphyletic. Use Order Diplporita only for members of Sphaeronitida
-#     and any traditional diploporitan NOT explicitly noted in their paper as not
-#     monophyletic members of the Sphaeronitida clade. (In other words, the
-#     default, for now, is to assume all diploporitans are within Diploporita
-#     unless explicitly known not to be.)
+#     Glyptosphaeritidacea and Asteroblastida in Class 'diploporitan' because 
+#     they are now polyphyletic. Use order 'diploporita' only for members of 
+#     Sphaeronitida and any traditional diploporitan NOT explicitly noted in 
+#     their paper as not monophyletic members of the Sphaeronitida clade. (In 
+#     other words, the default, for now, is to assume all diploporitans are 
+#     within 'diploporita' unless explicitly known not to be.)
 
 #  y. Following Kroh and Smith (2010) for taxonomy of echinoids (opinions also
 #     entered into PBDB), but adding superfamily and/or suborder rankings (which
