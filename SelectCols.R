@@ -34,7 +34,7 @@
 
 rm(list = ls())
 setwd("C:/Users/pnovack-gottshall/OneDrive - Benedictine University/Desktop/Databases/Maintenance & update R scripts")
-# setwd("C:/Users/pnovack-gottshall/OneDrive - Benedictine University/Documents/GSA (& NAPC)/2025PalAss/Analyses")
+# setwd("C:/Users/pnovack-gottshall/OneDrive - Benedictine University/Documents/_Spring2026/Research/Decapods")
 all <- read.delim(file = "AllCols.tab", stringsAsFactors = FALSE)
 # all <- read.delim(file = "AllCols_Constant_PBDB.tab", stringsAsFactors = FALSE)
 # all <- read.delim(file = "AllCols_Mode_PBDB.tab", stringsAsFactors = FALSE)
