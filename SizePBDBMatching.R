@@ -4,6 +4,8 @@
 
 rm(list = ls())
 
+## PART 1: MATCH ACCEPTED NAMES AND ID FROM PBDB ###############################
+
 # Get PBDB data (use unformatted so includes improper names, too!)
 
 # https://paleobiodb.org/data1.2/taxa/list.csv?base_name=Metazoa&rank=min_subgenus&variant=all&show=app
@@ -133,15 +135,15 @@ pbdb.subg$subgenus <- NA
 for (i in 1:nrow(pbdb.subg)) {
   subgenus <- pbdb.subg$taxon_name[i]
   if (grepl(" \\(", subgenus)) {
-    pbdb.subg$subgenus[i] <- unlist(regmatches(subgenus,
-                                               gregexpr("(?<=\\()[^()]+(?=\\))",
-                                                        subgenus, perl = TRUE)))
+    pbdb.subg$subgenus[i] <- 
+      unlist(regmatches(subgenus, gregexpr("(?<=\\()[^()]+(?=\\))", 
+                                           subgenus, perl = TRUE)))
   } else {
     subgenus <- pbdb.subg$accepted_name[i]
     if (grepl(" \\(", subgenus))
-      pbdb.subg$subgenus[i] <- unlist(regmatches(subgenus,
-                                                 gregexpr("(?<=\\()[^()]+(?=\\))",
-                                                          subgenus, perl = TRUE)))
+      pbdb.subg$subgenus[i] <- 
+        unlist(regmatches(subgenus, gregexpr("(?<=\\()[^()]+(?=\\))", 
+                                             subgenus, perl = TRUE)))
   }
 }
 pbdb.subg[1:20, c(5:6, 10, 21)]
@@ -221,16 +223,16 @@ num
 # Ammonites (Oecotraustes), Oekotraustes, and Oppelia (Oecotraustes) should all
 # point to Oecotraustes, allowing Oecotraustes (Oecotraustes)
 
-# Volutilithes (Volutocorbis), Volutocorbis (Volutocorbis), and Volutocorbis
-# should all point to Athleta (Volutocorbis)
+# Volutilithes (Volutocorbis), Volutocorbis (Volutocorbis), Volutocorbis, and
+# Volutocorbis (Ternivoluta) should all point to Athleta (Volutocorbis)
 
 # Antiguamya and Mya (Antiguamya) should point to Tugonia (Antiguamya)
 
 # Brevicardium, Protocardium (Brevicardium), and Nemocardium (Brevicardium)
-# should point to Brevicardium
+# should point to Brevicardium. (But Nemocardium remains distinct.)
 
 # Chlamys (Camptochlamys), Camptochlamys, and Camptochlamys (Camptochlamys)
-# should point to Camptochlamys
+# should point to Camptonectes (Camptochlamys)
 
 # Gryphaea (Catinula), Ostrea (Catinula), and Catinula should point to Catinula
 
@@ -299,6 +301,8 @@ num
 # Megastrophia (Eomegastrophia) and Brachyprion (Eomegastrophia) should be
 # recombined as Eomegastrophia (Eomegastrophia)
 
+# Gemellima (Isolimea) and Limea (Isolimea) should be ranked as Isolimea
+
 # Kossmaticeras (Jacobites) should be recombined as Jacobites, with subgenus
 # Jacobites (Jacobites)
 
@@ -309,6 +313,9 @@ num
 # Leiostegium (Leiostegium)
 
 # Lepidopleurus (Leptochiton) should be recombined as Leptochiton (Leptochiton)
+
+# Chlamys (Miyagipecten) and Miyagipecten (Miyagipecten) should be treated as
+# Miyagipecten
 
 # Pecten (Neithea) should be reranked as Neithea, with subgenus Neithea
 # (Neithea)
@@ -354,10 +361,10 @@ table(valid.4$accepted_rank)
 # Note many are nominate subgenera for genera in the PBDB that lack nominate
 # subgenera (but presumably have other subgenera). These may be worth
 # maintaining (if other subgenera are recognized), even if not recognized in the
-# PBDB (under principle that a nominate subgenus must exist if other subgenera
-# are recognized). Such "recognized" parent genera will be swept in during the
-# later propagation, and the nominate will likely be the size that gets
-# accordingly propagated (in the same way the Heim, et al.'s SI data did).
+# PBDB (under the principle that a nominate subgenus must exist if other
+# subgenera are recognized). Such "recognized" parent genera will be swept in
+# during the later propagation, and the nominate will likely be the size that
+# gets accordingly propagated (in the same way that Heim, et al.'s SI data did).
 valid.4[-which(valid.3$accepted_rank == "genus" |
                  valid.3$accepted_rank == "subgenus"), sum.cols]
 
@@ -397,4 +404,80 @@ orig.nrow
 nrow(valid.5)
 identical(orig.nrow, nrow(valid.1) + nrow(valid.2) + nrow(valid.3) + 
             nrow(valid.4) + nrow(valid.5) + nrow(sizes))
+
+## Combine back together
+output <- rbind(valid.1, valid.2, valid.3, valid.4, valid.5, sizes)
+head(output)
+tail(output)
+
+# Convert subgenera to genus + subgenus
+output$accepted_genus <- NA
+output$accepted_subgenus <- NA
+
+for (i in 1:nrow(output)) {
+  name <- output$accepted_name[i]
+  if (!is.na(name)) {
+    if (output$accepted_rank[i] == "subgenus") {
+      output$accepted_genus[i] <- unlist(strsplit(name, " "))[1]
+      output$accepted_subgenus[i] <-
+        unlist(regmatches(name, gregexpr("(?<=\\()[^()]+(?=\\))", name, perl = TRUE)))
+    } else {
+      output$accepted_genus[i] <- name
+    }
+  } else {
+    output[i, c("accepted_genus", "accepted_subgenus")] <- 
+      output[i, c("Genus", "Subgenus")]
+  }
+}
+head(output)
+tail(output)
+
+# Save output
+write.table(output, file = "output_accepted.txt", sep = "\t", row.names = FALSE)
+
+
+
+
+## PART 2: MATCH STRAT RANGES AND TAXONOMY FOR NON-PBDB ########################
+
+rm(list = ls())
+
+# Because too few from non-Heim data sets, only automating Heim, et al. here.
+# (Others done manually.)
+
+# Import accepted data
+x <- read.delim("TempSizes_Accepted.txt")
+head(x)
+nrow(x)
+
+# Import Heim, et al.
+Heim <- read.csv("HeimSizes_supplementary_data_file.csv")
+head(Heim)
+
+# Only need to process those NOT in PBDB (We'll use PBDB for those there)
+wh.NA <- which(is.na(x$accepted_no) & x$Enterer == "NHeim")
+# I hate dealing with indexing so break into good and bad:
+good <- x[-wh.NA, ]
+missing <- x[wh.NA, ]
+
+# Because Heim concatenates Genus (Subgenus), do so here
+wh.subg <- which(missing$Subgenus != "")
+taxa <- missing$Genus
+taxa[wh.subg] <-
+  paste0(missing$Genus[wh.subg], " (", missing$Subgenus[wh.subg], ")")
+
+matches <- match(taxa, Heim$taxon_name)
+# Confirm matched
+Heim$taxon_name[head(matches)]
+head(taxa)
+
+missing[, c("max_age", "min_age", "Family", "Order", "Class", "Phylum")] <-
+  Heim[matches, c("fad_int", "lad_int", "family", "order", "class", "phylum")]
+       
+head(missing)
+
+# Recombine and save
+x <- rbind(good, missing)
+write.table(x, file = "output_taxonomy.txt", sep = "\t", row.names = FALSE)
+
 
