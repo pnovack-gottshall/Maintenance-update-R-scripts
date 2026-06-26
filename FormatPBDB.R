@@ -822,7 +822,8 @@ dim(post)
 #     archaic synonyms):
 #       (i)    cephalochordate order Amphioxi to Amphioxiformes (and place in 
 #                class Leptocardii)
-#       (ii)   vertebrate class Actinopteri to Actinopterygii
+#       (ii)   vertebrate class Actinopterygii to Actinopteri (with 
+#                Actinopterygii as superclass)  
 #       (iii)  sponge class Demospongea to Demospongiae 
 #       (iv)   sponge class Archeocyatha to Archaeocyatha
 #       (v)    fish order Birkeniida to Birkeniiformes
