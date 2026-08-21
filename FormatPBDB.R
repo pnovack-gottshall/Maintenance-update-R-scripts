@@ -1384,8 +1384,9 @@ dim(post)
 # at. Treat unranked (monogeneric) Saccorhytida as a phylum.
 
 # au. For cephalopods, treat unranked clade Neocoleoidea as a coleoid 
-#     infraclass.
-
+#     infraclass. Treat superorder Decembrachiata as j.s.s. of Decabrachia.
+#     Treat suborders Teuthomorpha and Teuthina as j.s.s. of superorder
+#     Decabrachia.
 
 # (6) Run code in "IDBadHigherTaxa.R" to identify taxa that are not consistently
 #     parented, such as a family in my database parented to a superfamily that
