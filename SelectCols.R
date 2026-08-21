@@ -13,9 +13,12 @@
 #     tab-delimited format. DO NOT SAVE AS EXCEL FORMAT, AS DOING SO
 #     IDIOSYNCRATICALLY CHANGES NAs TO 0s AND 1s!! (MUST be tab-delimited, as
 #     several text fields contain commas!!!). Save a duplicate as an Excel 
-#     Workbook (AllColsHeadings.xlsx) to automatically obtain column headings. 
-#     (Need to create this colnames file EVERY TIME and for EVERY FILE in case 
-#     the order of columns has changed or is different between files.)
+#     Workbook (AllColsHeadings.xlsx) to automatically obtain column headings.
+#     (Need to create this colnames file EVERY TIME and for EVERY FILE in case
+#     the order of columns has changed or is different between files.) To avoid
+#     cleaning up quotation marks in following steps, can also ignore other
+#     text-based fields (BodyMeasureReference, EcologyNotes, EcologyReference,
+#     History_Ecology, History_Size, TaxonomyReference), unless required.
 
 # (2) Open file in MSWord (make sure smart quotes are off: File > Options >
 #     Proofing > Autocorrect Options > Autoformat As You Type > uncheck Smart
@@ -32,9 +35,11 @@
 
 ## IMPORT ALL-COLUMNS DATA FILE ---------------------------------------------------
 
+# If get an error, make sure the file was saved in Unicode UTF-8 format.
 rm(list = ls())
 setwd("C:/Users/pnovack-gottshall/OneDrive - Benedictine University/Desktop/Databases/Maintenance & update R scripts")
-# setwd("C:/Users/pnovack-gottshall/OneDrive - Benedictine University/Documents/_Spring2026/Research/Decapods")
+# setwd("C:/Users/pnovack-gottshall/OneDrive - Benedictine University/Desktop/DecapodNSSRP")
+# setwd("C:/Users/pnovack-gottshall/OneDrive - Benedictine University/Documents/GSA (& NAPC)/2026GSA/Size & disparity/Abstract analyses")
 all <- read.delim(file = "AllCols.tab", stringsAsFactors = FALSE)
 # all <- read.delim(file = "AllCols_Constant_PBDB.tab", stringsAsFactors = FALSE)
 # all <- read.delim(file = "AllCols_Mode_PBDB.tab", stringsAsFactors = FALSE)
@@ -98,7 +103,7 @@ if (!identical(cols, colnames(selected)))
   stop("column names are not as specified!")
 # write.table(selected, file = "PreSizes_Constant_withPBDB.tab", row.names = FALSE, sep = "\t", quote = FALSE)
 # write.table(selected, file = "PreSizes_Mode_withPBDB.tab", row.names = FALSE, sep = "\t", quote = FALSE)
-# write.table(selected, file = "PreSizes.tab", row.names = FALSE, sep = "\t", quote = FALSE)
+write.table(selected, file = "PreSizes.tab", row.names = FALSE, sep = "\t", quote = FALSE)
 
 
 
@@ -167,6 +172,7 @@ write.table(selected, file = "Taxa_Mode_PBDB.tab", row.names = FALSE, sep = "\t"
 
 
 # Alternative: Per-character sorting for downstream analyses:     ----------------------------------------------------
+# This version includes fossilization and environment
 cols <- c("IDNumber", "PBDB_GSG_Number", "Phylum", "Subphylum", "Class", 
           "Subclass", "Order", "Suborder", "Superfamily", "Family", "Subfamily", 
           "Genus", "Subgenus", "Species", "max_ma",	"min_ma", "Fossilization", 
@@ -188,6 +194,5 @@ head(selected)
 if (!identical(cols, colnames(selected)))
   stop("column names are not as specified!")
 write.table(selected, file = "Taxa_Mode.tab", row.names = FALSE, sep = "\t", quote = FALSE)
-write.table(selected, file = "Taxa_Isabel.tab", row.names = FALSE, sep = "\t", quote = FALSE)
 # write.table(selected, file = "AllPBDBTaxa_Mode_Oct2025.tab", row.names = FALSE, sep = "\t", quote = FALSE)
 # write.table(selected, file = "AllPBDBTaxa_Constant_June2024.tab", row.names = FALSE, sep = "\t", quote = FALSE)
