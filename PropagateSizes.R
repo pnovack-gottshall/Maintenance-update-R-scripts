@@ -464,7 +464,7 @@ if (record.log) cat("Changes made to body sizes on", today, ":\n\n", file = reco
 
 for (i in 1:nrow(out)) {
   # Errors typically occur when there are no available relatives
-  # for (i in 49072:nrow(out)) {
+  # for (i in 4781:nrow(out)) {
   
   if (i %in% index)
     cat("record", i, "of", nrow(out), ":", out$Genus[i], out$Species[i], "\n")
@@ -768,16 +768,16 @@ write.table(out, file = "PostSizes.tab", quote = FALSE, sep = "\t", row.names = 
 #     with ^t and replacing ^t" with " and replacing "" with ").
 
 # (3) Open FileMakerPro and import as a tab-delimited file, updating records by
-#     matching names and using the IDNumber as the matching identifier. (Fine to 
-#     not import the taxonomic names or geological ranges, but import  
-#     everything else.) To set the column names as the field names, make sure 
-#     the first entry row in the imported source (the column headings) are 
-#     visible, then choose "Use as Field Names" for the imported source file. 
-#     Then choose "Matching Names" in the Target Fields dropdown to ensure that 
-#     the source and target fields match (but double-check that they are matched 
-#     correctly). If using different propagations for the "constant" and "mode" 
-#     databases, make sure to import the correct source file to the correct 
-#     database version.
+#     matching names and using the IDNumber as the matching identifier. (Fine to
+#     not import the taxonomic names or geological ranges or
+#     BodyMeasureReference, but import everything else.) To set the column names
+#     as the field names, make sure the first entry row in the imported source
+#     (the column headings) are visible, then choose "Use as Field Names" for
+#     the imported source file. Then choose "Matching Names" in the Target
+#     Fields dropdown to ensure that the source and target fields match (but
+#     double-check that they are matched correctly). If using different
+#     propagations for the "constant" and "mode" databases, make sure to import
+#     the correct source file to the correct database version.
 
 
 
