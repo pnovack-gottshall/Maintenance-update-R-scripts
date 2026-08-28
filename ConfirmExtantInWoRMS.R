@@ -201,8 +201,8 @@ homonyms[order(homonyms$taxon), 1:5]
 # fossil record otherwise). Not considering brackish as non-marine (but also not
 # removing taxa tagged exclusively that way).
 
-# NOTE that unlike using the code above, here using the output from FormatPBDB.R
-# (which removes non-marines, etc.) to reduce the list of false positivies.
+# Note that unlike using the code above, here using the output from FormatPBDB.R
+# (which removes non-marines, etc.) to reduce the list of false positives.
 
 # Import list of PBDB genera (and subgenera), after first pass having removed
 # non-marines
@@ -226,7 +226,8 @@ marine.status <- foreach(g = 1:nrow(x), .combine = rbind) %dopar% {
   # Note ignoring subgenera
   taxon <- x$Genus[g]
   
-  # Check whether potential homonym (need to manually check, if so), but only checking for genus (and not subgenera)
+  # Check whether potential homonym (need to manually check, if so), but only
+  # checking for genus (and not subgenera)
   if (taxon %in% x$Genus[-g])
     flag <- "possible homonym: check manually"
   
@@ -289,5 +290,3 @@ sort(table(non.mars$Class))
 # into freshwater and terrestrial ones. (E.g., Feldmann, 1984 with earliest
 # aeglid Haumuriaegla.) The following taxa (mostly genera) are presumed false
 # positives (occurring in marine settings).
-
-# 
