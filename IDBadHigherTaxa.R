@@ -12,7 +12,6 @@ setwd("C:/Users/pnovack-gottshall/OneDrive - Benedictine University/Desktop/Data
 # Subsection, Superfamily, Family, Subfamily, Tribe), making sure headers are
 # included
 x <- read.csv(file = "HigherTaxa.csv", header = TRUE)
-#x <- read.csv(file = "HigherTaxa_PBDB.csv", header = TRUE)
 head(x)
 attach(x)
 
@@ -44,25 +43,26 @@ for (rank in 1:(ncol(x) - 1)) {
 }
 # Known exceptions (see FormatPBDB.R for additional details):
 #    a. Ignore UNCERTAINS and blanks
-#    b. Accept Hyolitha, Kimberellomorpha, Petalonamae, and Tentaculita as both 
-#       phylum and class given taxonomic ambiguity.
+#    b. Accept Echiura, Hyolitha, Kimberellomorpha, Petalonamae, and Tentaculita
+#       as both phylum and class given taxonomic ambiguity.
 #    c. Accept Holocephali as both class and subclass.
-#    d. Accept Cladistia as both class and infraclass.
-#    e. Accept Nektaspidida, Tuzoida, Tommotiida, and Parablastoidea as both
+#    d. Accept Cladistia and Onychodontida as both class and infraclass.
+#    e. Accept Tuzoida, Tommotiida, Parablastoidea, and Erniettomorpha as both
 #       class and order.
 #    f. Accept Chondrostei and Actinistia as both subclass and infraclass.
-#    g. Accept Aglaspidida,  Paleoloricata, Homoctenida, and Tentaculitida as 
-#       both subclass and order.
-#    h. Accept Orthoceratoidea as both subclass and superfamily.
-#    i. Accept Cladoselachimorpha as both infraclass and superorder.
-#    j. Accept Cocculiniformia as both superorder and order.
+#    g. Accept Aglaspidida, Cheloniellida, Paleoloricata, Homoctenida, and  
+#       Tentaculitida as both subclass and order.
+#    i. Accept Cladoselachimorpha and Porolepidimorpha as both infraclass and 
+#       superorder.
+#    j. Accept Cocculiniformia and Fissiculata as both superorder and order.
 #    k. Accept Palaeostomata as both superorder (of many bryozoan orders) and 
 #       suborder (of cyclostomes)
 #    l. Accept Stolonifera (for bryozoan and cnidarian), Phymosomatoida, and 
 #       Orchocladina as both order and suborder.
-#    m. Accept Pilosa as both order and infraorder.
-#    n. Accept Cambridioidea as both order and superfamily.
-#    o. Accept Lepadoidea and Cassidulina as both suborder and superfamily.
+#    m. Accept Cambridioidea as both order and superfamily.
+#    n. Accept Cassidulina as both suborder (as in PBDB) and superfamily (as in 
+#       WoRMS).
+
 
 
 ## (3) Identify taxa placed inconsistently within higher taxa.
@@ -116,8 +116,6 @@ for (i in 1:length(tax)) {
     next
   cat(as.character(tax[i]), ": ", as.character(higher), "\n\n")
 }
-# Ignore class Tommotiida, which is known to be either paraphyletic or
-#      polyphyletic (and generally considered as various stem brachiopods).
 
 # Subclass
 tax <- unique(Subclass)
@@ -183,7 +181,7 @@ for (i in 1:length(tax)) {
   cat(as.character(tax[i]), ": ", as.character(higher), "\n\n")
 }
 # Ignore order Tommotiida, which is known to be either paraphyletic or
-#      polyphyletic (and generally considered as various stem brachiopods).
+# polyphyletic (and generally considered as various stem brachiopods).
 
 # Suborder
 tax <- unique(Suborder)
@@ -281,6 +279,9 @@ for (i in 1:length(tax)) {
     next
   cat(as.character(tax[i]), ": ", as.character(higher), "\n\n")
 }
+
+# Ignore Ctenodontidae (bivalve and fish family), Aulocystidae (cnidarian and
+# sponge family)
 
 # Subfamily
 tax <- unique(Subfamily)
