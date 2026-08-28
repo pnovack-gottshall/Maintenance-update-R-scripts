@@ -26,7 +26,9 @@ sizes <- read.delim("TempSizes.txt")
 sizes$accepted_no <- NA
 sizes$accepted_rank <- NA
 sizes$accepted_name <- NA
+head(sizes)sizes <- read.delim("TempSizes.txt")
 head(sizes)
+
 (orig.nrow <- nrow(sizes))
 
 # Choose columns for viewing summaries
@@ -35,7 +37,7 @@ sum.cols <- which(colnames(sizes) %in% c("Row", "Genus", "Subgenus", "accepted_n
 
 ## 1. Match subgenera in SI data that are still subgenera in PBDB. Note PBDB
 ## uses "Genus (Subgenus)" for format.
-subgenera <- paste0(sizes$Genus, " (", sizes$Subgenus, ")")
+subgenera <- paste0(sizes$OrigGenus, " (", sizes$OrigSubgenus, ")")
 wh.subg <- which(subgenera %in% pbdb$taxon_name)
 subgenera[wh.subg[1:10]]
 subg.matches <- match(subgenera[wh.subg], pbdb$taxon_name)
@@ -59,8 +61,8 @@ identical(orig.nrow, nrow(valid.1) + nrow(sizes))
 
 ## 2. Match genera in SI data that are still genera in PBDB (restricting to
 ## those lacking subgenus names so only matches genera)
-index <- which(sizes$Subgenus == "")
-genera <- sizes$Genus[index]
+index <- which(sizes$OrigSubgenus == "")
+genera <- sizes$OrigGenus[index]
 wh.gen <- which(genera %in% pbdb$taxon_name)
 genera[wh.gen[1:10]]
 gen.matches <- match(genera[wh.gen], pbdb$taxon_name)
@@ -97,10 +99,10 @@ identical(orig.nrow, nrow(valid.1) + nrow(valid.2) + nrow(sizes))
 ## 3. Match subgenera in SI data now elevated to genus rank in PBDB. (Make sure
 ## to exclude nominate/type subgenera parented to the same genus. Eg., subgenus
 ## Atrypa (Atrypa) is a different taxon than genus Atrypa.)
-index <- which(sizes$Subgenus != "")
-remove.nominates <- which(sizes$Genus == sizes$Subgenus)
+index <- which(sizes$OrigSubgenus != "")
+remove.nominates <- which(sizes$OrigGenus == sizes$OrigSubgenus)
 index <- setdiff(index, remove.nominates)
-subgenera <- sizes$Subgenus[index]
+subgenera <- sizes$OrigSubgenus[index]
 pbdb.genera <- pbdb[which(pbdb$taxon_rank == "genus"), ]
 wh.subg.now.gen <- which(subgenera %in% pbdb.genera$taxon_name)
 subgenera[wh.subg.now.gen[1:10]]
@@ -343,8 +345,8 @@ num
 
 ## 4. Match subgenera in SI data now recombined in different genera in PBDB (or
 ## possibly elevated to genus rank)
-index <- which(sizes$Subgenus != "")
-subgenera <- sizes$Subgenus[index]
+index <- which(sizes$OrigSubgenus != "")
+subgenera <- sizes$OrigSubgenus[index]
 wh.subg.now.recombined <- which(subgenera %in% pbdb.subg$subgenus)
 subgenera[wh.subg.now.recombined[1:10]]
 subg.matches <- match(subgenera[wh.subg.now.recombined], pbdb.subg$subgenus)
@@ -378,8 +380,8 @@ identical(orig.nrow, nrow(valid.1) + nrow(valid.2) + nrow(valid.3) +
 
 ## 5. Match genera (lacking subgenera, as want to maintain subgenera, even if
 ## not in PBDB!) in SI data now reranked as a subgenus in PBDB.
-index <- which(sizes$Subgenus == "")
-genera <- sizes$Genus[index]
+index <- which(sizes$OrigSubgenus == "")
+genera <- sizes$OrigGenus[index]
 wh.g.now.demoted <- which(genera %in% pbdb.subg$subgenus)
 genera[wh.g.now.demoted]
 gen.matches <- match(genera[wh.g.now.demoted], pbdb.subg$subgenus)
@@ -480,4 +482,72 @@ head(missing)
 x <- rbind(good, missing)
 write.table(x, file = "output_taxonomy.txt", sep = "\t", row.names = FALSE)
 
+
+## PART 3 TAG HEIM et al. GENERA IF NON-MARINE #################################
+nonmarine <- read.csv("nonmarine_WoRMS_genera.csv")
+# Restrict to exclusively nonmarine
+nonmarine <- nonmarine[which(nonmarine$WoRMS.habitat == "non-marine"), ]
+
+x <- read.table(file = "output_taxonomy.txt", sep = "\t", header = TRUE)
+
+sort(unique(x$Genus[which(x$Genus %in% nonmarine$Genus)]))
+# Double check PBDB and WoRMS to confirm whether marine or non-marine
+
+
+## PART 4: Use WoRMS to fill in higher taxonomy ################################
+library(worrms)
+# Code is slow because requires API calls (via internet) to WoRMS. Note will
+# override the taxonomy used in from Heim, et al. (in case of a match). May also
+# not produce proper taxonomic structure in case of homonyms or extinct taxa.
+
+# Import (now updated) SizesToImport.tab
+sizes <- read.delim("TempSizes.txt")
+
+# Only want to run through those that are NOT in PBDB (at end of file)
+sizes <- sizes[which(is.na(sizes$accepted_no)), ]
+genera <- sizes$accepted_name
+
+# Set columns names for higher taxa
+cn <- colnames(sizes)
+
+for (g in 1:length(genera)) {
+  # Initialize each time
+  genus <- records <- taxonomy <- col.match <- NA
+  
+  # Download from WoRMS
+  genus <- genera[g]
+  
+  # Get name(s) (in case of homonyms). Including non-marines in case of
+  # non-marine snails/etc in Heim, et al., and setting fuzzy = FALSE so only
+  # matching the genus/subgenus
+  test <- try(wm_records_name(name = genus, marine_only = FALSE,
+                              fuzzy = FALSE), silent = TRUE)
+  if (length(test) < 2L)
+    next
+  
+  # Proceed if (potentially) in WoRMS
+  records <- wm_records_name(name = genus, marine_only = FALSE, fuzzy = FALSE)
+
+  # Beware of homonyms
+  if (nrow(records) > 1L) {
+    cat("manually check", genus, ", which might have homonyms\n")
+    next
+  }
+  
+  # Proceed if only a single match
+  taxonomy <- wm_classification(id = records$AphiaID)
+  
+  # Replace rank names shared with non-animals
+  if ("Phylum (Division)" %in% taxonomy$rank)
+    taxonomy$rank[which(taxonomy$rank == "Phylum (Division)")] <- "Phylum"
+  if ("Subphylum (Subdivision)" %in% taxonomy$rank)
+    taxonomy$rank[which(taxonomy$rank == "Subphylum (Subdivision)")] <- "Subphylum"
+  
+  # Merge to data file
+  col.match <- na.omit(match(taxonomy$rank, cn))
+  sizes[g, na.omit(col.match)] <- taxonomy$scientificname[-na.action(col.match)]
+
+}
+
+write.table(sizes, file = "sizeWWorms.txt", sep = "\t", row.names = FALSE)
 
