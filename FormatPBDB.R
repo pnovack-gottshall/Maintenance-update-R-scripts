@@ -779,8 +779,8 @@ dim(post)
 #   - Treat order Notomyotida as an asteroid order, leaving the suborder 
 #     unnamed. (Note taxon is currently empty, so disused in PBDB.)
 
-#   - Treat suborder Orchocladina as a sponge order (and also as a suborder), 
-#     leaving the suborder unnamed, per Rigby, et al., 2004.
+#   - Treat suborder Orchocladina as a sponge order, leaving the suborder 
+#     unnamed, per Rigby, et al., 2004.
 
 #   - Maintain suborder Phymosomatoida as an echinoid suborder, leaving the 
 #     order UNCERTAIN.
@@ -849,33 +849,36 @@ dim(post)
 #       (vii)  Change phylum Problematica to UNCERTAIN.
 
 #       (viii) Assign order Sachitida to class Diplacophora (following Vinther 
-#                and Nielsen 2005 and Parkhaev and Demidenko, 2010), although 
-#                their current status is in some unknown molluscan class.
+#                and Nielsen 2005 and Parkhaev and Demidenko, 2010), although
+#                their current status is in some unknown molluscan class. The
+#                order also includes Halkieriidae and Wiwaxiidae.
 
 #  e. CHANGE the following names (typically alternative spellings or 
 #     archaic synonyms):
-#       (i)    cephalochordate order Amphioxi to Amphioxiformes (and place in 
+#       (1)    cephalochordate order Amphioxi to Amphioxiformes (and place in 
 #                class Leptocardii)
-#       (ii)   vertebrate class Actinopterygii to Actinopteri (with 
+#       (2)    vertebrate class Actinopterygii to Actinopteri (with 
 #                Actinopterygii as superclass)  
-#       (iii)  sponge class Demospongea to Demospongiae 
-#       (iv)   sponge class Archeocyatha to Archaeocyatha
-#       (v)    fish order Birkeniida to Birkeniiformes
-#       (vi)   annelid subclass Aciculata to Errantia
-#       (vii)  set starfish infraclass Neoasteroidea within subclass 
-#              Ambuloasteroidea
-#       (viii) bryozoan order Cryptostomata to Cryptostomida 
-#       (ix)   bryozoan order Ctenostomata to Ctenostomatida 
-#       (x)    bryozoan order Cyclostomata to Cyclostomatida
-#       (vi)   bryozoan order Cystoporata to Cystoporida  
-#       (vii)  bryozoan order Fenestrata to Fenestrida 
-#       (viii) bryozoan order Trepostomida and Trepostomata to Trepostomatida
-#       (xiv)  diploporitan "superfamily" Glyptosphaeritida to 
-#              Glyptosphaeritidoidea (in order Glyptosphaeritida) 
-#              (See below for details on other diploporitans)
-#       (xv)   superfamily Mosasauria to superfamily Mosasauroidea
-#       (xvi)  brachiopod family Disciniidae to Discinidae (and treat order
-#              Discinida as j.s.s. of order Lingulida)
+#       (3)    sponge class Demospongea to Demospongiae 
+#       (4)    sponge class Archeocyatha to Archaeocyatha
+#       (5)    fish order Birkeniida to Birkeniiformes
+#       (6)    annelid subclass Aciculata to Errantia
+#       (7)    set starfish infraclass Neoasteroidea within subclass 
+#                Ambuloasteroidea
+#       (8)    bryozoan order Cryptostomata to Cryptostomida 
+#       (9)    bryozoan order Ctenostomata to Ctenostomatida 
+#       (10)   bryozoan order Cyclostomata to Cyclostomatida
+#       (11)   bryozoan order Cystoporata to Cystoporida  
+#       (12)   bryozoan order Fenestrata to Fenestrida 
+#       (13)   bryozoan order Trepostomida and Trepostomata to Trepostomatida
+#       (14)   diploporitan "superfamily" Glyptosphaeritida to 
+#                Glyptosphaeritidoidea (in order Glyptosphaeritida) 
+#                (See below for details on other diploporitans)
+#       (15)   superfamily Mosasauria to superfamily Mosasauroidea
+#       (16)   brachiopod family Disciniidae to Discinidae (and treat order
+#                Discinida as j.s.s. of order Lingulida)
+#       (17)   use subclass Hexacorallia instead of synonym Zoantharia
+#       (18)   per WoRMS, use order Octocorallia instead of Gorgonacea
 
 #  f. Bivalve classification primarily follows that of Carter, et al. (2011),
 #     the basis of the forthcoming Treatise). For outdated names (i.e., bivalves
@@ -888,19 +891,25 @@ dim(post)
 #     infraclass Heteroconchia (albeit in different superorders). Order
 #     Pterioida is in Subclass Pteromorphia. Treat "cohorts" Mytilomorphi,
 #     Ostreomorphi, Palaeoheterodonta (= senior synonym of Uniomorphi), and
-#     Heterodonta (= senior synonym of Cardiomorphi) to rank superorder. Within
+#     Heterodonta (= senior synonym of Cardiomorphi) as rank superorder. Within
 #     suborder Anomiidina, rank unranked clades Anomioidei, Aviculopectinoidei,
 #     and Monotoidei as sections (with unranked subclades Anomioitei and
 #     Dimyoitei as subsections). (For Ostreomorphi and others above, this has
 #     the effect of making my propogation algorithm more conservative because
-#     smaller ranks are treated as larger, more inclusive ones.)
+#     smaller ranks are treated as larger, more inclusive ones.) Because of lack
+#     of available ranks, superorders Cardiiformii, Imparidentia and
+#     Pholadiformii and subcohorts Carditioni and Cardioni and infrasubcohorts
+#     Cardiidia and Lucinidia (and underlying megaorders) are all treated as
+#     functionally equivalent to superorder Heterodonta. (This would be a great
+#     opportunity to artifically downrank the subclades into sections, etc. to
+#     allow these intermediately ranked clades!)
 
 #  g. For opisthobranch and pulmonate gastropods, use a modified version of
 #     Bouchet and Rocroi (2005), which is also consistent with how WoRMS treats
 #     their clade names. Treat Heterobranchia as the subclass that includes the
 #     orders Allogastropoda (now paraphyletic, so replacing Allogastropoda with
 #     order UNCERTAIN and assigning to infraclass 'lower Heterobranchia'), plus
-#     now rearranged opisthobranch and pulmonate subgroups (now divided into
+#     now-rearranged opisthobranch and pulmonate subgroups (now divided into
 #     subclades because the traditional names are non-monophyletic). Replace
 #     Sepkoski's order Heterostrophia with Heterostropha and his order
 #     Cephalaspida as Cephalaspidea. With the division of the opisthobranchs,
@@ -909,7 +918,9 @@ dim(post)
 #     and Ringipleura ranked as superorder. See "Gastropod_taxononomy.docx" for standardized
 #     taxonomic structure used, which merges (as best as can be done) the
 #     taxonomic structure of the PBDB, Bouchet and Rocroi 2005, Bouchet, et al.
-#     2017, and WoRMS.
+#     2017, and WoRMS. For now-defunct order Neotaenioglossa, replacing with
+#     UNCERTAIN Caenogastropoda because likely polyphletic and split among
+#     multiple superorders.
 
 #  h. Following WoRMS (and modified from Bouchet and Rocroi, 2005), downrank
 #     order Neogastropoda as a suborder in downranked superorder-to-order
@@ -921,8 +932,8 @@ dim(post)
 #     Ptenoglossa as hypsogastropod suborders. Downrank (disused in PBDB)
 #     ptenoglossan suborder Gymnoglossa to infraorder (but place Muricoidea
 #     within Neogastropoda). See other details of gastropod taxonomy above (and
-#     in "Gastropod_taxonomy.docx").
-
+#     in "Gastropod_taxonomy.docx"). Treat Annulariinae within Annulariidae 
+#     (per WoRMS), not Pomatiidae.
 
 #  i. For certain vertebrate groups whose taxonomy is often cladistically based
 #     on unranked taxa, use the following ranks. Treat order Ichthyosauria as
@@ -978,16 +989,17 @@ dim(post)
 #                echinoderms'. Cyclocystoidea are placed in subphylum UNCERTAIN
 
 #  k. For tetrapods, do not use the larger fish-inclusive Dipnotetrapodomorpha
-#     as subclass (and Dipnomorpha for class). Instead, use Subclass Theria
-#     (etc.) for mammals (whales, sirenians, etc.); and place whales in Order
-#     Cetacea (and NOT Artiodactyla). Use Subclass Eureptilia for reptiles
+#     as subclass (and Dipnomorpha for class). Instead, use subclass Theria
+#     (etc.) for mammals (whales, sirenians, etc.); and place whales in order
+#     Cetacea (and NOT Artiodactyla). Use subclass Eureptilia for reptiles
 #     (plesiosaurs, ichthyosaurs, squamate mosasaurs, thalattosaurs, turtles,
 #     etc.). Treat unranked clade Testudinata as a superorder and unranked clade
 #     Thalassochelydia as section. For Aves, treat unranked clades Aequornithes
 #     (for superorders Pelecanimorphae and Procellariimorphae and order
 #     Gaviiformes) and Eurypygimorphae (order Phaethontiformes) as subclasses
 #     and 'stem birds' for paraphyletic grouping of Hesperornithiformes and
-#     Yanornithiformes.
+#     Yanornithiformes. Treat unranked clades Procellariiformes and 
+#     Sphenisciformes as orders.
 
 #  l. Treat Xiphosura as a class that is a synonym with prior Class Merostomata,
 #     despite how WoRMS ranks them. (Be aware that many PBDB "xiphosurans" are
@@ -1013,8 +1025,10 @@ dim(post)
 #     Demospongiae.
 
 #  n. Move sponges placed by PBDB in order Calcaronea into subclass Calcaronea 
-#     (sensu Rigby, et al. 2004) and place in order UNCERTAIN (unless the family 
-#     indicates a known order).
+#     (sensu Rigby, et al. 2004) and place in order UNCERTAIN (unless the family
+#     indicates a known order). Based on concensus in West, et al. (2015) that
+#     polyphyletic, replace subclasses Tetractinomorpha and Ceractinomorpha with
+#     UNCERTAIN. Use order Lychniscosa instead of Lychniscosida.
 
 #  o. For converting Sepkoski's archaic polychaete orders, use Amphinomida for
 #     Amphinomorpha, Eunicida for Eunicemorpha, Phyllodocida for
@@ -1022,7 +1036,8 @@ dim(post)
 #     for Drilomorpha, Terebellida for Terebellomorpha, Terebellida (Family
 #     Flabelligeridae) for Flabelligerimorpha, and Sabellida (Family Serpulidae)
 #     for Serpulimorpha (but allowing still-used order Sabelliditida, but
-#     placing within Polychaeta instead of Annelida incertae sedis).
+#     placing within Polychaeta instead of Annelida incertae sedis). Downrank 
+#     infraclass Scolecida to order.
 
 #  p. Based on recent work by Skovsted and Holmer and their group (mostly in
 #     2008-2009), treating order Hyolithelminthida (including Hyolithellidae and
@@ -1134,7 +1149,8 @@ dim(post)
 #     Ophidiasteridae, Oreasteridae, Pycinasteridae, and Radiasteridae] and
 #     Tumulosina [Sphaerasteridae, Stauranderasteridae]. Treating unranked
 #     Neoasteroidea as an infraclass of subclass Ambuloasteroidea (although
-#     nearly a synonym).
+#     nearly a synonym). Following WoRMS (and partially PBDB), treat 
+#     Chilophiurina as infraorder (suborder blank) in order Ophiurida.
 
 #  y. Following Parry, et al. (2019) that demonstrates machaeridians are
 #     polychaetes in order Phyllodocida and suborder Aphroditiformia, downgrade
@@ -1162,7 +1178,9 @@ dim(post)
 #     Merostomoidea) and remaining unclassified genera in subclass UNCERTAIN.
 #     For those genera in class Merostomoidea, downgrade the name to subclass
 #     status, although likely not monophyletic. Treat class Aglaspidida as a
-#     subclass with orders Aglaspidida (of same name) and Strabopida.
+#     subclass with orders Aglaspidida (of same name) and Strabopida. Assign 
+#     following orders to subclass Libristoma (= Librostoma): Asaphida,
+#     Harpetida, Proetida, Ptychopariida, and Trinucleida.
 
 # ab. The affinity of radiocyaths is uncertain (Treatise: Kruse, et al., 2015),
 #     with most considering them either allied to archaeocyath or heteractine
@@ -1224,8 +1242,10 @@ dim(post)
 #     different versions of same name (e.g., Batomorphii vs Batoidea).
 
 #     (1) Using modification of Nelson, et al. (2016, Fishes of the World), 
-#         placing class Conodonta in superclass Conodontophorida (within 
-#         Vertebrata) instead of separate subphylum.
+#         placing class Conodonta in superclass Conodontophorida (within
+#         Vertebrata) instead of separate subphylum. Treat order
+#         Conodontophorida as j.s.s. of class Conodonta, order Prioniodinida as
+#         j.s.s of Prioniodontida .
 
 #     (2) For presumably paraphyletic jaw-less vertebrates ("Agnatha"), 
 #         ignoring infraphylum Agnatha and maintaining PBDB superclasses
@@ -1233,6 +1253,8 @@ dim(post)
 #         Petromyzontida), Osteostracomorphi (= classes Galeaspidomorphi [=
 #         Galeaspida] and Osteostraci [= Cephalaspidomorphi]), Pteraspidomorphi
 #         (= class Pteraspidomorpha), and Thelodontomorphi (= class Thelodonti).
+#         Use order Benneviaspidiformes and Thyestiformes instead of 
+#         Benneviaspidida and Thyestiida.
 
 #         (a) Treat suborder Cyathaspida as j.s.s. of Cyathaspidoidei, with
 #             family Cyathaspididae (= j.s.s. of Dinaspidae, Diplaspidae, and
@@ -1308,12 +1330,14 @@ dim(post)
 #         and Dipnomorpha (= subclass Dipnotetrapodomorpha) and infraclass 
 #         Onychodontida (in unnamed subclass, in duplicate class Onychodontida).
 #         Unranked clades Choanata, Eutetrapoda, and Stegocephali are ignored.
-#         Osteolepidae is treated as j.s.s. of Osteolepididae. Infraclasses
-#         Osteolepidida and Rhizodontida are placed as UNCERTAIN sarcopterygian 
+#         Osteolepidae is treated as j.s.s. of Osteolepididae and use
+#         Osteolepidiformes instead of j.s.s. Osteolepiformes. Infraclasses
+#         Osteolepidida and Rhizodontida are placed as UNCERTAIN sarcopterygian
 #         classes.
 
 #     (7) Assigning all tetrapods to superclass Tetrapoda (= classes Amphibia,
-#         Aves, Mammalia, and Reptilia).
+#         Aves, Mammalia, and Reptilia). Treat unranked Squamata as order within 
+#         subclass Eureptilia.
 
 # aj. Based on convention in WoRMS, treating downgrade class Tergomya to 
 #     subclass rank and placing within class Monoplacophora.
@@ -1386,7 +1410,61 @@ dim(post)
 # au. For cephalopods, treat unranked clade Neocoleoidea as a coleoid 
 #     infraclass. Treat superorder Decembrachiata as j.s.s. of Decabrachia.
 #     Treat suborders Teuthomorpha and Teuthina as j.s.s. of superorder
-#     Decabrachia.
+#     Decabrachia. Following King and Evans (2019), replacing subclass
+#     Nautiloidea with Nautilia, subclass Orthoceratoidea with Orthoceratia, and
+#     superorder Multiceratoidea with subclass Multiceratia. Treat Aulacocerida 
+#     as j.s.s. of Aulacoceratida
+
+# av. For anthozoans, defer to WoRMS for extant corals. Downrank subphylum 
+#     Anthozoa to class rank. Subclass Hexacorallia (= Zoantharia) includes
+#     orders Actiniaria, Antipatharia [= Ameripathidae, Antipathidae,
+#     Aphanipathidae, Cladopathidae, Leiopathidae, Myriopathidae,
+#     Pteridopathidae, Schizopathidae, Sinopathidae, Sterictopathidae, and
+#     Stylopathidae], Ceriantharia, Corallimorpharia (= families
+#     Corallimorphidae, Discosomidae, Ricordeidae, and Sideractinidae but no
+#     occurrences in PBDB), Hexanthiniaria (= Hispaniastraeidae and
+#     Pachythecalina [= Pachythecaliina]), Kilbuchophyllida, Scleractinia,
+#     Tabulaconida, and Zoantharia (= j.s.s. Zoanthidea) (= suborders
+#     Brachycnemina [= Neozoanthidae, Sphenopidae, Zoanthidae] and Macrocnemina
+#     [= Epizoanthidae, Hydrozoanthidae, Microzoanthidae, Nanozoanthidae, and
+#     Parazoanthidae but no occurrences in PBDB])
+
+# aw. For octocorals, defer to WoRMS where better informed by molecular 
+#     phylogenetics. Downrank class Octocorallia to subclass rank, and
+#     equivalent to now-defunct Alcyonacea and Gorgonacea. Only two orders are
+#     currently recognized: Malacalcyonacea (= j.s.s. Alcyoniina, Holaxonia,
+#     Protoalcyonaria, Scleraxonia, and Stolonifera) and Scleralcyonacea (=
+#     j.s.s. Calcaxonia). Treat order Helioporacea as j.s.s. of family
+#     Helioporidae. Superfamily Pennatuloidea is equivalent to j.s.s. order
+#     Pennatulacea and suborders Sessiliflorae and Subselliflorae. Maintaining 
+#     most recent concensus that order Heterocorallia are octocorals.
+
+# ax. For extant holothuroids, defer to WoRMS for higher taxonomy.
+
+# ay. Following WoRMS, assign order (and redundant subclass) Paleoloricata to 
+#     Polyplacophora, whereas PBDB considers a stem aculiferan.
+
+# az. Treat unranked Euprotobranchia as bivalve subclass (although solely 
+#     contains Fordillida).
+
+# ba. Treat hydroid suborders / orders Anthomedusae, Athecata, Gymnoblastea, 
+#     Gymnoblastina, and Stylasterina all as synonyms of order Anthoathecata.
+#     Treat Calyptoblastea, Leptomedusae, Thecata, and Thecaphora as synonyms of
+#     order Leptothecata. Use WoRMS for extant and higher taxonomic structure.
+#     Suborder Chondrophorina and Velellidae are treated as j.s.s. of family
+#     Porpitidae. Replace Olindiadidae with Olindiidae. Suborder Milliporina is
+#     treated as family Milleporina. Heterastrididae treated as Milleporidae.
+#     Siphonophorida is treated as order Siphonophorae. Order Trachylinida is
+#     treated as j.s.s. of subclass Trachylinae. Suborder Suborder Narcomedusina
+#     is treated as j.s.s. of order Narcomedusae. Order Hydroida is treated as
+#     j.s.s. of subclass Hydroidolina.
+
+# bb. Use traditional order Stromatocystitida for Stromatocystitidae (instead 
+#     of UNCERTAIN).
+
+# bc. For extant tunicates (and higher taxonomy for extinct ones), use taxonomy 
+#     from WoRMS.
+
 
 # (6) Run code in "IDBadHigherTaxa.R" to identify taxa that are not consistently
 #     parented, such as a family in my database parented to a superfamily that
