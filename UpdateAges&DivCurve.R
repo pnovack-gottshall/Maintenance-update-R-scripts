@@ -5,9 +5,11 @@
 
 ## ISSUES ######################################################################
 ##
-## 1. Consider adding a tag to the TaxonomyReference field to document when 
-##    Sepkoski's Compendium and WoRMS were used to expand stratigraphic ranges. (Would require adding this field to occs.csv.)
-##
+## 1. Consider adding a tag to the TaxonomyReference field to document when
+## Sepkoski's Compendium and WoRMS were used to expand stratigraphic ranges.
+## (Would require adding this field to occs.csv.)
+
+
 ################################################################################
 
 ## SEE CODE IN ConfirmExtantInWoRMS.R for easy way to add in WoRMS extant status
@@ -94,7 +96,8 @@ which(table(occs$IDNumber) > 1)
 
 ## Any missing ID numbers?
 num <- seq(nrow(occs))
-all(num %in% sort(occs$IDNumber)) # TRUE if nothing missing
+all(num %in% sort(occs$IDNumber))
+# TRUE if nothing missing
 which(num %in% sort(occs$IDNumber) == FALSE)
 
 # Any duplicated genus entries?
@@ -185,7 +188,7 @@ which(sepkoski_compendium$LA == "")
 # Let's take a look at the first two:
 sepkoski_compendium[c(4474, 23222), ]
 
-# Now we need to update (=override) the dates in the Compendium. Because the
+# Now we need to update (= override) the dates in the Compendium. Because the
 # first is the blank one (""), we'll only loop through the others. "" can remain
 # the default NA because missing.
 sepkoski_compendium$max_ma <- as.numeric(NA)
@@ -296,8 +299,11 @@ WoRMS.warning <- 20
 # (subgenus) names. The following cases will be ignored below because not in the
 # PBDB ID number namespace.
 wh.no.ID <- which(is.na(occs$PBDB_GSG_Number))
-# Note all extant-only, missing PBDB ID numbers, and only in the core life-habit
-# database
+# Note (nearly) all extant-only, missing PBDB ID numbers, only in the core
+# life-habit database (or imported body size SIs), intentionally excluded
+# because the PBDB genus name is entangled with some other taxon, or listed as a
+# subgenus combination not currently in the PBDB (usually the case for the SI
+# body size data that may have used now-outdated Compendia).
 occs[wh.no.ID, c(1:2, 4, 8, 11, 13)]
 length(wh.no.ID)
 summary(occs$IDNumber[wh.no.ID])
@@ -306,13 +312,14 @@ summary(occs$IDNumber[wh.no.ID])
 # reprocess above again.) Note some may be homonyms (e.g., Janira, Leptocheirus,
 # and Lafoea)
 any(occs$Genus[wh.no.ID] %in% pbdb$taxon_name)
-occs[wh.no.ID, ][which(occs$Genus[wh.no.ID] %in% pbdb$taxon_name), ]
+head(occs[wh.no.ID, ][which(occs$Genus[wh.no.ID] %in% pbdb$taxon_name), ], 10)
 
 # Confirm actually missing from Sepkoski's Compendium. (If so, manually update
 # and reprocess above again.)
 any(occs$Genus[wh.no.ID] %in% sepkoski_compendium$Genus)
 any(occs$Genus[wh.no.ID] %in% sepkoski_compendium$Genus_23)
-
+# Mostly false positives for PBDB-absent subgenus combos where the genus IS in the
+# PBDB
 
 
 
@@ -326,7 +333,7 @@ index <- seq(0, 100000, by = 1000)
 
 Gen <- sort(unique(occs$PBDB_GSG_Number))
 for (i in 1:length(Gen)) {
-#  for (i in 33418:length(Gen)) {
+#  for (i in 17660:length(Gen)) {
   gen.pbdb <- max.ma <- min.ma <- Early <- Late <- Sepkoski.max.ma <- 
     Sepkoski.min.ma <- wh.occs.G <- wh.pbdb.G <- wh.Sepkoski.G <- 
     wh.WoRMS.G <- NA
@@ -565,8 +572,8 @@ beepr::beep(3)
 # Confirm no dates are out of order (e.g., FAD younger than LAD). This is
 # usually because of manual entry errors by me in cases where a genus does not
 # have occurrences in the PBDB, or where the conversions in
-# SepkoskiAgeConversion.csv is . Thanks for Dave Bapst for pointing out error,
-# which is triggered if try to build a time-tree.
+# SepkoskiAgeConversion.csv are incorrect. Thanks for Dave Bapst for pointing
+# out coding test, which is triggered if try to build a time-tree.
 any(occs$max_ma < occs$min_ma)
 if (any(occs$max_ma < occs$min_ma)) {
   cat(occs$Genus[which(occs$max_ma < occs$min_ma)])
@@ -606,7 +613,7 @@ occs$min_age[wh.Recent.LAD] <- "Recent"
 head(occs)
 tail(occs)
 
-# write.csv(occs, file = "PBDBDates_New.csv", row.names = FALSE)
+# write.csv(occs, file = "PBDBDates.csv", row.names = FALSE)
 
 # It is worthwhile to compare the original and updated ranges to troubleshoot
 # for errors. If there is a significant change (e.g., > 100 Myr), it is possible
@@ -623,9 +630,10 @@ tail(occs)
 # Import "PBDBDates.csv", "updating matching records" using IDNumber as match
 # and ONLY importing the age and interval fields.
 
-
-
-
+# If the PBDB lacks ranges but the database above has them manually entered, it
+# is also worth maintaining the manually entered ones instead of deleting them.
+# Because of the 70 myr 'WoRMS.FAD.expand', many extant taxa will be overridden.
+# These should be manually checked to confirm whether tagged correctly in PBDB.
 
 
 
@@ -644,7 +652,7 @@ tail(occs)
 # using the object above. (Make sure the file details are the same as above.)
 
 colCl <- c(rep(NA, 9), "character", NA, "character", NA)
- read.csv("PBDBDates.csv", header = TRUE, stringsAsFactors=FALSE, colClasses=colCl)
+occs <- read.csv("PBDBDates.csv", header = TRUE, stringsAsFactors=FALSE, colClasses=colCl)
 # occs <- read.delim("PostSizes_withPBDB.tab", sep = "\t", header = TRUE, stringsAsFactors=FALSE, colClasses=colCl)
 head(occs)
 
