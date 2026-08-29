@@ -314,3 +314,16 @@ for (i in 1:length(tax)) {
     next
   cat(as.character(tax[i]), ": ", as.character(higher), "\n\n")
 }
+
+
+
+## Produce compact taxonomic structure of database.
+
+# Useful for summary purposes as well as for scanning to identify the same name
+# that has been reranked. For example, a subgenus A in genus B vs stand-alone
+# (reranked) genus A. These are most common among subgenera/genera,
+# subfamilies/families, and suborders/orders.
+
+dups <- duplicated(x[, 1:16])
+uniques <- x[!dups, ]
+write.csv(uniques, file = "TaxonomicStructure.csv", row.names = FALSE)
