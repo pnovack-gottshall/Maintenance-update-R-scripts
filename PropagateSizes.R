@@ -15,15 +15,16 @@
 #    estimating using following logic:
 #
 #   A. Find closest relative with ALL 3 ATD. 1) if multiple relatives exist, 
-#      pick the one (regardless of whether sp or genus) that is closest to the 
-#      same age [(earlyRel - earlyEntry) ^ 2 + (lateR - lateE) ^ 2], and pick  
-#      match with smallest absolute difference. Why? Because size is known to  
-#      change through time (although unclear if shape does). Note that this 
-#      means that taxa missing a range will not get an estimated body size. (And 
-#      no need to calculate square root here, which saves computational time.)
+#      pick the one (regardless of whether sp, subgenus, or genus) that is
+#      closest to the same age [(earlyRel - earlyEntry) ^ 2 + (lateR - lateE) ^
+#      2], and pick match with smallest absolute difference. Why? Because size
+#      is known to change through time (although unclear if shape does). Note
+#      that this means that taxa missing a range will not get an estimated body
+#      size. (And no need to calculate square root here, which saves
+#      computational time.)
 #
-#   B. If all 3 lengths are missing (not possible if SizeScale = sp/g), drop in
-#      all 3 measurements from relative.
+#   B. If all 3 lengths are missing (should not possible if SizeScale = sp/g), 
+#      drop in all 3 measurements from temporally closest, closest relative.
 #
 #   C. If 2 lengths are missing, estimate the missing ones using the relative's
 #      shape.
