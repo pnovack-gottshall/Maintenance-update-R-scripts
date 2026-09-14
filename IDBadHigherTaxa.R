@@ -180,8 +180,6 @@ for (i in 1:length(tax)) {
     next
   cat(as.character(tax[i]), ": ", as.character(higher), "\n\n")
 }
-# Ignore order Tommotiida, which is known to be either paraphyletic or
-# polyphyletic (and generally considered as various stem brachiopods).
 
 # Suborder
 tax <- unique(Suborder)
@@ -209,11 +207,13 @@ for (i in 1:length(tax)) {
   wh <- which(Infraorder == tax[i])
   if (length(wh) == 1L)
     next
-  higher <- unique(x[wh, 1:8])
+  higher <- unique(x[wh, 1:9])
   if (nrow(higher) == 1)
     next
   cat(as.character(tax[i]), ": ", as.character(higher), "\n\n")
 }
+# Allow Hueneosauria, which is allowed to be polyphyletic because includes both
+# stem and crown ichthyopterygians.
 
 # Section
 tax <- unique(Section)
@@ -225,7 +225,7 @@ for (i in 1:length(tax)) {
   wh <- which(Section == tax[i])
   if (length(wh) == 1L)
     next
-  higher <- unique(x[wh, 1:8])
+  higher <- unique(x[wh, 1:10])
   if (nrow(higher) == 1)
     next
   cat(as.character(tax[i]), ": ", as.character(higher), "\n\n")
@@ -242,7 +242,7 @@ for (i in 1:length(tax)) {
   wh <- which(Subsection == tax[i])
   if (length(wh) == 1L)
     next
-  higher <- unique(x[wh, 1:8])
+  higher <- unique(x[wh, 1:11])
   if (nrow(higher) == 1)
     next
   cat(as.character(tax[i]), ": ", as.character(higher), "\n\n")
@@ -258,7 +258,7 @@ for (i in 1:length(tax)) {
   wh <- which(Superfamily == tax[i])
   if (length(wh) == 1L)
     next
-  higher <- unique(x[wh, 1:8])
+  higher <- unique(x[wh, 1:12])
   if (nrow(higher) == 1)
     next
   cat(as.character(tax[i]), ": ", as.character(higher), "\n\n")
@@ -274,7 +274,7 @@ for (i in 1:length(tax)) {
   wh <- which(Family == tax[i])
   if (length(wh) == 1L)
     next
-  higher <- unique(x[wh, 1:8])
+  higher <- unique(x[wh, 1:13])
   if (nrow(higher) == 1)
     next
   cat(as.character(tax[i]), ": ", as.character(higher), "\n\n")
@@ -293,7 +293,7 @@ for (i in 1:length(tax)) {
   wh <- which(Subfamily == tax[i])
   if (length(wh) == 1L)
     next
-  higher <- unique(x[wh, 1:8])
+  higher <- unique(x[wh, 1:14])
   if (nrow(higher) == 1)
     next
   cat(as.character(tax[i]), ": ", as.character(higher), "\n\n")
@@ -309,7 +309,7 @@ for (i in 1:length(tax)) {
   wh <- which(Tribe == tax[i])
   if (length(wh) == 1L)
     next
-  higher <- unique(x[wh, 1:8])
+  higher <- unique(x[wh, 1:15])
   if (nrow(higher) == 1)
     next
   cat(as.character(tax[i]), ": ", as.character(higher), "\n\n")
