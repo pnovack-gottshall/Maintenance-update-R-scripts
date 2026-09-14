@@ -751,8 +751,8 @@ dim(post)
 #     include the following:
 
 #  a. Changing suffixes (e.g., -acea to -oidea), adding superfamily and suborder
-#     names when left empty in PBDB. See code in IDBadHigherTaxa.R for a
-#     function to automate.
+#     names when left empty in PBDB. For corals, the custom is to change -icae
+#     to -oidea. See code in IDBadHigherTaxa.R for a function to automate.
 
 #  b. Some names have different ranks in my database and the PBDB. See code in 
 #     IDBadHigherTaxa.R for a function to automate. Known instances include:
@@ -1245,7 +1245,8 @@ dim(post)
 #         placing class Conodonta in superclass Conodontophorida (within
 #         Vertebrata) instead of separate subphylum. Treat order
 #         Conodontophorida as j.s.s. of class Conodonta, order Prioniodinida as
-#         j.s.s of Prioniodontida .
+#         j.s.s of Prioniodontida, and Furnishinitoidea as j.s.s. of 
+#         Furnishinoidea.
 
 #     (2) For presumably paraphyletic jaw-less vertebrates ("Agnatha"), 
 #         ignoring infraphylum Agnatha and maintaining PBDB superclasses
@@ -1362,14 +1363,17 @@ dim(post)
 #     name Cyclostomatida for order of cyclostomes (synonym of Tubuliporata),
 #     with suborders Articulina (replaced name for Articulata, with families
 #     Crisiidae and Crisuliporidae), Cancellata, Cerioporina, Fasciculina (with
-#     families Actinoporidae, Frondiporidae, Hastingsiidae, Semiceidae,
-#     Siphoniotyphlidae, and Theonoidae), Hederellida (with families
-#     Hederellidae and Reptariidae), Palaeostomata (= Paleotubuliporina in part,
-#     with families Corynotrypidae, Crownoporidae, Flabellotrypidae, and
-#     Sagenellidae), Rectangulata (with families Alyonushkidae [no fossils],
-#     Anyutidae [no fossils], and Lichenoporidae), and Tubuliporina (most other
-#     families). Treat order Rhabdomesida as suborder Rhabdomesina in order
-#     Cryptostomida. Assign suborder Esthonioporina to order Esthonioporata.
+#     families Actinoporidae, Fasciculiporidae, Frondiporidae, Hastingsiidae,
+#     Semiceidae, Siphoniotyphlidae, and Theonoidae), Hederellida (with families
+#     Hederellidae and Reptariidae), Hexagonellina (with families
+#     Cystodictyonidae, Etherellidae, Evactinoporidae, Goniocladiidae, and
+#     Hexagonellidae), Palaeostomata (= Paleotubuliporina in part, with families
+#     Corynotrypidae, Crownoporidae, Flabellotrypidae, and Sagenellidae),
+#     Rectangulata (with families Alyonushkidae [no fossils], Anyutidae [no
+#     fossils], and Lichenoporidae), and Tubuliporina (most other families).
+#     Treat order Rhabdomesida as suborder Rhabdomesina in order Cryptostomida.
+#     Assign suborder Esthonioporina to order Esthonioporata. Treat suborder
+#     Fistuliporoidea as j.s.s. to Fistuliporina.
 
 # an. Treat problematic cambroernids (= unranked Cambroernida of Yang, et al., 
 #     2020) as class Cambroernida in phylum UNCERTAIN. The "class" includes
@@ -1422,12 +1426,25 @@ dim(post)
 #     Pteridopathidae, Schizopathidae, Sinopathidae, Sterictopathidae, and
 #     Stylopathidae], Ceriantharia, Corallimorpharia (= families
 #     Corallimorphidae, Discosomidae, Ricordeidae, and Sideractinidae but no
-#     occurrences in PBDB), Hexanthiniaria (= Hispaniastraeidae and
-#     Pachythecalina [= Pachythecaliina]), Kilbuchophyllida, Scleractinia,
-#     Tabulaconida, and Zoantharia (= j.s.s. Zoanthidea) (= suborders
-#     Brachycnemina [= Neozoanthidae, Sphenopidae, Zoanthidae] and Macrocnemina
-#     [= Epizoanthidae, Hydrozoanthidae, Microzoanthidae, Nanozoanthidae, and
-#     Parazoanthidae but no occurrences in PBDB])
+#     occurrences in PBDB), Kilbuchophyllida, Scleractinia, Tabulaconida, and
+#     Zoantharia (= j.s.s. Zoanthidea) (= suborders Brachycnemina [=
+#     Neozoanthidae, Sphenopidae, Zoanthidae] and Macrocnemina [= Epizoanthidae,
+#     Hydrozoanthidae, Microzoanthidae, Nanozoanthidae, and Parazoanthidae but
+#     no occurrences in PBDB]). The PBDB (curiously) does not recognize extinct
+#     order Hexanthiniaria, instead treating it as essentially a synonym of
+#     Scleractinia (which is also essentially what WoRMS does). To maintain
+#     historical (and still modern) usage in the literature, downranking
+#     Hexanthiniaria to scleractinian suborder, and downranking suborder
+#     Pachythecalina [= Pachythecaliina] to infraorder rank.) Use traditional
+#     suborders (And lower taxonomic ranks) for extinct groups, when they do not
+#     conflict with how extant corals are classified into Refertina and
+#     Vacatina. Assigning traditional suborder Faviina to Vacatina because all
+#     other extant families are assigned there (except for Rhizangiidae).
+
+
+
+Defer to WoRMS substantially for scleractinian
+#     corals, given the vastly outdated taxonomy in the PBDB.
 
 # aw. For octocorals, defer to WoRMS where better informed by molecular 
 #     phylogenetics. Downrank class Octocorallia to subclass rank, and
@@ -1464,6 +1481,9 @@ dim(post)
 
 # bc. For extant tunicates (and higher taxonomy for extinct ones), use taxonomy 
 #     from WoRMS.
+
+# bd. For amphipods, follow WoRMS in treating Corophiida as infraorder (= j.s.s. 
+#     reranked suborder of Corophiidea in WoRMS) within suborder Senticaudata.
 
 
 # (6) Run code in "IDBadHigherTaxa.R" to identify taxa that are not consistently
