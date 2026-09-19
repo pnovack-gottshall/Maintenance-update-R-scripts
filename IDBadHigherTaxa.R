@@ -178,6 +178,7 @@ for (i in 1:length(tax)) {
     next
   cat(as.character(tax[i]), ": ", as.character(higher), "\n\n")
 }
+# Allow Coronatae, which is a homonym for blastoid and scyphozoan orders.
 
 # Suborder
 tax <- unique(Suborder)
@@ -278,8 +279,8 @@ for (i in 1:length(tax)) {
   cat(as.character(tax[i]), ": ", as.character(higher), "\n\n")
 }
 
-# Ignore Ctenodontidae (bivalve and fish family), Aulocystidae (cnidarian and
-# sponge family)
+# Ignore Ctenodontidae (bivalve and fish family) and Aulocystidae (cnidarian and
+# sponge family).
 
 # Subfamily
 tax <- unique(Subfamily)
@@ -314,14 +315,14 @@ for (i in 1:length(tax)) {
 }
 
 
-## Also useful to identify alternative spellings, corrections, misspellings,
+## (4) Also useful to identify alternative spellings, corrections, misspellings,
 ## etc., but requires manually review. Do separately for each rank.
 taxa <- sort(unique(x$Family))
 # write.csv(taxa, file = "Families.csv", row.names = FALSE)
 
 
 
-## Produce compact taxonomic structure of database.
+## (5) Produce compact taxonomic structure of database.
 
 # Useful for summary purposes as well as for scanning to identify the same name
 # that has been reranked. For example, a subgenus A in genus B vs stand-alone
