@@ -1037,7 +1037,8 @@ dim(post)
 #     Flabelligeridae) for Flabelligerimorpha, and Sabellida (Family Serpulidae)
 #     for Serpulimorpha (but allowing still-used order Sabelliditida, but
 #     placing within Polychaeta instead of Annelida incertae sedis). Downrank 
-#     infraclass Scolecida to order.
+#     infraclass Scolecida to order. Treat order Sabelliditida as j.s.s. of 
+#     Sabellida and superfamily Eunicea as j.s.s. of Eunicoidea.
 
 #  p. Based on recent work by Skovsted and Holmer and their group (mostly in
 #     2008-2009), treating order Hyolithelminthida (including Hyolithellidae and
@@ -1066,7 +1067,8 @@ dim(post)
 #  s. Follow Maletz (2014, basis of forthcoming Treatise revision) in treating
 #     Graptolithina as a subclass in Class Pterobranchia. Assign subclass 
 #     Cephalodiscida (order Cephalodiscoidea) as other pterobranch subclass
-#     (unlike WoRMS, which treats as graptolith).
+#     (unlike WoRMS, which treats as graptolith). Treat suborder Sinograpta as 
+#     j.s.s. of Sinograptina.
 
 #  t. Do not override the following higher taxonomic homonyms! They are
 #     distinct:
@@ -1178,9 +1180,12 @@ dim(post)
 #     Merostomoidea) and remaining unclassified genera in subclass UNCERTAIN.
 #     For those genera in class Merostomoidea, downgrade the name to subclass
 #     status, although likely not monophyletic. Treat class Aglaspidida as a
-#     subclass with orders Aglaspidida (of same name) and Strabopida. Assign 
+
+#     subclass with orders Aglaspidida (of same name) and Strabopida. Assign
 #     following orders to subclass Libristoma (= Librostoma): Asaphida,
-#     Harpetida, Proetida, Ptychopariida, and Trinucleida.
+#     Harpetida, Proetida, Ptychopariida, and Trinucleida. Treat Dorypygellidae
+#     (only recently used but apparently named in 1935 but lacking in any
+#     pre-2024 work) as j.s.s. (improper correction) of Dorypygidae.
 
 # ab. The affinity of radiocyaths is uncertain (Treatise: Kruse, et al., 2015),
 #     with most considering them either allied to archaeocyath or heteractine
@@ -1212,7 +1217,8 @@ dim(post)
 #     WoRMS and PBDBD. It is imperfect, but represents a balance between being
 #     locally highly resolved (based on cladistic analyses of small clades)
 #     while being relatively standardized at higher levels. We need more
-#     ostracod workers!
+#     ostracod workers! Treat Euprimitiidae as correction of Euprimitidae (both 
+#     appear to be used interchangeably, but "ii" is the original spelling).
 
 # ae. Search the "Subfamilies" field for reranked families ending in -idae and 
 #     use PBDB and WoRMS to decide whether to treat as a subfamily or family
@@ -1280,6 +1286,9 @@ dim(post)
 #         can be parented to infraclass Euselachii. Use order Iniopterygia
 #         instead of Iniopterygiformes and Mongolepidida instead of
 #         Mongolepidiformes. Use order Odontaspidida as j.s.s. of Lamniformes.
+#         Treat order Cladoselachida as j.s.s. of Cladoselachiformes. Treat 
+#         order Ischnacanthida as j.s.s. of Ischnacanthiformes. Treat order 
+#         Xenacanthida as j.s.s. of Xenacanthiformes.
 
 #     (4) Traditional group Osteichthyes ("class" in PBDB and parvphylum in 
 #         PBDB) is essentially ignored herein, with bony fishes assigned to
@@ -1313,11 +1322,15 @@ dim(post)
 #         to superorder), unranked clade Elopocephalai as j.s.s. of cohort
 #         Elopomorpha [downranked to superorder], suborder Alepisauroidei
 #         [downranked to superfamily] as equivalent to superfamily
-#         Alepisauroidea, which it very nearly is. Superorder Pycnodontomorpha
-#         is treated as j.s.s. of order Pycnodontiformes, order Gyrodontiformes
-#         as j.s.s. of suborder Gyrodontoidei, unranked clade Gobiida as j.s.s.
-#         of Gobiaria, Ophidiida as j.s.s. of Ophidiaria, Pelagia as j.s.s. of
-#         Pelagiaria.
+#         Alepisauroidea (= Alepisauriformes), which it very nearly is.
+#         Superorder Pycnodontomorpha is treated as j.s.s. of order
+#         Pycnodontiformes, order Gyrodontiformes as j.s.s. of suborder
+#         Gyrodontoidei, unranked clade Gobiida as j.s.s. of Gobiaria, Ophidiida
+#         as j.s.s. of Ophidiaria, Pelagia as j.s.s. of Pelagiaria, and taxa
+#         with root Lampri- used a j.s.s. of forms using Lampridi- (e.g.,
+#         Lamprididae, Lampridiformes), except for Lampripterygii (and in
+#         contrast to WoRMS and van der Laan, which prefer Lampri-; see Appendix
+#         to Olney, et al., 1993 for historical justification).
 
 #     (5) Modifying Nelson, et al. (2016), assigning class Placodermi to 
 #         superclass Placodermiomorphi (who considers this an unranked clade). 
@@ -1334,7 +1347,7 @@ dim(post)
 #         Osteolepidae is treated as j.s.s. of Osteolepididae and use
 #         Osteolepidiformes instead of j.s.s. Osteolepiformes. Infraclasses
 #         Osteolepidida and Rhizodontida are placed as UNCERTAIN sarcopterygian
-#         classes.
+#         classes. Treat suborder Coelacanthoidei as j.s.s. of Coelacanthoideo. 
 
 #     (7) Assigning all tetrapods to superclass Tetrapoda (= classes Amphibia,
 #         Aves, Mammalia, and Reptilia). Treat unranked Squamata as order within 
@@ -1393,7 +1406,10 @@ dim(post)
 # ap. Following Ramirez-Guerrero, et al. (2026), assign classes Cubozoa, 
 #     Scyphozoa, and Staurozoa (= order Stauromedusae, which apparently has no
 #     fossils) to superclass Acraspeda (within subphylum Medusozoa), but not
-#     including Hydrozoa. (Note this includes the Conulariida.)
+#     including Hydrozoa. (Note this includes the Conulariida. Treat order 
+#     Conularina as j.s.s. of suborder Conulariina in order Conulariida.) Treat
+#     order Coronatida as j.s.s. of Coronatae. Treat order Rhizostomatida as 
+#     j.s.s. of Rhizostomeae.
 
 # aq. Place order Radiodonta within arthropod class Dinocarida (= Sepkoski's 
 #     Dinocardia and others Dinocaridida). Also include Opabiniidae here, until 
@@ -1417,7 +1433,8 @@ dim(post)
 #     Decabrachia. Following King and Evans (2019), replacing subclass
 #     Nautiloidea with Nautilia, subclass Orthoceratoidea with Orthoceratia, and
 #     superorder Multiceratoidea with subclass Multiceratia. Treat Aulacocerida 
-#     as j.s.s. of Aulacoceratida
+#     as j.s.s. of Aulacoceratida. Treat Phylloceratitida as j.s.s. of 
+#     Phylloceratida. 
 
 # av. For anthozoans, defer to WoRMS for extant corals. Downrank subphylum 
 #     Anthozoa to class rank. Subclass Hexacorallia (= Zoantharia) includes
@@ -1439,12 +1456,9 @@ dim(post)
 #     suborders (And lower taxonomic ranks) for extinct groups, when they do not
 #     conflict with how extant corals are classified into Refertina and
 #     Vacatina. Assigning traditional suborder Faviina to Vacatina because all
-#     other extant families are assigned there (except for Rhizangiidae).
-
-
-
-Defer to WoRMS substantially for scleractinian
-#     corals, given the vastly outdated taxonomy in the PBDB.
+#     other extant families are assigned there (except for Rhizangiidae). Defer
+#     to WoRMS substantially for scleractinian corals, given the vastly outdated
+#     taxonomy in the PBDB.
 
 # aw. For octocorals, defer to WoRMS where better informed by molecular 
 #     phylogenetics. Downrank class Octocorallia to subclass rank, and
@@ -1456,7 +1470,9 @@ Defer to WoRMS substantially for scleractinian
 #     Pennatulacea and suborders Sessiliflorae and Subselliflorae. Maintaining 
 #     most recent concensus that order Heterocorallia are octocorals.
 
-# ax. For extant holothuroids, defer to WoRMS for higher taxonomy.
+# ax. For extant holothuroids, defer to WoRMS for higher taxonomy. I have doubts 
+#     about the veracity and autonomy of families Synaptellidae, Synaptidae, and
+#     Synaptitidae, but leaving them alone for now.
 
 # ay. Following WoRMS, assign order (and redundant subclass) Paleoloricata to 
 #     Polyplacophora, whereas PBDB considers a stem aculiferan.
