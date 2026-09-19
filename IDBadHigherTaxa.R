@@ -57,10 +57,8 @@ for (rank in 1:(ncol(x) - 1)) {
 #    j. Accept Cocculiniformia and Fissiculata as both superorder and order.
 #    k. Accept Palaeostomata as both superorder (of many bryozoan orders) and 
 #       suborder (of cyclostomes)
-#    l. Accept Stolonifera (for bryozoan and cnidarian), Phymosomatoida, and 
-#       Orchocladina as both order and suborder.
-#    m. Accept Cambridioidea as both order and superfamily.
-#    n. Accept Cassidulina as both suborder (as in PBDB) and superfamily (as in 
+#    l. Accept Cambridioidea as both order and superfamily.
+#    m. Accept Cassidulina as both suborder (as in PBDB) and superfamily (as in 
 #       WoRMS).
 
 
