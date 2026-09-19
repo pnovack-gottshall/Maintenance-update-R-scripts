@@ -316,6 +316,12 @@ for (i in 1:length(tax)) {
 }
 
 
+## Also useful to identify alternative spellings, corrections, misspellings,
+## etc., but requires manually review. Do separately for each rank.
+taxa <- sort(unique(x$Family))
+# write.csv(taxa, file = "Families.csv", row.names = FALSE)
+
+
 
 ## Produce compact taxonomic structure of database.
 
