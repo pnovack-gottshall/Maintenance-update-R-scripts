@@ -782,9 +782,6 @@ dim(post)
 #   - Treat suborder Orchocladina as a sponge order, leaving the suborder 
 #     unnamed, per Rigby, et al., 2004.
 
-#   - Maintain suborder Phymosomatoida as an echinoid suborder, leaving the 
-#     order UNCERTAIN.
-
 #   - Elevate suborder Pygocephalomorpha to order rank (so order rank is not 
 #     left blank).
 
@@ -832,7 +829,8 @@ dim(post)
 
 #       (ii)   Class Dipnomorpha for infraclasses Dipnoi and subclass
 #              Dipnotetrapodomorpha. (And duplicate superorder Porolepidimorpha
-#              as infraclass, in subclass Dipnotetrapodomorpha.)
+#              as infraclass, in subclass Dipnotetrapodomorpha.) Treat suborder
+#              Dipnorhynchina as j.s.s. of order Dipnorhynchiformes.
 
 #       (iii)  Class Tentaculita / phylum Tentaculita for order Tentaculitida 
 #              (and replace class Tentaculitoidea with Tentaculita).
@@ -884,25 +882,25 @@ dim(post)
 #     the basis of the forthcoming Treatise). For outdated names (i.e., bivalves
 #     listed in PBDB without a family assignment and placed in outdated orders
 #     used by Sepkoski but not mentioned in Carter, et al., 2011), use the
-#     following rules: orders Anomalodesmacea, Myoida, Thraciida, and Trigoniida
-#     are in infraclass Heteroconchia. Members of superfamily Grammysioidea
-#     (Families Grammysiidae and Sanguinolitidae) and superfamily
-#     Lyrodesmatoidea (Family Lyrodesmatidae) are in Order UNCERTAIN and
-#     infraclass Heteroconchia (albeit in different superorders). Order
-#     Pterioida is in Subclass Pteromorphia. Treat "cohorts" Mytilomorphi,
-#     Ostreomorphi, Palaeoheterodonta (= senior synonym of Uniomorphi), and
-#     Heterodonta (= senior synonym of Cardiomorphi) as rank superorder. Within
-#     suborder Anomiidina, rank unranked clades Anomioidei, Aviculopectinoidei,
-#     and Monotoidei as sections (with unranked subclades Anomioitei and
-#     Dimyoitei as subsections). (For Ostreomorphi and others above, this has
-#     the effect of making my propogation algorithm more conservative because
-#     smaller ranks are treated as larger, more inclusive ones.) Because of lack
-#     of available ranks, superorders Cardiiformii, Imparidentia and
-#     Pholadiformii and subcohorts Carditioni and Cardioni and infrasubcohorts
-#     Cardiidia and Lucinidia (and underlying megaorders) are all treated as
-#     functionally equivalent to superorder Heterodonta. (This would be a great
-#     opportunity to artifically downrank the subclades into sections, etc. to
-#     allow these intermediately ranked clades!)
+#     following rules: orders Anomalodesmacea (disused), Myoida (disused),
+#     Thraciida, and Trigoniida are in infraclass Heteroconchia. Members of
+#     superfamily Grammysioidea (Families Grammysiidae and Sanguinolitidae) and
+#     superfamily Lyrodesmatoidea (Family Lyrodesmatidae) are in Order UNCERTAIN
+#     and infraclass Heteroconchia (albeit in different superorders). Order
+#     Pterioida (mostly disused) is in order UNCERTAIN in Subclass Pteromorphia.
+#     Treat "cohorts" Mytilomorphi, Ostreomorphi, Palaeoheterodonta (= senior
+#     synonym of Uniomorphi), and Heterodonta (= senior synonym of Cardiomorphi)
+#     as rank superorder. Within suborder Anomiidina, rank unranked clades
+#     Anomioidei, Aviculopectinoidei, and Monotoidei as sections (with unranked
+#     subclades Anomioitei and Dimyoitei as subsections). (For Ostreomorphi and
+#     others above, this has the effect of making my propogation algorithm more
+#     conservative because smaller ranks are treated as larger, more inclusive
+#     ones.) Because of lack of available ranks, superorders Cardiiformii,
+#     Imparidentia and Pholadiformii and subcohorts Carditioni and Cardioni and
+#     infrasubcohorts Cardiidia and Lucinidia (and underlying megaorders) are
+#     all treated as functionally equivalent to superorder Heterodonta. (This
+#     would be a great opportunity to artifically downrank the subclades into
+#     sections, etc. to allow these intermediately ranked clades!)
 
 #  g. For opisthobranch and pulmonate gastropods, use a modified version of
 #     Bouchet and Rocroi (2005), which is also consistent with how WoRMS treats
@@ -915,12 +913,14 @@ dim(post)
 #     Cephalaspida as Cephalaspidea. With the division of the opisthobranchs,
 #     otherwise-unclassified Heterostropha are classified herein as order
 #     UNCERTAIN and in subclass Heterobranchia. Unranked clades Acteonimorpha
-#     and Ringipleura ranked as superorder. See "Gastropod_taxononomy.docx" for standardized
-#     taxonomic structure used, which merges (as best as can be done) the
-#     taxonomic structure of the PBDB, Bouchet and Rocroi 2005, Bouchet, et al.
-#     2017, and WoRMS. For now-defunct order Neotaenioglossa, replacing with
-#     UNCERTAIN Caenogastropoda because likely polyphletic and split among
-#     multiple superorders.
+#     and Ringipleura ranked as superorder. See "Gastropod_taxononomy.docx" for
+#     standardized taxonomic structure used, which merges (as best as can be
+#     done) the taxonomic structure of the PBDB, Bouchet and Rocroi 2005,
+#     Bouchet, et al. 2017, and WoRMS. For now-defunct order Neotaenioglossa,
+#     replacing with UNCERTAIN Caenogastropoda because likely polyphletic and
+#     split among multiple superorders. For now-defunct order Archaeogastropoda
+#     incertae sedis, treat as Gastropoda incertae sedis (although likely mostly
+#     Vetigastropoda)
 
 #  h. Following WoRMS (and modified from Bouchet and Rocroi, 2005), downrank
 #     order Neogastropoda as a suborder in downranked superorder-to-order
@@ -1100,33 +1100,49 @@ dim(post)
 #     unless explicitly known not to be.)
 
 #  w. Following Kroh and Smith (2010) for taxonomy of echinoids (opinions also
-#     entered into PBDB), but adding superfamily and/or suborder rankings (which
-#     they often avoided) in cases where an order is assigned and infraorder
-#     subclades are assigned. Maintaining order Camarodonta infraorders:
-#     Temnopleuridea (with families Temnopleuridae, Trigonocidaridae,
-#     Zeuglopleuridae, and Glyphocyphidae) and Echinidea (with downranked
-#     "superfamily" Odontophora [with families Toxopneustidae,
-#     Strongylocentrotidae, and Echinometridae], and superfamily UNCERTAIN [with
-#     families Echinidae and Parechinidae]) and suborder/superfamily UNCERTAIN
-#     (with family Parasaleniidae). For suborder Scutellina, maintain
-#     infraorders Laganiformes (including Fibulariidae = j.s.s. Echinocyamidae
-#     and Laganidae including Laganinae and Neolaganinae plus any other genera
-#     listed in now reranked suborder Laganina) and Scutelliformes (including
-#     Taiwanasteridae, Protoscutellidae [in stem group], Echinarachniidae,
-#     Dendrasteridae, Rotulidae, Scutellidae, Eoscutellidae, Scutasteridae,
-#     Abertellidae, Astriclypeidae, Monophorasteridae, and Mellitidae) and
-#     assigning to superfamily Scutelloidea except for family Protoscutellidae
-#     in superfamily UNCERTAIN because stem Scutellina. Treat unranked clade
-#     Meridosternata as a suborder of Holasteroida with infraorders
-#     Cardiasterina (= Stegasterina (including Stegasteridae and Cardiasteridae
-#     = Cardiotaxinae) and Urechinina (including echinoid homonym Corystidae
-#     replaced by Corystusidae, Calymnidae, Carnarechinidae, Garumnasteridae,
-#     Urechinidae, Plexechinidae, and Pourtalesiidae) [note that the corystusids
-#     and calymnids are not listed this way on page 173 but clearly an error
-#     based on cladogram in fig. 2]; families Echinocorythidae and Holasteridae
-#     are then in infraorder UNCERTAIN as stem Meridosternata and families
-#     Stenonasteridae, Hemipneustidae, and Pseudholasteridae are in infraorder
-#     and suborder UNCERTAIN as stem holasteroids.
+#     entered into PBDB and generally consistent with WoRMS), but adding
+#     superfamily and/or suborder rankings (which they often avoided) in cases
+#     where an order is assigned and infraorder subclades are assigned.
+#     Maintaining order Camarodonta infraorders: Temnopleuridea (with families
+#     Temnopleuridae, Trigonocidaridae, Zeuglopleuridae, and Glyphocyphidae) and
+#     Echinidea (with downranked "superfamily" Odontophora [with families
+#     Toxopneustidae, Strongylocentrotidae, and Echinometridae], and superfamily
+#     UNCERTAIN [with families Echinidae and Parechinidae]) and
+#     suborder/superfamily UNCERTAIN (with family Parasaleniidae). For suborder
+#     Scutellina, maintain infraorders Laganiformes (including Fibulariidae =
+#     j.s.s. Echinocyamidae and Laganidae including Laganinae and Neolaganinae
+#     plus any other genera listed in now reranked suborder Laganina) and
+#     Scutelliformes (including Taiwanasteridae, Protoscutellidae [in stem
+#     group], Echinarachniidae, Dendrasteridae, Rotulidae, Scutellidae,
+#     Eoscutellidae, Scutasteridae, Abertellidae, Astriclypeidae,
+#     Monophorasteridae, and Mellitidae) and assigning to superfamily
+#     Scutelloidea except for family Protoscutellidae in superfamily UNCERTAIN
+#     because stem Scutellina. Treat unranked clade Meridosternata as a suborder
+#     of Holasteroida with infraorders Cardiasterina (= Stegasterina (including
+#     Stegasteridae and Cardiasteridae = Cardiotaxinae) and Urechinina
+#     (including echinoid homonym Corystidae replaced by Corystusidae,
+#     Calymnidae, Carnarechinidae, Garumnasteridae, Urechinidae, Plexechinidae,
+#     and Pourtalesiidae) [note that the corystusids and calymnids are not
+#     listed this way on page 173 but clearly an error based on cladogram in
+#     fig. 2]; families Echinocorythidae and Holasteridae are then in infraorder
+#     UNCERTAIN as stem Meridosternata and families Stenonasteridae,
+#     Hemipneustidae, and Pseudholasteridae are in infraorder
+#     and suborder UNCERTAIN as stem holasteroids. Following WoRMS, uprank
+#     Acroechinoidea from superorder to infraclass rank to allow [PBDB orders /
+#     WoRMS infraclasses] superorders Aulodonta (orders Diadematoida and
+#     Echinothurioida), Calycina (orders Salenioida, suborder Phymosomatoida [in
+#     order UNCERTAIN] and genus Salenocidaris), Neognathostomata (orders
+#     Cassiduloida, Clypeasteroida, Echinolampadoida, families Apatopygidae,
+#     Archiaciidae, Clypeidae, Clypeolampadidae, and Nucleolitidae, and genus
+#     Bothryopneustes), and Atelostomata (orders Holasteroida and Spatangoida,
+#     families Collyritidae, Disasteridae, and Tithoniidae, and genera
+#     Aulacopygus, Notidisaster, and Orbigniana). Treat unranked Echinacea as
+#     infraclass, for orders Arbacioida, Camarodonta, Plesiocidaroida,
+#     Stomopneustoida, and Hemicidaroida (redundant with family Hemicidaridae),
+#     family Glyphopneustidae, and genera Besairiecidaris, Bramus, and
+#     Crinocidaris, and placing Hemicidaroida within superorder Stirodonta.
+#     Maintain suborder Phymosomatoida as an echinoid suborder, leaving the
+#     order UNCERTAIN.
 
 #  x. Following Blake (2018) for (primarily Paleozoic) asteroids (and other
 #     asterozoans: somasteroids, stenuroids, and ophiuroids). (This set of
@@ -1151,8 +1167,10 @@ dim(post)
 #     Ophidiasteridae, Oreasteridae, Pycinasteridae, and Radiasteridae] and
 #     Tumulosina [Sphaerasteridae, Stauranderasteridae]. Treating unranked
 #     Neoasteroidea as an infraclass of subclass Ambuloasteroidea (although
-#     nearly a synonym). Following WoRMS (and partially PBDB), treat 
-#     Chilophiurina as infraorder (suborder blank) in order Ophiurida.
+#     nearly a synonym). Following WoRMS (and partially PBDB), treat
+#     Chilophiurina as infraorder (suborder blank) in order Ophiurida,
+#     infraorder Hemieuryalina as j.s.s. of family Hemieuryalidae, and suborder
+#     Myophiurina as j.s.s. of subclass Myophiuroida.
 
 #  y. Following Parry, et al. (2019) that demonstrates machaeridians are
 #     polychaetes in order Phyllodocida and suborder Aphroditiformia, downgrade
@@ -1160,16 +1178,19 @@ dim(post)
 #     Turrilepadomorpha as new superfamilies, and unranked clade
 #     Cuniculepadida [Lepidocoleidae and Turrilepadidae]	also as a new superfamily.
 
-#  z. Based on the affirmation of Lindberg and Ponder (2020) regarding
+#  z. Based on the affirmation of Ponder and Lindberg (2019) regarding
 #     conclusions of Dzik (2010), treating problematic tergomyan
-#     ("monoplacophoran") families Kirengellidae, Pygmaeoconidae =
-#     Pygmaeoconinae, Romaniellidae, and Shelbyoceridae (and other kirengellids
-#     unassigned to families) as synonyms of Hypseloconidae in order
-#     Kirengellida (= senior to junior synonyms Hypseloconida and Romaniellida),
-#     and treating all as uncertain (possibly stem-group Craniiformea) members
-#     of Brachiopoda (class UNCERTAIN and subphylum blank). Also assign
-#     Scenellidae (order and class UNCERTAIN) to stem Brachiopoda (UNCERTAIN
-#     subphylum), despite PBDB considering a tergomyan.
+#     ("monoplacophoran") families Kirengellidae, Archaeophialidae,
+#     Pygmaeoconidae (= Pygmaeoconinae), Romaniellidae, and Shelbyoceridae (and
+#     other kirengellids and Kiringelloidea unassigned to families) as synonyms
+#     of Hypseloconidae in order Kiringellida (= Kirengellida and senior to
+#     junior synonyms Hypseloconida and Romaniellida), and treating all as
+#     uncertain (possibly stem-group Craniiformea) members of Brachiopoda (class
+#     UNCERTAIN and subphylum blank). Also assign Scenellidae (order and class
+#     UNCERTAIN) to stem Brachiopoda (UNCERTAIN subphylum), despite PBDB
+#     considering a tergomyan. The status of "hypseloconine" Protoconchoididae
+#     is less clear, and consensus seems to be they are legitimate tergomyan
+#     monoplacophorans; therefore, ignoring suborder Hypseloconina.
 
 # aa. Based on results in Lerosey-Aubril, et al. (2017), replace subphylum 
 #     Trilobitomorpha with near-equivalent but better-defined subphylum
@@ -1180,12 +1201,12 @@ dim(post)
 #     Merostomoidea) and remaining unclassified genera in subclass UNCERTAIN.
 #     For those genera in class Merostomoidea, downgrade the name to subclass
 #     status, although likely not monophyletic. Treat class Aglaspidida as a
-
 #     subclass with orders Aglaspidida (of same name) and Strabopida. Assign
 #     following orders to subclass Libristoma (= Librostoma): Asaphida,
-#     Harpetida, Proetida, Ptychopariida, and Trinucleida. Treat Dorypygellidae
-#     (only recently used but apparently named in 1935 but lacking in any
-#     pre-2024 work) as j.s.s. (improper correction) of Dorypygidae.
+#     Harpetida (= Harpida and s.s.s. of suborder Harpina), Proetida,
+#     Ptychopariida, and Trinucleida. Treat Dorypygellidae (only recently used
+#     but apparently named in 1935 but lacking in any pre-2024 work) as j.s.s.
+#     (improper correction) of Dorypygidae.
 
 # ab. The affinity of radiocyaths is uncertain (Treatise: Kruse, et al., 2015),
 #     with most considering them either allied to archaeocyath or heteractine
@@ -1260,8 +1281,9 @@ dim(post)
 #         Petromyzontida), Osteostracomorphi (= classes Galeaspidomorphi [=
 #         Galeaspida] and Osteostraci [= Cephalaspidomorphi]), Pteraspidomorphi
 #         (= class Pteraspidomorpha), and Thelodontomorphi (= class Thelodonti).
-#         Use order Benneviaspidiformes and Thyestiformes instead of 
-#         Benneviaspidida and Thyestiida.
+#         Use order Benneviaspidiformes and Thyestiformes instead of
+#         Benneviaspidida and Thyestiida. Treat subclass Myxinoidea as j.s.s. of
+#         order Myxiniformes.
 
 #         (a) Treat suborder Cyathaspida as j.s.s. of Cyathaspidoidei, with
 #             family Cyathaspididae (= j.s.s. of Dinaspidae, Diplaspidae, and
@@ -1337,7 +1359,8 @@ dim(post)
 #         See Placoderm_taxonomy.docx for conventions in handling unranked 
 #         clades Antiarchi and Arthrodira, where assigned rank of subclass, with
 #         other orders assigned class UNCERTAIN. Archaic "family" Acanthaspida
-#         is treated as a j.s.s. of Macropetalichthyidae.
+#         is treated as a j.s.s. of Macropetalichthyidae. Order Phyllolepida
+#         treated as j.s.s. of Phyllolepidae.
 
 #     (6) Superclass Sarcopterygii (a gigaclass in WoRMS and subclass in PBDB)
 #         is used to include classes Coelacanthimorpha (= subclass Actinistia)
@@ -1386,7 +1409,9 @@ dim(post)
 #     fossils], and Lichenoporidae), and Tubuliporina (most other families).
 #     Treat order Rhabdomesida as suborder Rhabdomesina in order Cryptostomida.
 #     Assign suborder Esthonioporina to order Esthonioporata. Treat suborder
-#     Fistuliporoidea as j.s.s. to Fistuliporina.
+#     Fistuliporoidea as j.s.s. to Fistuliporina. Treat order Vesiculariida as
+#     j.s.s. of suborder Vesicularina (and class Eurystomata as j.s.s. of order 
+#     Ctenostomatida).
 
 # an. Treat problematic cambroernids (= unranked Cambroernida of Yang, et al., 
 #     2020) as class Cambroernida in phylum UNCERTAIN. The "class" includes
