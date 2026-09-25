@@ -54,7 +54,7 @@ for (rank in 1:(ncol(x) - 1)) {
 #       Tentaculitida as both subclass and order.
 #    i. Accept Cladoselachimorpha and Porolepidimorpha as both infraclass and 
 #       superorder.
-#    j. Accept Cocculiniformia and Fissiculata as both superorder and order.
+#    j. Accept Fissiculata and Cocculiniformia as both superorder and order.
 #    k. Accept Palaeostomata as both superorder (of many bryozoan orders) and 
 #       suborder (of cyclostomes)
 #    l. Accept Cambridioidea as both order and superfamily.
@@ -278,7 +278,6 @@ for (i in 1:length(tax)) {
     next
   cat(as.character(tax[i]), ": ", as.character(higher), "\n\n")
 }
-
 # Ignore Ctenodontidae (bivalve and fish family) and Aulocystidae (cnidarian and
 # sponge family).
 
