@@ -23,8 +23,9 @@
 #      size. (And no need to calculate square root here, which saves
 #      computational time.)
 #
-#   B. If all 3 lengths are missing (should not possible if SizeScale = sp/g), 
-#      drop in all 3 measurements from temporally closest, closest relative.
+#   B. If all 3 lengths are missing (should not possible if SizeScale = 
+#      sp/g/subg), drop in all 3 measurements from temporally closest, closest 
+#      relative.
 #
 #   C. If 2 lengths are missing, estimate the missing ones using the relative's
 #      shape.
@@ -66,7 +67,7 @@
 
 # (1) To save time, you only need to export one dataset. The "constant" database
 #     is recommended, although both data sets should have identical body size
-#     estimates (although there will be variation in the estimates for
+#     estimates (although there may be variation in the estimates for
 #     AbsStratDist). Before exporting, sort the entries in the following order:
 
 #     (a) BodySizeScale = Species is first, followed by Subgenus, Genus, etc.,
@@ -109,7 +110,7 @@
 #     'PhotoX' columns with values. 
 #     (HINT: Use = MIN((3-COUNTA(Est_AP:Est_DV)),COUNT(APLength:DVLength)) , 
 #     which is = MIN((3-COUNTA(AO2:AQ2)),COUNT(AI2:AK2)) that allows including 
-#     the Est_X columns!) TROUBLESHOOT: Confirm that all 'Sp/Subg/Gen' have at 
+#     the Est_X columns!) TROUBLESHOOT: Confirm that all 'Sp/Gen/Subg' have at 
 #     least 1 measurement! Also delete any NAs in AbsStratDistance, SizeChanged, 
 #     and size measures, and delete size or AbsStratDist measures that are 0 
 #     (if not intentional).
@@ -117,7 +118,7 @@
 # (6) Add a new column named 'BodySize' that estimates the body size, using 
 #     the product of 3 'XLength' sizes (= PRODUCT(AF2:AH2)).
 
-# (7) Sort the BodySizeScale = 'Sp/Subg/Gen' rows (AND ONLY THESE ROWS!) by:
+# (7) Sort the BodySizeScale = 'Sp/Gen/Subg' rows (AND ONLY THESE ROWS!) by:
 
 #     (a) Number of PhotoX columns (with largest values first) so entries with 
 #         complete (all 3) size measurements are first and most incomplete are 
@@ -181,17 +182,19 @@ hist.col <- which(colnames(input) == "History_Size")
 date.col <- which(colnames(input) == "DateEntered_Size")
 str(input)
 
-# TROUBLESHOOT: Make sure the "SizeChanged" and 4 "Est_X" (including
-# Est_AbsStratDistance) columns are input as characters and not logicals or all
-# NAs. (If a column is blank, it is classed by default as a logical (which
-# causes errors below) and replaced with NAs.) If needed (such as when there are
-# no "check"ed entries; i.e., when did a clean propagation), use next lines to
-# force to proper class. Note that it is fine for AbsStratDist to have NAs for
-# missing values (so long as the column is treated as a numeric). It is also
-# advisable to confirm the PhotoX and XLength columns are input as numerics.
+# TROUBLESHOOT: Make sure the "SizeChanged", "History_Size", and 4 "Est_X"
+# (including Est_AbsStratDistance) columns are input as characters and not
+# logicals or all NAs. (If a column is blank, it is classed by default as a
+# logical (which causes errors below) and replaced with NAs.) If needed (such as
+# when there are no "check"ed entries; i.e., when did a clean propagation), use
+# next lines to force to proper class. Note that it is fine for AbsStratDist to
+# have NAs for missing values (so long as the column is treated as a numeric).
+# It is also advisable to confirm the PhotoX and XLength columns are input as
+# numerics.
 
 ## Following usually required:
 input$SizeChanged <- replace(input$SizeChanged, which(is.na(input$SizeChanged)), "")
+input$History_Size <- replace(input$History_Size, which(is.na(input$History_Size)), "")
 
 ## Rest needed only if did a fresh propagation (i.e., lacking any estimates -
 ## not typically recommended!)
@@ -218,7 +221,7 @@ table(input$BodySizeScale)
 # Troubleshooting
 if (any(is.na(input$max_ma)) || any(is.na(input$min_ma)))
   stop("Some entries have missing age ranges, which is used in body size propagation 
-algorithm. Leaving ranges empty will mean that missing size measurements will not be propagated for these taxa. Update ages from the Paleobiology Database before proceeding.\n")
+algorithm. Leaving ranges empty will mean that missing size measurements will not use age-matched relatives for these entries. Update ages from the Paleobiology Database before proceeding.\n")
 
 ## Any duplicated ID numbers?
 # Will match the incorrect life habits when importing
@@ -273,6 +276,12 @@ find.rel <- function(x, i, start = 4, end = 21, photo.cols = NULL,
                          rels$BodySizeScale == "Genus"), ]
     nr <- nrow(rels)
     if (nr == 0L) next
+    # Confirm relatives are within correct higher taxon (in case of homonyms)
+    if (nrow(unique(rels[, 3:sc.col])) > 1L) {
+      higher.taxon <- apply(rels[, 3:sc.col], 1, paste0, collapse = "")
+      rels <- 
+        rels[which(higher.taxon == paste0(out[i, 3:sc.col], collapse = "")), ]
+    }
     poss.rels <- rels
     # Test if there are any relatives with all 3 complete measurements
     sq <- seq.int(nr)
@@ -465,7 +474,7 @@ if (record.log) cat("Changes made to body sizes on", today, ":\n\n", file = reco
 
 for (i in 1:nrow(out)) {
   # Errors typically occur when there are no available relatives
-  # for (i in 4781:nrow(out)) {
+  # for (i in 4814:nrow(out)) {
   
   if (i %in% index)
     cat("record", i, "of", nrow(out), ":", out$Genus[i], out$Species[i], "\n")
@@ -769,16 +778,18 @@ write.table(out, file = "PostSizes.tab", quote = FALSE, sep = "\t", row.names = 
 #     with ^t and replacing ^t" with " and replacing "" with ").
 
 # (3) Open FileMakerPro and import as a tab-delimited file, updating records by
-#     matching names and using the IDNumber as the matching identifier. (Fine to
-#     not import the taxonomic names or geological ranges or
-#     BodyMeasureReference, but import everything else.) To set the column names
-#     as the field names, make sure the first entry row in the imported source
-#     (the column headings) are visible, then choose "Use as Field Names" for
-#     the imported source file. Then choose "Matching Names" in the Target
-#     Fields dropdown to ensure that the source and target fields match (but
-#     double-check that they are matched correctly). If using different
-#     propagations for the "constant" and "mode" databases, make sure to import
-#     the correct source file to the correct database version.
+#     matching names and using the IDNumber as the matching identifier. Avoid
+#     using the PBDB Number to match, because this will cause false matches for
+#     entries missing PBDB numbers. (Fine to not import the taxonomic names or
+#     geological ranges or [especially the] BodyMeasureReference [which will
+#     override any non-latin characters], but import everything else.) To set
+#     the column names as the field names, make sure the first entry row in the
+#     imported source (the column headings) are visible, then choose "Use as
+#     Field Names" for the imported source file. Then choose "Matching Names" in
+#     the Target Fields dropdown to ensure that the source and target fields
+#     match (but double-check that they are matched correctly). If using
+#     different propagations for the "constant" and "mode" databases, make sure
+#     to import the correct source file to the correct database version.
 
 
 
@@ -892,8 +903,8 @@ write.table(out, file = "PostSizes.tab", quote = FALSE, sep = "\t", row.names = 
 # 1. Run this check across all 5 such characters (substrate composition,
 # substrate consistency, diet, physical condition of food, and foraging habit)
 # BEFORE running subsequent checks, because it can introduce new life habit
-# codings. If adding a state to a Sp/Gen-level entry, make sure to "Check" that
-# the added state is "Estimated."
+# codings. If adding a state to a Sp/Gen/Subg-level entry, make sure to "Check"
+# that the added state is "Estimated."
 
 # (4) Pelagic taxa given benthic AbsStratDists: Find Fluidic = 1 & Insubstantial
 # = 1 & AbsStratDist = ">-10000" [ANY] & SizeChanged = CHECK and delete
