@@ -121,9 +121,8 @@ if (length(table(table(occs$Genus))) > 1L) {
 # scale_no = 1 (ICS 2024).
 
 ## Get updated PBDB intervals and ages
-strat_names <-
-  read.csv("https://www.paleobiodb.org/data1.2/intervals/list.csv?all_records&vocab=pbdb")
-# strat_names <- read.csv("strat_names.csv")
+# strat_names <- read.csv("https://www.paleobiodb.org/data1.2/intervals/list.csv?all_records&vocab=pbdb")
+strat_names <- read.csv("strat_names.csv")
 head(strat_names)
 
 ## Restrict standard intervals to the default geochronological scale (ICS 2024)
@@ -299,6 +298,7 @@ WoRMS.warning <- 20
 # (subgenus) names. The following cases will be ignored below because not in the
 # PBDB ID number namespace.
 wh.no.ID <- which(is.na(occs$PBDB_GSG_Number))
+
 # Note (nearly) all extant-only, missing PBDB ID numbers, only in the core
 # life-habit database (or imported body size SIs), intentionally excluded
 # because the PBDB genus name is entangled with some other taxon, or listed as a
@@ -310,7 +310,7 @@ summary(occs$IDNumber[wh.no.ID])
 
 # Confirm actually missing from PBDB namespace. (If so, manually update and
 # reprocess above again.) Note some may be homonyms (e.g., Janira, Leptocheirus,
-# and Lafoea)
+# and Lafoea) or Sepkoski's misspellings (which may need to be manually entered)
 any(occs$Genus[wh.no.ID] %in% pbdb$taxon_name)
 head(occs[wh.no.ID, ][which(occs$Genus[wh.no.ID] %in% pbdb$taxon_name), ], 10)
 
@@ -333,7 +333,7 @@ index <- seq(0, 100000, by = 1000)
 
 Gen <- sort(unique(occs$PBDB_GSG_Number))
 for (i in 1:length(Gen)) {
-#  for (i in 17660:length(Gen)) {
+#  for (i in 17566:length(Gen)) {
   gen.pbdb <- max.ma <- min.ma <- Early <- Late <- Sepkoski.max.ma <- 
     Sepkoski.min.ma <- wh.occs.G <- wh.pbdb.G <- wh.Sepkoski.G <- 
     wh.WoRMS.G <- NA
@@ -617,23 +617,28 @@ tail(occs)
 
 # It is worthwhile to compare the original and updated ranges to troubleshoot
 # for errors. If there is a significant change (e.g., > 100 Myr), it is possible
-# the genus has a newly entered homonym or an incorrectly classified homonym, or
-# a previously unrecognized homonym. In these cases, manually compare the PBDB
-# entries and re-classify (or enter appropriate opinions) if incorrect. (If you
-# get a "check extinct status" warning and the genus is correctly tagged, it
-# usually means one of the species in the genus was improperly flagged. It's
-# easiest to confirm on the "pbdb_data.csv" file rather than PBDB web
-# interface.)
+# the genus has a newly entered homonym, an incorrectly classified homonym, or a
+# previously unrecognized homonym, or is overriding a range manually entered
+# (e.g., from the Treatise, if no PBDB occurrences). In these cases, manually
+# compare the PBDB entries and re-classify (or enter appropriate opinions to
+# PBDB) if incorrect. (If you get a "check extinct status" warning and the genus
+# is correctly tagged, it usually means one of the species in the genus was
+# improperly flagged. It's easiest to confirm on the "pbdb_data.csv" file rather
+# than PBDB web interface.)
+
+# If the PBDB lacks ranges but the database above has them manually entered, it
+# is also worth maintaining the manually entered ones instead of deleting them.
+# Because of the 70 myr 'WoRMS.FAD.expand', many extant taxa originating in the
+# Mesozoic with Cenozoic fossil ranges will be overridden. These should be
+# manually checked to confirm whether tagged correctly as extinct/extant in
+# PBDB.
 
 # Before importing ranges, manually delete 'NA's in strat ranges.
 
 # Import "PBDBDates.csv", "updating matching records" using IDNumber as match
-# and ONLY importing the age and interval fields.
-
-# If the PBDB lacks ranges but the database above has them manually entered, it
-# is also worth maintaining the manually entered ones instead of deleting them.
-# Because of the 70 myr 'WoRMS.FAD.expand', many extant taxa will be overridden.
-# These should be manually checked to confirm whether tagged correctly in PBDB.
+# and ONLY importing the age and interval fields. VERY IMPORTANT: Do NOT use the
+# PBDB numbers to match! Doing so will treat all entries lacking PBDB numbers as
+# identical!!
 
 
 
