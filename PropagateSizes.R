@@ -20,12 +20,12 @@
 #      2], and pick match with smallest absolute difference. Why? Because size
 #      is known to change through time (although unclear if shape does). Note
 #      that this means that taxa missing a range will not get an estimated body
-#      size. (And no need to calculate square root here, which saves
-#      computational time.)
+#      size based on temporal similarity (and will only be chosen based on
+#      closest relative). (And no need to calculate square root in this case,
+#      which saves computational time.)
 #
 #   B. If all 3 lengths are missing (should not possible if SizeScale = 
-#      sp/g/subg), drop in all 3 measurements from temporally closest, closest 
-#      relative.
+#      sp/g/subg), drop in all 3 measurements from temporally closest relative.
 #
 #   C. If 2 lengths are missing, estimate the missing ones using the relative's
 #      shape.
@@ -277,7 +277,7 @@ find.rel <- function(x, i, start = 4, end = 21, photo.cols = NULL,
     nr <- nrow(rels)
     if (nr == 0L) next
     # Confirm relatives are within correct higher taxon (in case of homonyms)
-    if (nrow(unique(rels[, 3:sc.col])) > 1L) {
+    if (NROW(unique(rels[, 3:sc.col])) > 1L) {
       higher.taxon <- apply(rels[, 3:sc.col], 1, paste0, collapse = "")
       rels <- 
         rels[which(higher.taxon == paste0(out[i, 3:sc.col], collapse = "")), ]
