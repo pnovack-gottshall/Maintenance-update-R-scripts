@@ -955,7 +955,7 @@ dim(post)
 
 #       (i)  Arthropods: Arachnomorpha, Chelicerata, Crustacea, and 
 #            Artiopoda (= Trilobita + Nektaspidida + class[!] Vicissicaudata +
-#            Agnostida)
+#            Agnostida).
 
 #       (ii) Echinoderms: Subphyla for echinoderms are largely informal, often 
 #            paraphyletic, and an area of much debate. For consistency, using 
@@ -1526,6 +1526,12 @@ dim(post)
 # bd. For amphipods, follow WoRMS in treating Corophiida as infraorder (= j.s.s. 
 #     reranked suborder of Corophiidea in WoRMS) within suborder Senticaudata.
 
+# be. Despite latest PBDB opinion that Hymenostraca is an unranked clade of 
+#     arthropod (essentially a subphylum), treat as a crustacean superclass
+#     separate from Oligostraca and Multicrustacea.
+
+# bf. Treat Tianzhushanellidae (order Tianzhushanelliformes, class 
+#     Siphonoconcha) as stem brachiopods (i.e., Kouchinsky, et al., 2017).
 
 # (6) Run code in "IDBadHigherTaxa.R" to identify taxa that are not consistently
 #     parented, such as a family in my database parented to a superfamily that
