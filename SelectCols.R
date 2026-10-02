@@ -38,15 +38,8 @@
 # If get an error, make sure the file was saved in Unicode UTF-8 format.
 rm(list = ls())
 setwd("C:/Users/pnovack-gottshall/OneDrive - Benedictine University/Desktop/Databases/Maintenance & update R scripts")
-# setwd("C:/Users/pnovack-gottshall/OneDrive - Benedictine University/Desktop/DecapodNSSRP")
 # setwd("C:/Users/pnovack-gottshall/OneDrive - Benedictine University/Documents/GSA (& NAPC)/2026GSA/Size & disparity/Abstract analyses")
 all <- read.delim(file = "AllCols.tab", stringsAsFactors = FALSE)
-# all <- read.delim(file = "AllCols_Constant_PBDB.tab", stringsAsFactors = FALSE)
-# all <- read.delim(file = "AllCols_Mode_PBDB.tab", stringsAsFactors = FALSE)
-# all <- read.delim(file = "AllCols_Mode.tab", stringsAsFactors = FALSE)
-# all <- read.delim(file = "AllCols_Constant.tab", stringsAsFactors = FALSE)
-# all <- read.delim(file = "AllCols_Mode_PBDB_June2024.tab", stringsAsFactors = FALSE)
-# all <- read.delim(file = "AllCols_Constant_PBDB_June2024.tab", stringsAsFactors = FALSE)
 head(all)
 tail(all)
 nrow(all)
@@ -80,7 +73,6 @@ head(selected)
 if (!identical(cols, colnames(selected)))
   stop("column names are not as specified!")
 write.csv(selected, file = "occs.csv", row.names = FALSE)
-# write.csv(selected, file = "occs_Mode_PBDB.csv", row.names = FALSE)
 
 
 
@@ -101,8 +93,6 @@ selected <- all[, wh.cols]
 head(selected)
 if (!identical(cols, colnames(selected)))
   stop("column names are not as specified!")
-# write.table(selected, file = "PreSizes_Constant_withPBDB.tab", row.names = FALSE, sep = "\t", quote = FALSE)
-# write.table(selected, file = "PreSizes_Mode_withPBDB.tab", row.names = FALSE, sep = "\t", quote = FALSE)
 write.table(selected, file = "PreSizes.tab", row.names = FALSE, sep = "\t", quote = FALSE)
 
 
@@ -142,8 +132,6 @@ if (!identical(cols, colnames(selected)))
   stop("column names are not as specified!")
 write.table(selected, file = "PreLH_mode.tab", row.names = FALSE, sep = "\t", quote = FALSE)
 # write.table(selected, file = "PreLH_constant.tab", row.names = FALSE, sep = "\t", quote = FALSE)
-# write.table(selected, file = "PreLH_constant_PBDB.tab", row.names = FALSE, sep = "\t", quote = FALSE)
-# write.table(selected, file = "PreLH_mode_PBDB.tab", row.names = FALSE, sep = "\t", quote = FALSE)
 
 
 # Per-character sorting for downstream analyses:     ----------------------------------------------------
