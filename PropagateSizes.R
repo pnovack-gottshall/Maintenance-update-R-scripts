@@ -157,8 +157,6 @@ colCl[est.cols] <- "character"
 rm(pre.input)
 
 input <- read.delim(file = "preSizes.tab", stringsAsFactors = FALSE, colClasses = colCl)
-# input <- read.delim(file = "PreSizes_Constant_withPBDB.tab", stringsAsFactors = FALSE)
-# input <- read.delim(file = "PreSizes_Mode_withPBDB.tab", stringsAsFactors = FALSE)
 scales <- c("Species", "Subgenus", "Genus", "Tribe", "Subfamily", "Family", 
             "Superfamily", "Subsection", "Section", "Infraorder", "Suborder", 
             "Order", "Superorder", "Infraclass", "Subclass", "Class", 
@@ -463,8 +461,8 @@ seq.AbsStratDist <- rep(seq.int(AbsStratDist.text), 2)
 scale.end <- length(scales)
 # Choose what rank to end searching for relatives for AbsStratDist? (order)
 AbsStratDist.scale.end <- which(scales == "Order")
-interactive <- TRUE   # If want to watch updates in real time
-# interactive <- FALSE
+# interactive <- TRUE   # If want to watch updates in real time
+interactive <- FALSE
 if (interactive) par("ask" = TRUE) else par("ask" = FALSE)
 # log actions so can trace changes
 record.log <- TRUE
@@ -474,7 +472,7 @@ if (record.log) cat("Changes made to body sizes on", today, ":\n\n", file = reco
 
 for (i in 1:nrow(out)) {
   # Errors typically occur when there are no available relatives
-  # for (i in 4814:nrow(out)) {
+  # for (i in 19786:nrow(out)) {
   
   if (i %in% index)
     cat("record", i, "of", nrow(out), ":", out$Genus[i], out$Species[i], "\n")
@@ -764,9 +762,6 @@ if (any(table(input$IDNumber) > 1)) {
 
 ## EXPORT DATA -------------------------------------------------------------
 write.table(out, file = "PostSizes.tab", quote = FALSE, sep = "\t", row.names = FALSE)
-# write.table(out, file = "PostSizes_Decapods.tab", quote = FALSE, sep = "\t", row.names = FALSE)
-# write.table(out, file = "PostSizes_Constant_withPBDB.tab", quote = FALSE, sep = "\t", row.names = FALSE)
-# write.table(out, file = "PostSizes_Mode_withPBDB.tab", quote = FALSE, sep = "\t", row.names = FALSE)
 
 # (1) Open in Excel to confirm looks acceptable. Replace (with Options = Match
 #     entire cell contents) "NA"s in taxonomic names, body size data, 
@@ -916,7 +911,9 @@ write.table(out, file = "PostSizes.tab", quote = FALSE, sep = "\t", row.names = 
 # typically have AbsStratDist values that do NOT correspond to the organism's
 # major axes, or are semi-infaunal in which case the AbsStrat and RelStrat may
 # differ, or have a typically known raised distance [such as encrusters of known
-# hosts]. Easiest to confirm if sort by History_Size.)
+# hosts]. Easiest to confirm if sort by History_Size and search for those with
+# algorithm-entered "AbsStratDist estimated ..." and the estimated checkbox next
+# for AbsStratDist.)
 
 # (6) Confirm that epifaunal "Self-supported" taxa have the same tier for
 # AbsStrat and RelStrat. (And that "supported" taxa have different values.)

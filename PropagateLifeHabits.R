@@ -131,10 +131,8 @@
 rm(list = ls())
 setwd("C:/Users/pnovack-gottshall/OneDrive - Benedictine University/Desktop/Databases/Maintenance & update R scripts")
 # setwd("C:/Users/pnovack-gottshall/OneDrive - Benedictine University/Documents/GSA (& NAPC)/2024NAPC/Higher taxa eco diversity")
-input <- read.delim(file = "PreLH_mode_PBDB.tab", colClasses = "character")
+input <- read.delim(file = "preLH_mode.tab", colClasses = "character")
 # input <- read.delim(file = "preLH_constant.tab", colClasses = "character")
-# input <- read.delim(file = "preLH_mode.tab", colClasses = "character")
-# input <- read.delim(file = "preLH_constant_PBDB.tab", colClasses = "character")
 scales <- c("Species", "Subgenus", "Genus", "Tribe", "Subfamily", "Family", 
             "Superfamily", "Subsection", "Section", "Infraorder", "Suborder", 
             "Order", "Superorder", "Infraclass", "Subclass", "Class", 
@@ -325,7 +323,7 @@ i <- which(out$Genus == "Schuchertia")[1]
 out[i, cols]
 (missings <- any.missing(out[i, ], cols))
 (estimateds <- any.est(out[i,], est.cols))
-combined.any.missing(missings, estimateds)st
+combined.any.missing(missings, estimateds)
 (r <- find.rels(input, i))
 rels <- r$rels
 r$eco.sc
@@ -346,9 +344,8 @@ rel.10$rels[ ,4:14]; rel.10$eco.sc; nrow(rel.10$rels)
 rel.20$rels[ ,4:14]; rel.20$eco.sc; nrow(rel.20$rels)
 rel.50$rels[ ,4:14]; rel.50$eco.sc; nrow(rel.50$rels)
 
-rm(list = c("i", "r", "cols", "est.cols", "missings", "estimateds", "cs.c", 
-            "cs.m", "proxy1", "proxy2", "rels", "rel.1", "rel.5", "rel.10", 
-            "rel.20", "rel.50"))
+rm(list = c("i", "r", "cols", "est.cols", "missings", "estimateds", "proxy1", 
+            "proxy2", "rels", "rel.1", "rel.5", "rel.10", "rel.20", "rel.50"))
 
 
 
@@ -433,8 +430,8 @@ colnames(input)[-c(eco.col, est.col)] #  IDNumber   < ---- >  History_Ecology
 # Which consensus method ('constant' or 'mode' to use for propagating from relatives
 method <- "mode"
 # method <- "constant"
-interactive <- TRUE   # If want to watch updates in real time
-# interactive <- FALSE
+# interactive <- TRUE   # If want to watch updates in real time
+interactive <- FALSE
 if (interactive) par("ask" = TRUE) else par("ask" = FALSE)
 (start.t <- Sys.time())
 
@@ -715,9 +712,7 @@ if (any(table(input$IDNumber) > 1)) {
 
 ## EXPORT DATA -------------------------------------------------------------
 # write.table(out, file = "PostLH_constant.tab", quote = FALSE, sep = "\t", row.names = FALSE)
-# write.table(out, file = "PostLH_mode.tab", quote = FALSE, sep = "\t", row.names = FALSE)
-write.table(out, file = "PostLH_withPBDB_mode.tab", quote = FALSE, sep = "\t", row.names = FALSE)
-# write.table(out, file = "PostLH_withPBDB_constant.tab", quote = FALSE, sep = "\t", row.names = FALSE)
+write.table(out, file = "PostLH_mode.tab", quote = FALSE, sep = "\t", row.names = FALSE)
 
 # (1) Open in Excel to confirm looks acceptable. Delete (matching entire cell
 #     contents) all "NA"s in life habit data.
