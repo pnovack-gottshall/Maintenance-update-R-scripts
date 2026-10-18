@@ -1533,6 +1533,9 @@ dim(post)
 # bf. Treat Tianzhushanellidae (order Tianzhushanelliformes, class 
 #     Siphonoconcha) as stem brachiopods (i.e., Kouchinsky, et al., 2017).
 
+# bg. Treat order Protoconodontida as j.s.s. of unranked clade Protoconodonta 
+#     (ranked as a class), using both names (despite redundancy).
+
 # (6) Run code in "IDBadHigherTaxa.R" to identify taxa that are not consistently
 #     parented, such as a family in my database parented to a superfamily that
 #     is absent from PBDB import. See that file for list of taxa that are
